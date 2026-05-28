@@ -90,7 +90,7 @@ export function AppShell({ children, bottomSlot = null }) {
         </Toolbar>
       </AppBar>
 
-      <Container className="app-shell__content" component="main" maxWidth="sm">
+      <Container className="app-shell__content" component="main" disableGutters maxWidth={false}>
         {children}
       </Container>
 

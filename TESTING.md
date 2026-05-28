@@ -20,6 +20,11 @@
 - 2026-05-28: Lighthouse 11.7.1 PWA score on local preview was 100.
 - 2026-05-28: Lighthouse 11.7.1 PWA score on deployed
   `https://tmrk.github.io/qr-recast/` was 100 after workflow run `26573960339`.
+- 2026-05-28: Phase 3 local preview fake-camera smoke test reached "Point at a QR code" after
+  tapping "Start camera".
+- 2026-05-28: Phase 3 local preview upload fallback decoded a generated QR payload:
+  `https://tmrk.github.io/qr-recast/test-payload`.
+- [ ] Phase 3 real mobile camera verification at the deployed URL.
 
 ## Manual Browser Matrix
 

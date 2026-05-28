@@ -18,3 +18,8 @@ This log is append-only. New entries go at the bottom.
   preview screenshots, and measured a Lighthouse 11.7.1 PWA score of 100 on local preview.
 - Completed Phase 2 after workflow run `26573960339` passed and the deployed
   `https://tmrk.github.io/qr-recast/` Lighthouse 11.7.1 PWA score was 100.
+- Plan: implement the Phase 3 camera viewfinder, user-gesture camera start, upload fallback,
+  downscaled QR decode loop, permission states, and in-memory detection handoff.
+- Implemented the Phase 3 camera viewfinder and verified local upload decoding with a generated QR
+  plus fake-camera readiness in Playwright; real mobile camera verification is still pending after
+  deployment.

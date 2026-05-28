@@ -113,3 +113,10 @@ touch PNG assets consumed by `public/manifest.webmanifest`.
 Lighthouse 13 no longer exposes a `pwa` category, so the Phase 2 PWA gate uses Lighthouse 11.7.1,
 the newest tested release in this environment that still reports that category. The local preview
 scored 100 before deployment.
+
+### 2026-05-28 — Camera Permission Model
+
+The camera viewfinder starts from an explicit button tap rather than requesting camera access on
+mount. This keeps iOS PWA permission prompts tied to a user gesture and gives desktop users an
+upload-only path when no camera is available. Successful scans are handed to an in-memory completion
+view until Phase 4 replaces it with the full export result view.
