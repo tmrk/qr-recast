@@ -36,6 +36,8 @@
   payload. Sizes were 1,927 bytes, 27,150 bytes, 9,340 bytes, and 25,152 bytes respectively.
 - 2026-05-28: Phase 4 local preview copied a compressed share URL containing `?q=` and opened the
   decoded-text dialog for the generated QR payload.
+- 2026-05-28: Phase 3 polygon overlay build passed lint and build; local upload-to-result
+  regression still reached the rendered QR.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

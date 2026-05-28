@@ -42,6 +42,7 @@ const statusCopy = {
  * @param {{ onDetected: (text: string) => void }} props
  */
 export function Viewfinder({ onDetected }) {
+  const sectionRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -55,6 +56,7 @@ export function Viewfinder({ onDetected }) {
   const [torchAvailable, setTorchAvailable] = useState(false);
   const [torchOn, setTorchOn] = useState(false);
   const [detected, setDetected] = useState(false);
+  const [detectedPolygon, setDetectedPolygon] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
 
   const stopStream = useCallback(() => {
@@ -102,6 +104,7 @@ export function Viewfinder({ onDetected }) {
       setStatus('pending');
       setErrorMessage('');
       setDetected(false);
+      setDetectedPolygon(null);
       detectedRef.current = false;
       stopStream();
 
@@ -173,6 +176,7 @@ export function Viewfinder({ onDetected }) {
       setStatus('pending');
       setErrorMessage('');
       setDetected(false);
+      setDetectedPolygon(null);
       detectedRef.current = false;
 
       try {
@@ -209,6 +213,9 @@ export function Viewfinder({ onDetected }) {
         const result = await decodeVideoFrame(videoRef.current, canvasRef.current);
 
         if (result?.data) {
+          setDetectedPolygon(
+            mapQrLocation(result.location, videoRef.current, canvasRef.current, sectionRef.current),
+          );
           handleDetected(result.data);
         }
       } catch (error) {
@@ -240,7 +247,7 @@ export function Viewfinder({ onDetected }) {
   const copy = statusCopy[status] ?? statusCopy.error;
 
   return (
-    <section className="viewfinder" aria-label={strings.camera.viewfinderLabel}>
+    <section ref={sectionRef} className="viewfinder" aria-label={strings.camera.viewfinderLabel}>
       <video ref={videoRef} autoPlay className="viewfinder__video" muted playsInline />
       <canvas ref={canvasRef} className="viewfinder__canvas" />
 
@@ -257,6 +264,16 @@ export function Viewfinder({ onDetected }) {
           <span className="viewfinder__sweep" />
           <QrCodeScannerRounded className="viewfinder__detected-icon" />
         </Box>
+      ) : null}
+
+      {detected && detectedPolygon ? (
+        <svg
+          aria-hidden="true"
+          className="viewfinder__polygon"
+          viewBox={`0 0 ${detectedPolygon.width} ${detectedPolygon.height}`}
+        >
+          <polygon points={detectedPolygon.points} />
+        </svg>
       ) : null}
 
       {status === 'ready' ? (
@@ -348,4 +365,32 @@ function isPermissionError(error) {
     error instanceof DOMException &&
     ['NotAllowedError', 'PermissionDeniedError'].includes(error.name)
   );
+}
+
+function mapQrLocation(location, video, canvas, container) {
+  if (!location || !video || !canvas || !container || !canvas.width || !canvas.height) {
+    return null;
+  }
+
+  const videoRect = video.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  const scale = Math.max(videoRect.width / canvas.width, videoRect.height / canvas.height);
+  const renderedWidth = canvas.width * scale;
+  const renderedHeight = canvas.height * scale;
+  const offsetX = videoRect.left + (videoRect.width - renderedWidth) / 2 - containerRect.left;
+  const offsetY = videoRect.top + (videoRect.height - renderedHeight) / 2 - containerRect.top;
+  const points = [
+    location.topLeftCorner,
+    location.topRightCorner,
+    location.bottomRightCorner,
+    location.bottomLeftCorner,
+  ]
+    .map((point) => `${offsetX + point.x * scale},${offsetY + point.y * scale}`)
+    .join(' ');
+
+  return {
+    height: containerRect.height,
+    points,
+    width: containerRect.width,
+  };
 }

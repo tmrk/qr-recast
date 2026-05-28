@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-28: Added detected-polygon confirmation over the camera viewfinder before result handoff.
 - 2026-05-28: Replaced the temporary scan completion screen with the Phase 4 result view, canonical
   QR generation, and local SVG, PNG, PDF, DOCX, share URL, and decoded-text verification.
 - 2026-05-28: Implemented the Phase 3 camera viewfinder with user-gesture camera start, upload

@@ -30,3 +30,5 @@ This log is append-only. New entries go at the bottom.
 - Implemented the Phase 4 result view, removed the temporary scan completion screen, and verified
   local preview downloads for SVG, PNG, PDF, and DOCX. Fixed DOCX generation by passing UTF-8 SVG
   bytes to `docx` with the PNG fallback intact.
+- Added the Phase 3 detected-polygon overlay so successful camera scans visibly snap to the QR
+  shape before handing off to the Result view.

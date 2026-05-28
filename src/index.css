@@ -201,6 +201,21 @@
   transform: translate(-50%, -50%) scale(1.2);
 }
 
+.viewfinder__polygon {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: qr-polygon-confirm 240ms ease-out both;
+}
+
+.viewfinder__polygon polygon {
+  fill: rgb(var(--qr-palette-primary-mainChannel) / 0.16);
+  stroke: var(--qr-palette-primary-main);
+  stroke-linejoin: round;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 12px rgb(var(--qr-palette-primary-mainChannel) / 0.36));
+}
+
 .viewfinder__hint {
   position: absolute;
   top: calc(46% + min(37vw, 170px) + 22px);
@@ -343,8 +358,19 @@
   }
 }
 
+@keyframes qr-polygon-confirm {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .viewfinder__sweep {
+  .viewfinder__sweep,
+  .viewfinder__polygon {
     animation: none;
   }
 }
