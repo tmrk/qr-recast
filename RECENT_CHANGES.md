@@ -1,0 +1,11 @@
+# Recent Changes
+
+Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
+move into `CHANGELOG.md`.
+
+- 2026-05-28: Added the Phase 1 Vite React skeleton, dependency stack, PWA manifest wiring,
+  linting, formatting, spelling checks, husky hook, GitHub Pages workflow, and Pages source
+  configuration.
+- 2026-05-28: Created the Phase 0 project documents that define the agent contract, roadmap,
+  architecture notes, deployment notes, testing plan, contribution guide, progress log, and
+  changelog.

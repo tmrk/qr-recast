@@ -1,0 +1,115 @@
+# QR Recast Roadmap
+
+Tick items only after the Definition of Done in `AGENTS.md` is met.
+
+## Phase 0 — Agentic Environment Setup
+
+- [x] Create `AGENTS.md`.
+- [x] Create `ROADMAP.md`.
+- [x] Create `PROGRESS.md`.
+- [x] Create `RECENT_CHANGES.md`.
+- [x] Create `ARCHITECTURE.md`.
+- [x] Create `DEPLOYMENT.md`.
+- [x] Create `TESTING.md`.
+- [x] Create `CONTRIBUTING.md`.
+- [x] Create `CHANGELOG.md`.
+
+## Phase 1 — Repo, Tooling, Deploy Pipeline
+
+- [ ] Initialise git if needed, create the GitHub repo, and configure `origin`.
+- [ ] Scaffold Vite and React with the JavaScript template.
+- [ ] Configure `vite.config.js` with `/qr-recast/` base path and `vite-plugin-pwa`.
+- [ ] Install runtime dependencies: MUI, Emotion, MUI icons, Roboto Flex, router, QR decoding and
+      export libraries, file saving, and URL compression.
+- [ ] Install development dependencies: eslint, React and accessibility plugins, prettier,
+      eslint-config-prettier, PWA tooling, husky, and lint-staged.
+- [ ] Configure eslint with React, hooks, accessibility rules, and CI spelling checks.
+- [ ] Configure prettier with 2-space indent, single quotes, semicolons, trailing commas, and
+      100-column print width.
+- [ ] Configure husky pre-commit so lint-staged runs prettier and eslint on staged files.
+- [ ] Add GitHub Actions deployment for pushes to `main`, including Pages artefact upload and SPA
+      fallback.
+- [ ] Enable GitHub Pages with GitHub Actions as the source and document any manual fallback.
+- [ ] Commit, push, wait for a green workflow, and verify the placeholder page at
+      `https://tmrk.github.io/qr-recast/`.
+
+## Phase 2 — Foundation: Theme, Layout, PWA Shell
+
+- [ ] Create `src/theme/` with light and dark themes plus a `useAppTheme()` hook.
+- [ ] Use Material 3 colour roles with deep teal `#0F766E` as the brand seed and document the
+      rationale.
+- [ ] Add Roboto Flex and configure typography with subtle variable weight transitions.
+- [ ] Set up router basename, CSS variables provider, safe-area global styles, and the root route.
+- [ ] Build the `AppShell` with top app bar, main slot, and optional bottom area.
+- [ ] Add the full PWA manifest and generated icon set from a stylised QR fragment mark.
+- [ ] Add iOS meta tags and dynamic theme-colour handling.
+- [ ] Verify Lighthouse PWA score is at least 95 before moving on.
+
+## Phase 3 — Camera Viewfinder and QR Decoding
+
+- [ ] Build `src/features/camera/Viewfinder.jsx` with environment camera capture.
+- [ ] Add the scanning frame, dimmed mask, sweep line, and reduced-motion handling.
+- [ ] Add hint text and bottom controls for torch, camera flip, and image upload fallback.
+- [ ] Implement continuous downscaled `jsQR` decoding.
+- [ ] Add detection feedback with haptics, bracket pulse, polygon snap, and result transition.
+- [ ] Handle permission states explicitly.
+- [ ] Tear down streams on unmount and pause camera work when the document is hidden.
+
+## Phase 4 — Result View: Re-emit the QR
+
+- [ ] Build `src/features/result/ResultView.jsx`.
+- [ ] Generate the canonical inline SVG with `qrcode`.
+- [ ] Export SVG as an image blob.
+- [ ] Export PNG through canvas rasterisation at 1024 x 1024.
+- [ ] Export vector PDF and document the chosen library.
+- [ ] Export DOCX with SVG and PNG fallback.
+- [ ] Generate filenames from the first eight SHA-1 characters of the payload.
+- [ ] Add loading, success, cancellation, and error feedback for export actions.
+
+## Phase 5 — Share-as-URL
+
+- [ ] Encode payloads with `lz-string.compressToEncodedURIComponent` into `?q=`.
+- [ ] Disable URL sharing for payload URLs over 2000 characters with inline guidance.
+- [ ] Share the URL on mobile and copy it on desktop.
+- [ ] Show the copied URL pill and secondary QR preview on desktop.
+- [ ] Add copy feedback with icon morph, success colour, and subtle scale animation.
+- [ ] Load valid `?q=` payloads directly into the Result view and clear the query string.
+
+## Phase 6 — Decoded Text Panel
+
+- [ ] Open decoded text in a bottom sheet on mobile and a dialog on desktop.
+- [ ] Render decoded text in a monospace code block with long-content scrolling.
+- [ ] Detect and display payload kind.
+- [ ] Add a clear external-link affordance for URL payloads.
+- [ ] Add copy feedback matching the URL share interaction.
+
+## Phase 7 — Ads Placeholder and Analytics
+
+- [ ] Add `src/features/ads/AdSlot.jsx` behind `VITE_ADS_ENABLED`.
+- [ ] Document planned AdSense wiring and keep the owned TODO on the roadmap.
+- [ ] Add runtime GA4 injection behind `VITE_GA_MEASUREMENT_ID`.
+- [ ] Commit `.env.example` and keep `.env.local` gitignored.
+- [ ] Track privacy-safe events without sending QR content.
+- [ ] Respect Do Not Track and provide a one-click analytics opt-out in the About sheet.
+
+## Phase 8 — Polish
+
+- [ ] Add a subtle page transition between Viewfinder and Result.
+- [ ] Add the QR capture moment animation with graceful View Transitions fallback.
+- [ ] Add long-press QR copy on mobile and a desktop tooltip.
+- [ ] Verify dark mode parity on every screen.
+- [ ] Complete accessibility pass for keyboard, ARIA, focus, live regions, and contrast.
+- [ ] Add the About sheet with version, build hash, privacy note, and MIT licence link.
+- [ ] Add a 404 page that redirects gracefully to `/`.
+
+## Phase 9 — Hardening and Launch
+
+- [ ] Complete the cross-device manual test matrix in `TESTING.md`.
+- [ ] Meet Lighthouse budgets for performance, accessibility, best practices, SEO, and PWA.
+- [ ] Keep the main bundle at or below 250 KB gzipped through lazy-loaded exporters.
+- [ ] Tag `v1.0.0`, update `CHANGELOG.md`, and publish a brief GitHub release.
+
+## Deferred Owned TODOs
+
+- [ ] `TODO(ads)`: replace the placeholder ad strip with the real AdSense `ins` tag once the
+      account and client ID are available.
