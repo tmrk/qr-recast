@@ -38,6 +38,8 @@
   decoded-text dialog for the generated QR payload.
 - 2026-05-28: Phase 3 polygon overlay build passed lint and build; local upload-to-result
   regression still reached the rendered QR.
+- 2026-05-28: Phase 4 deployed smoke test at `https://tmrk.github.io/qr-recast/` generated SVG,
+  PNG, PDF, and DOCX downloads and copied a production share URL after workflow run `26596003511`.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

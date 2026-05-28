@@ -32,3 +32,6 @@ This log is append-only. New entries go at the bottom.
   bytes to `docx` with the PNG fallback intact.
 - Added the Phase 3 detected-polygon overlay so successful camera scans visibly snap to the QR
   shape before handing off to the Result view.
+- Completed Phase 3 and Phase 4 after workflow run `26596003511` passed and the deployed
+  `https://tmrk.github.io/qr-recast/` smoke test downloaded SVG, PNG, PDF, and DOCX exports and
+  copied a production share URL.

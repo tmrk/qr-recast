@@ -47,24 +47,24 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 ## Phase 3 — Camera Viewfinder and QR Decoding
 
-- [ ] Build `src/features/camera/Viewfinder.jsx` with environment camera capture.
-- [ ] Add the scanning frame, dimmed mask, sweep line, and reduced-motion handling.
-- [ ] Add hint text and bottom controls for torch, camera flip, and image upload fallback.
-- [ ] Implement continuous downscaled `jsQR` decoding.
-- [ ] Add detection feedback with haptics, bracket pulse, polygon snap, and result transition.
-- [ ] Handle permission states explicitly.
-- [ ] Tear down streams on unmount and pause camera work when the document is hidden.
+- [x] Build `src/features/camera/Viewfinder.jsx` with environment camera capture.
+- [x] Add the scanning frame, dimmed mask, sweep line, and reduced-motion handling.
+- [x] Add hint text and bottom controls for torch, camera flip, and image upload fallback.
+- [x] Implement continuous downscaled `jsQR` decoding.
+- [x] Add detection feedback with haptics, bracket pulse, polygon snap, and result transition.
+- [x] Handle permission states explicitly.
+- [x] Tear down streams on unmount and pause camera work when the document is hidden.
 
 ## Phase 4 — Result View: Re-emit the QR
 
-- [ ] Build `src/features/result/ResultView.jsx`.
-- [ ] Generate the canonical inline SVG with `qrcode`.
-- [ ] Export SVG as an image blob.
-- [ ] Export PNG through canvas rasterisation at 1024 x 1024.
-- [ ] Export vector PDF and document the chosen library.
-- [ ] Export DOCX with SVG and PNG fallback.
-- [ ] Generate filenames from the first eight SHA-1 characters of the payload.
-- [ ] Add loading, success, cancellation, and error feedback for export actions.
+- [x] Build `src/features/result/ResultView.jsx`.
+- [x] Generate the canonical inline SVG with `qrcode`.
+- [x] Export SVG as an image blob.
+- [x] Export PNG through canvas rasterisation at 1024 x 1024.
+- [x] Export vector PDF and document the chosen library.
+- [x] Export DOCX with SVG and PNG fallback.
+- [x] Generate filenames from the first eight SHA-1 characters of the payload.
+- [x] Add loading, success, cancellation, and error feedback for export actions.
 
 ## Phase 5 — Share-as-URL
 
