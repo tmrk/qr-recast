@@ -10,3 +10,5 @@ This log is append-only. New entries go at the bottom.
 - Verified the first deployed GitHub Pages build returned HTTP 200 at
   `https://tmrk.github.io/qr-recast/`; updating Pages action majors to avoid runtime deprecation
   annotations before marking Phase 1 complete.
+- Completed Phase 1 after workflow run `26573447472` passed and the deployed placeholder returned
+  HTTP 200 with the expected `/qr-recast/` manifest scope.

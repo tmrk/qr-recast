@@ -16,21 +16,21 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 ## Phase 1 — Repo, Tooling, Deploy Pipeline
 
-- [ ] Initialise git if needed, create the GitHub repo, and configure `origin`.
-- [ ] Scaffold Vite and React with the JavaScript template.
-- [ ] Configure `vite.config.js` with `/qr-recast/` base path and `vite-plugin-pwa`.
-- [ ] Install runtime dependencies: MUI, Emotion, MUI icons, Roboto Flex, router, QR decoding and
+- [x] Initialise git if needed, create the GitHub repo, and configure `origin`.
+- [x] Scaffold Vite and React with the JavaScript template.
+- [x] Configure `vite.config.js` with `/qr-recast/` base path and `vite-plugin-pwa`.
+- [x] Install runtime dependencies: MUI, Emotion, MUI icons, Roboto Flex, router, QR decoding and
       export libraries, file saving, and URL compression.
-- [ ] Install development dependencies: eslint, React and accessibility plugins, prettier,
+- [x] Install development dependencies: eslint, React and accessibility plugins, prettier,
       eslint-config-prettier, PWA tooling, husky, and lint-staged.
-- [ ] Configure eslint with React, hooks, accessibility rules, and CI spelling checks.
-- [ ] Configure prettier with 2-space indent, single quotes, semicolons, trailing commas, and
+- [x] Configure eslint with React, hooks, accessibility rules, and CI spelling checks.
+- [x] Configure prettier with 2-space indent, single quotes, semicolons, trailing commas, and
       100-column print width.
-- [ ] Configure husky pre-commit so lint-staged runs prettier and eslint on staged files.
-- [ ] Add GitHub Actions deployment for pushes to `main`, including Pages artefact upload and SPA
+- [x] Configure husky pre-commit so lint-staged runs prettier and eslint on staged files.
+- [x] Add GitHub Actions deployment for pushes to `main`, including Pages artefact upload and SPA
       fallback.
-- [ ] Enable GitHub Pages with GitHub Actions as the source and document any manual fallback.
-- [ ] Commit, push, wait for a green workflow, and verify the placeholder page at
+- [x] Enable GitHub Pages with GitHub Actions as the source and document any manual fallback.
+- [x] Commit, push, wait for a green workflow, and verify the placeholder page at
       `https://tmrk.github.io/qr-recast/`.
 
 ## Phase 2 — Foundation: Theme, Layout, PWA Shell

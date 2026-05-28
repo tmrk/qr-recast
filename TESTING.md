@@ -13,6 +13,8 @@
 - 2026-05-28: Verified built asset URLs and manifest links include the `/qr-recast/` base path.
 - 2026-05-28: Captured mobile `390 x 844` and desktop `1280 x 900` Playwright screenshots from
   the preview server.
+- 2026-05-28: Verified deployed `https://tmrk.github.io/qr-recast/` returned HTTP 200 after
+  workflow run `26573447472`.
 
 ## Manual Browser Matrix
 
