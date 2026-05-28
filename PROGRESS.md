@@ -25,3 +25,8 @@ This log is append-only. New entries go at the bottom.
   deployment.
 - Verified workflow run `26575176325` deployed the Phase 3 camera build; deployed upload decoding
   and fake-camera readiness passed, while real mobile camera verification remains pending.
+- Plan: complete the scan handoff by replacing the temporary detection screen with the Phase 4
+  result view, canonical QR generation, and SVG, PNG, PDF, and DOCX exports.
+- Implemented the Phase 4 result view, removed the temporary scan completion screen, and verified
+  local preview downloads for SVG, PNG, PDF, and DOCX. Fixed DOCX generation by passing UTF-8 SVG
+  bytes to `docx` with the PNG fallback intact.

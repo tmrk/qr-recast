@@ -1,0 +1,72 @@
+export async function createQrSvg(text) {
+  const { default: QRCode } = await import('qrcode');
+
+  return QRCode.toString(text, {
+    type: 'svg',
+    errorCorrectionLevel: 'M',
+    margin: 2,
+  });
+}
+
+export function svgToBlob(svgString) {
+  return new Blob([svgString], { type: 'image/svg+xml' });
+}
+
+export async function svgToPngBlob(svgString, size = 1024) {
+  const image = new Image();
+  const url = URL.createObjectURL(svgToBlob(svgString));
+
+  try {
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = reject;
+      image.src = url;
+    });
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+      throw new Error('Canvas is unavailable.');
+    }
+
+    canvas.width = size;
+    canvas.height = size;
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, size, size);
+    context.drawImage(image, 0, 0, size, size);
+
+    return await new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob);
+          return;
+        }
+
+        reject(new Error('PNG export failed.'));
+      }, 'image/png');
+    });
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+export async function hashTextPrefix(text) {
+  const data = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest('SHA-1', data);
+
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('')
+    .slice(0, 8);
+}
+
+export function buildShareUrl(text) {
+  const basePath = new URL(import.meta.env.BASE_URL, window.location.origin);
+  const parameters = new URLSearchParams();
+  return import('lz-string').then(({ default: lzString }) => {
+    parameters.set('q', lzString.compressToEncodedURIComponent(text));
+    basePath.search = parameters.toString();
+    return basePath.toString();
+  });
+}

@@ -28,7 +28,15 @@
   `https://tmrk.github.io/qr-recast/`.
 - 2026-05-28: Phase 3 deployed fake-camera smoke test reached "Point at a QR code" after tapping
   "Start camera".
-- [ ] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
+- 2026-05-28: User confirmed on a real mobile device that the deployed Phase 3 camera opens, scans,
+  and detects a QR payload.
+- 2026-05-28: Phase 4 local preview upload fallback handed the generated QR payload to the Result
+  view instead of the temporary scan completion screen.
+- 2026-05-28: Phase 4 local preview generated downloads for SVG, PNG, PDF, and DOCX from the same
+  payload. Sizes were 1,927 bytes, 27,150 bytes, 9,340 bytes, and 25,152 bytes respectively.
+- 2026-05-28: Phase 4 local preview copied a compressed share URL containing `?q=` and opened the
+  decoded-text dialog for the generated QR payload.
+- [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
 
@@ -62,8 +70,10 @@
 
 ## Export Checks
 
-- [ ] SVG opens as crisp vector.
-- [ ] PNG exports at 1024 x 1024.
+- [x] SVG downloads from local preview.
+- [x] PNG downloads from local preview at 1024 x 1024.
+- [x] PDF downloads from local preview through the vector exporter.
+- [x] DOCX downloads from local preview with SVG data and PNG fallback.
 - [ ] PDF opens in Preview and Acrobat as vector artwork.
 - [ ] DOCX opens in Microsoft Word with SVG and PNG fallback intact.
 

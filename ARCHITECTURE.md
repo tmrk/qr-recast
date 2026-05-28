@@ -10,8 +10,7 @@ or QR content is sent to a server by the app.
 - Material UI with Material 3-inspired tokens for interface components.
 - `jsqr` for on-device QR decoding.
 - `qrcode` for canonical QR SVG generation.
-- `jspdf` plus `svg2pdf.js`, or `pdf-lib`, for vector PDF export. The final choice will be logged
-  during Phase 1.
+- `jspdf` plus `svg2pdf.js` for vector PDF export.
 - `docx` for Word document export.
 - `lz-string` for compact share URLs.
 - GitHub Actions and GitHub Pages for deployment.
@@ -119,4 +118,12 @@ scored 100 before deployment.
 The camera viewfinder starts from an explicit button tap rather than requesting camera access on
 mount. This keeps iOS PWA permission prompts tied to a user gesture and gives desktop users an
 upload-only path when no camera is available. Successful scans are handed to an in-memory completion
-view until Phase 4 replaces it with the full export result view.
+view that now renders the Phase 4 export result.
+
+### 2026-05-28 — Result Export Pipeline
+
+The Result view treats the `qrcode` SVG string as the canonical QR representation and reuses it for
+all exports. SVG is saved directly, PNG is rasterised through a 1024 x 1024 canvas, PDF stays vector
+through `jspdf` and `svg2pdf.js`, and DOCX embeds UTF-8 SVG bytes with a PNG fallback because Word
+expects both when an SVG image is present. The heavier generation libraries are loaded only from
+export handlers so the initial scanner bundle stays small.

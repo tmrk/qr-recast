@@ -3,6 +3,8 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-28: Replaced the temporary scan completion screen with the Phase 4 result view, canonical
+  QR generation, and local SVG, PNG, PDF, DOCX, share URL, and decoded-text verification.
 - 2026-05-28: Implemented the Phase 3 camera viewfinder with user-gesture camera start, upload
   fallback, downscaled QR decoding, permission states, haptic detection handoff, and stream cleanup.
 - 2026-05-28: Completed Phase 2 with a deployed PWA shell scoring 100 in the Lighthouse 11.7.1 PWA
