@@ -16,3 +16,5 @@ This log is append-only. New entries go at the bottom.
   manifest source, generated icons, and theme-colour handling.
 - Implemented the Phase 2 shell locally, generated the full icon set, captured light and dark
   preview screenshots, and measured a Lighthouse 11.7.1 PWA score of 100 on local preview.
+- Completed Phase 2 after workflow run `26573960339` passed and the deployed
+  `https://tmrk.github.io/qr-recast/` Lighthouse 11.7.1 PWA score was 100.

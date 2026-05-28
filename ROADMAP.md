@@ -35,15 +35,15 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 ## Phase 2 — Foundation: Theme, Layout, PWA Shell
 
-- [ ] Create `src/theme/` with light and dark themes plus a `useAppTheme()` hook.
-- [ ] Use Material 3 colour roles with deep teal `#0F766E` as the brand seed and document the
+- [x] Create `src/theme/` with light and dark themes plus a `useAppTheme()` hook.
+- [x] Use Material 3 colour roles with deep teal `#0F766E` as the brand seed and document the
       rationale.
-- [ ] Add Roboto Flex and configure typography with subtle variable weight transitions.
-- [ ] Set up router basename, CSS variables provider, safe-area global styles, and the root route.
-- [ ] Build the `AppShell` with top app bar, main slot, and optional bottom area.
-- [ ] Add the full PWA manifest and generated icon set from a stylised QR fragment mark.
-- [ ] Add iOS meta tags and dynamic theme-colour handling.
-- [ ] Verify Lighthouse PWA score is at least 95 before moving on.
+- [x] Add Roboto Flex and configure typography with subtle variable weight transitions.
+- [x] Set up router basename, CSS variables provider, safe-area global styles, and the root route.
+- [x] Build the `AppShell` with top app bar, main slot, and optional bottom area.
+- [x] Add the full PWA manifest and generated icon set from a stylised QR fragment mark.
+- [x] Add iOS meta tags and dynamic theme-colour handling.
+- [x] Verify Lighthouse PWA score is at least 95 before moving on.
 
 ## Phase 3 — Camera Viewfinder and QR Decoding
 

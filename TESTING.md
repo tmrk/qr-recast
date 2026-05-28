@@ -18,6 +18,8 @@
 - 2026-05-28: Captured Phase 2 mobile light, desktop light, and mobile dark Playwright screenshots
   from `http://127.0.0.1:4174/qr-recast/`.
 - 2026-05-28: Lighthouse 11.7.1 PWA score on local preview was 100.
+- 2026-05-28: Lighthouse 11.7.1 PWA score on deployed
+  `https://tmrk.github.io/qr-recast/` was 100 after workflow run `26573960339`.
 
 ## Manual Browser Matrix
 
