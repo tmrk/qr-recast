@@ -87,3 +87,10 @@ React, hooks, and accessibility linting clean without peer-dependency overrides.
 The Phase 1 manifest uses a small SVG QR Recast mark so the deployable skeleton has valid branding
 immediately. Phase 2 will replace this with the full generated 192, 384, 512, maskable, and Apple
 touch icon set from the same mark.
+
+### 2026-05-28 — Pages Action Versions
+
+The initial Pages workflow used the requested Pages action shape and deployed successfully, but
+GitHub annotated the run with Node 20 action-runtime deprecations. The workflow now uses the current
+major versions of the checkout, Node setup, Pages configuration, Pages artefact upload, and Pages
+deployment actions while still building the project with Node 20 as specified.
