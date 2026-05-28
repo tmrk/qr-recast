@@ -23,3 +23,5 @@ This log is append-only. New entries go at the bottom.
 - Implemented the Phase 3 camera viewfinder and verified local upload decoding with a generated QR
   plus fake-camera readiness in Playwright; real mobile camera verification is still pending after
   deployment.
+- Verified workflow run `26575176325` deployed the Phase 3 camera build; deployed upload decoding
+  and fake-camera readiness passed, while real mobile camera verification remains pending.

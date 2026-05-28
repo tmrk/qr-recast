@@ -24,7 +24,11 @@
   tapping "Start camera".
 - 2026-05-28: Phase 3 local preview upload fallback decoded a generated QR payload:
   `https://tmrk.github.io/qr-recast/test-payload`.
-- [ ] Phase 3 real mobile camera verification at the deployed URL.
+- 2026-05-28: Phase 3 deployed upload fallback decoded the same generated QR payload at
+  `https://tmrk.github.io/qr-recast/`.
+- 2026-05-28: Phase 3 deployed fake-camera smoke test reached "Point at a QR code" after tapping
+  "Start camera".
+- [ ] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
 
