@@ -1,49 +1,113 @@
+@import '@fontsource-variable/roboto-flex/wght.css';
+
 :root {
   font-family: 'Roboto Flex Variable', 'Roboto Flex', Roboto, system-ui, sans-serif;
-  font-size: 16px;
-  font-weight: 420;
-  color: #173c37;
-  background:
-    radial-gradient(circle at 20% 20%, rgb(166 230 218 / 0.55), transparent 34rem),
-    linear-gradient(150deg, #f7fffc 0%, #edf7f4 52%, #fbf7ef 100%);
-  color-scheme: light dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html {
-  min-width: 320px;
-  min-height: 100%;
-}
-
-body {
-  min-width: 320px;
+.app-shell {
   min-height: 100svh;
-  margin: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(var(--qr-palette-primary-mainChannel) / 0.16),
+      transparent 22rem
+    ),
+    linear-gradient(
+      180deg,
+      rgb(var(--qr-palette-surface-containerLowChannel) / 0.92),
+      var(--qr-palette-background-default)
+    );
+  color: var(--qr-palette-text-primary);
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
+.app-shell__bar {
+  padding-top: env(safe-area-inset-top);
+  border-bottom: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.8);
+  background: rgb(var(--qr-palette-background-defaultChannel) / 0.78);
+  backdrop-filter: blur(18px);
 }
 
-#root {
-  min-height: 100svh;
+.app-shell__toolbar {
+  width: min(100% - 32px, 560px);
+  min-height: 64px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #e6fffb;
-    background:
-      radial-gradient(circle at 20% 20%, rgb(28 117 108 / 0.35), transparent 34rem),
-      linear-gradient(150deg, #061512 0%, #0a211e 58%, #201a12 100%);
+.app-shell__logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  box-shadow: 0 10px 22px rgb(var(--qr-palette-primary-mainChannel) / 0.18);
+}
+
+.app-shell__title {
+  font-size: 1rem;
+  font-weight: 760;
+}
+
+.app-shell__content {
+  width: 100%;
+  padding: clamp(28px, 7svh, 64px) max(20px, env(safe-area-inset-right))
+    max(28px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+}
+
+.app-shell__bottom {
+  padding: 0 max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+}
+
+.home-view {
+  width: 100%;
+}
+
+.home-view__scanner {
+  min-height: min(62svh, 620px);
+  padding: clamp(24px, 7vw, 40px);
+  display: grid;
+  align-content: center;
+  gap: 28px;
+  border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.78);
+  border-radius: 28px;
+  background: linear-gradient(
+    145deg,
+    rgb(var(--qr-palette-surface-containerHighestChannel) / 0.92),
+    rgb(var(--qr-palette-surface-containerLowChannel) / 0.86)
+  );
+  box-shadow: 0 22px 60px rgb(0 0 0 / 0.08);
+}
+
+.home-view__scanner-mark {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  background: rgb(var(--qr-palette-primary-mainChannel) / 0.14);
+  color: var(--qr-palette-primary-main);
+}
+
+.home-view__privacy {
+  min-height: 64px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.72);
+  border-radius: 16px;
+  background: rgb(var(--qr-palette-surface-containerLowChannel) / 0.78);
+}
+
+@media (min-width: 720px) {
+  .app-shell__toolbar {
+    width: min(100% - 48px, 680px);
   }
 }

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="QR Recast">
+  <rect width="512" height="512" rx="112" fill="#0F766E" />
+  <path
+    fill="#F7FFFC"
+    d="M128 128h96v96h-96zm32 32v32h32v-32zm128-32h96v96h-96zm32 32v32h32v-32zM128 288h96v96h-96zm32 32v32h32v-32zm160-32h64v32h-64zm-64 0h32v96h-32zm64 64h32v32h-32zm64 0h32v64h-96v-32h64z"
+  />
+  <path
+    fill="#A7F3D0"
+    d="M256 128h32v32h-32zm-32 96h64v32h-64zm160 0h32v32h-32zM224 384h32v32h-32z"
+  />
+</svg>

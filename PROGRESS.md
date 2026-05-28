@@ -12,3 +12,7 @@ This log is append-only. New entries go at the bottom.
   annotations before marking Phase 1 complete.
 - Completed Phase 1 after workflow run `26573447472` passed and the deployed placeholder returned
   HTTP 200 with the expected `/qr-recast/` manifest scope.
+- Plan: build the Phase 2 foundation with MUI CSS variables theming, app shell, router, PWA
+  manifest source, generated icons, and theme-colour handling.
+- Implemented the Phase 2 shell locally, generated the full icon set, captured light and dark
+  preview screenshots, and measured a Lighthouse 11.7.1 PWA score of 100 on local preview.

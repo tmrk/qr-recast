@@ -1,25 +1,67 @@
-import './App.css';
-import { strings } from './strings.js';
+import { CssBaseline, GlobalStyles, InitColorSchemeScript } from '@mui/material';
+import { CssVarsProvider } from '@mui/material/styles';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { AppShell } from './components/AppShell.jsx';
+import { ThemeColourMeta } from './components/ThemeColourMeta.jsx';
+import { HomeView } from './features/home/HomeView.jsx';
+import { appTheme, colourSchemeStorageKey } from './theme/index.js';
+
+function AppContent() {
+  return (
+    <BrowserRouter basename="/qr-recast">
+      <CssBaseline enableColorScheme />
+      <GlobalStyles
+        styles={(theme) => ({
+          ':root': {
+            backgroundColor: theme.vars.palette.background.default,
+          },
+          'html, body, #root': {
+            minWidth: 320,
+            minHeight: '100svh',
+          },
+          body: {
+            margin: 0,
+            overflowX: 'hidden',
+          },
+          '#root': {
+            minHeight: '100svh',
+          },
+          '*, *::before, *::after': {
+            boxSizing: 'border-box',
+          },
+          '@media (prefers-reduced-motion: reduce)': {
+            '*, *::before, *::after': {
+              animationDuration: '0.01ms !important',
+              animationIterationCount: '1 !important',
+              scrollBehavior: 'auto !important',
+              transitionDuration: '0.01ms !important',
+            },
+          },
+        })}
+      />
+      <ThemeColourMeta />
+      <AppShell>
+        <Routes>
+          <Route element={<HomeView />} path="/" />
+        </Routes>
+      </AppShell>
+    </BrowserRouter>
+  );
+}
 
 function App() {
   return (
-    <main className="app-home" aria-labelledby="app-title">
-      <section className="app-home__panel">
-        <img
-          className="app-home__mark"
-          src={`${import.meta.env.BASE_URL}favicon.svg`}
-          alt=""
-          width="88"
-          height="88"
-        />
-        <div className="app-home__copy">
-          <p className="app-home__eyebrow">{strings.tagline}</p>
-          <h1 id="app-title">{strings.appName}</h1>
-          <p>{strings.intro}</p>
-        </div>
-        <p className="app-home__note">{strings.privacyNote}</p>
-      </section>
-    </main>
+    <>
+      <InitColorSchemeScript defaultMode="system" modeStorageKey={colourSchemeStorageKey} />
+      <CssVarsProvider
+        defaultMode="system"
+        disableTransitionOnChange
+        modeStorageKey={colourSchemeStorageKey}
+        theme={appTheme}
+      >
+        <AppContent />
+      </CssVarsProvider>
+    </>
   );
 }
 

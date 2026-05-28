@@ -11,6 +11,8 @@ https://tmrk.github.io/qr-recast/
 - The Vite base path must be `/qr-recast/`.
 - The React router basename must be `/qr-recast`.
 - GitHub Pages uses GitHub Actions as its source.
+- The PWA manifest source lives at `public/manifest.webmanifest` and is loaded by
+  `vite-plugin-pwa` during the build.
 - The deployment workflow builds `dist/`, copies `dist/index.html` to `dist/404.html` for SPA
   fallback, uploads the Pages artefact, and deploys it.
 

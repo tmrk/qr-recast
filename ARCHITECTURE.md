@@ -94,3 +94,22 @@ The initial Pages workflow used the requested Pages action shape and deployed su
 GitHub annotated the run with Node 20 action-runtime deprecations. The workflow now uses the current
 major versions of the checkout, Node setup, Pages configuration, Pages artefact upload, and Pages
 deployment actions while still building the project with Node 20 as specified.
+
+### 2026-05-28 — Material 3 Theme Seed
+
+The Phase 2 shell uses deep teal `#0F766E` as the brand seed. It gives the scanner a calm utility
+feel, keeps the privacy note visually tied to trust and safety, and avoids the common purple-blue
+PWA palette. Light and dark schemes are defined as Material 3-inspired roles in `src/theme/` and
+served through MUI CSS variables.
+
+### 2026-05-28 — PWA Icon Pipeline
+
+The source mark lives at `public/qr-recast-mark.svg`, with a matching `favicon.svg` for the browser
+tab. `scripts/generate-icons.mjs` uses Sharp to generate the 192, 384, 512, maskable 512, and Apple
+touch PNG assets consumed by `public/manifest.webmanifest`.
+
+### 2026-05-28 — Lighthouse PWA Audit Version
+
+Lighthouse 13 no longer exposes a `pwa` category, so the Phase 2 PWA gate uses Lighthouse 11.7.1,
+the newest tested release in this environment that still reports that category. The local preview
+scored 100 before deployment.

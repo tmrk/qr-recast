@@ -15,6 +15,9 @@
   the preview server.
 - 2026-05-28: Verified deployed `https://tmrk.github.io/qr-recast/` returned HTTP 200 after
   workflow run `26573447472`.
+- 2026-05-28: Captured Phase 2 mobile light, desktop light, and mobile dark Playwright screenshots
+  from `http://127.0.0.1:4174/qr-recast/`.
+- 2026-05-28: Lighthouse 11.7.1 PWA score on local preview was 100.
 
 ## Manual Browser Matrix
 
