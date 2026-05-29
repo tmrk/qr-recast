@@ -65,6 +65,8 @@
   in the shell bottom slot when built with `VITE_ADS_ENABLED=true`.
 - 2026-05-29: Phase 7 local preview verified GA is absent by default and runtime GA4 injection
   appears when built with `VITE_GA_MEASUREMENT_ID=G-TEST123`.
+- 2026-05-29: Phase 7 repository audit verified `.env.example` is tracked, while `.env`,
+  `.env.local`, and `.env.production` are ignored.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

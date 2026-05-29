@@ -86,3 +86,6 @@ This log is append-only. New entries go at the bottom.
 - Plan: add runtime GA4 script injection behind `VITE_GA_MEASUREMENT_ID`.
 - Completed runtime GA4 injection behind `VITE_GA_MEASUREMENT_ID`; local preview verified GA is
   absent by default and injected when a test measurement ID is set.
+- Plan: verify the committed environment example and local secret ignore rules for Phase 7.
+- Completed the environment-file audit: `.env.example` is tracked, while `.env`, `.env.local`, and
+  `.env.production` are ignored by `.gitignore`.

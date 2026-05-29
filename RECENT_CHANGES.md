@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Verified the tracked `.env.example` and gitignored local environment files.
 - 2026-05-29: Added runtime GA4 injection behind `VITE_GA_MEASUREMENT_ID`.
 - 2026-05-29: Documented planned AdSense wiring while keeping the owned ads TODO on the roadmap.
 - 2026-05-29: Added the Phase 7 advertisement placeholder slot behind `VITE_ADS_ENABLED`.
