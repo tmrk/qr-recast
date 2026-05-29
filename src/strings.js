@@ -45,7 +45,10 @@ export const strings = Object.freeze({
     cancelled: 'Cancelled',
     qrError: 'The QR code could not be generated.',
     exportError: 'That export could not be created.',
+    shareUrlError: 'The share URL could not be prepared.',
     urlTooLarge: 'This payload is too large to share as a URL.',
+    urlTooLargeGuidance:
+      'URL sharing is disabled because this payload creates a link over 2000 characters. Export the QR or show the decoded text instead.',
   },
   theme: {
     menuLabel: 'Choose colour scheme',

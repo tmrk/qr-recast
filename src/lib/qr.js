@@ -1,3 +1,5 @@
+export const SHARE_URL_MAX_LENGTH = 2000;
+
 export async function createQrSvg(text) {
   const { default: QRCode } = await import('qrcode');
 

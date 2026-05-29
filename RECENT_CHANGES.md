@@ -3,6 +3,8 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Disabled URL sharing when compressed links exceed 2000 characters and added inline
+  guidance on the Result view.
 - 2026-05-29: Formalised Phase 5 compressed share URLs with explicit `lz-string` `?q=` encoding
   and local preview verification.
 - 2026-05-28: Completed Phase 3 and Phase 4 with a green GitHub Pages deployment and live export

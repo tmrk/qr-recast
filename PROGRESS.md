@@ -41,3 +41,7 @@ This log is append-only. New entries go at the bottom.
 - Plan: formalise Phase 5 compressed share URL encoding and verify the generated `?q=` link.
 - Completed the compressed share URL helper, verified local preview returned HTTP 200, and confirmed
   a sample payload round-tripped through `lz-string` without exposing the plain payload in the URL.
+- Plan: disable Phase 5 URL sharing when the compressed link exceeds 2000 characters and show inline
+  guidance.
+- Completed the URL length guard with the disabled Share URL action and inline guidance; lint, build,
+  and local preview Playwright checks passed for short and long QR payloads.

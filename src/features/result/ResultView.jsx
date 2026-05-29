@@ -27,7 +27,7 @@ import {
   createSvgExport,
 } from '../../lib/exporters.js';
 import { shareOrCopyUrl, shareOrSaveBlob, statusToMessage } from '../../lib/files.js';
-import { buildShareUrl, createQrSvg, hashTextPrefix } from '../../lib/qr.js';
+import { SHARE_URL_MAX_LENGTH, buildShareUrl, createQrSvg, hashTextPrefix } from '../../lib/qr.js';
 import { strings } from '../../strings.js';
 
 const exportActions = [
@@ -71,6 +71,7 @@ export function ResultView({ onScanAgain, text }) {
   const [textOpen, setTextOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [shareUrlState, setShareUrlState] = useState({ text: '', url: '' });
 
   useEffect(() => {
     let active = true;
@@ -96,6 +97,29 @@ export function ResultView({ onScanAgain, text }) {
   }, [text]);
 
   const payloadPreview = useMemo(() => text.trim() || strings.result.emptyPayload, [text]);
+  const shareUrl = shareUrlState.text === text ? shareUrlState.url : '';
+  const shareUrlTooLarge = shareUrl.length > SHARE_URL_MAX_LENGTH;
+  const shareUrlDisabled = Boolean(busyAction) || !shareUrl || shareUrlTooLarge;
+
+  useEffect(() => {
+    let active = true;
+
+    buildShareUrl(text)
+      .then((url) => {
+        if (active) {
+          setShareUrlState({ text, url });
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setError(strings.result.shareUrlError);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [text]);
 
   async function runExport(action) {
     if (!svgString || !fileStem) {
@@ -116,15 +140,17 @@ export function ResultView({ onScanAgain, text }) {
   }
 
   async function runShareUrl() {
+    if (!shareUrl) {
+      return;
+    }
+
+    if (shareUrlTooLarge) {
+      setError(strings.result.urlTooLarge);
+      return;
+    }
+
     await runBusyAction('url', async () => {
-      const url = await buildShareUrl(text);
-
-      if (url.length > 2000) {
-        setError(strings.result.urlTooLarge);
-        return;
-      }
-
-      const status = await shareOrCopyUrl(url);
+      const status = await shareOrCopyUrl(shareUrl);
       setMessage(statusToMessage(status, strings.result));
     });
   }
@@ -191,7 +217,8 @@ export function ResultView({ onScanAgain, text }) {
             );
           })}
           <Button
-            disabled={Boolean(busyAction)}
+            aria-describedby={shareUrlTooLarge ? 'share-url-guidance' : undefined}
+            disabled={shareUrlDisabled}
             onClick={runShareUrl}
             startIcon={busyAction === 'url' ? <CircularProgress size={18} /> : <ShareRounded />}
             variant="contained"
@@ -207,6 +234,12 @@ export function ResultView({ onScanAgain, text }) {
             {strings.result.showText}
           </Button>
         </div>
+
+        {shareUrlTooLarge ? (
+          <Alert id="share-url-guidance" severity="warning" variant="outlined">
+            {strings.result.urlTooLargeGuidance}
+          </Alert>
+        ) : null}
 
         <Button onClick={onScanAgain} startIcon={<QrCodeScannerRounded />} variant="outlined">
           {strings.result.scanAgain}
