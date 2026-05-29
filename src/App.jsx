@@ -2,6 +2,7 @@ import { CssBaseline, GlobalStyles, InitColorSchemeScript } from '@mui/material'
 import { CssVarsProvider } from '@mui/material/styles';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/AppShell.jsx';
+import { AdSlot, adsEnabled } from './features/ads/AdSlot.jsx';
 import { ThemeColourMeta } from './components/ThemeColourMeta.jsx';
 import { HomeView } from './features/home/HomeView.jsx';
 import { appTheme, colourSchemeStorageKey } from './theme/index.js';
@@ -40,7 +41,7 @@ function AppContent() {
         })}
       />
       <ThemeColourMeta />
-      <AppShell>
+      <AppShell bottomSlot={adsEnabled ? <AdSlot /> : null}>
         <Routes>
           <Route element={<HomeView />} path="/" />
         </Routes>

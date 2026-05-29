@@ -1,6 +1,10 @@
 export const strings = Object.freeze({
   appName: 'QR Recast',
   privacyNote: 'Your photos and QR contents never leave your device.',
+  ads: {
+    label: 'Advertisement slot',
+    placeholder: 'Advertisement',
+  },
   camera: {
     viewfinderLabel: 'QR camera scanner',
     idleTitle: 'Ready to scan',

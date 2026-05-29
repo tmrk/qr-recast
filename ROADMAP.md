@@ -85,7 +85,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 ## Phase 7 — Ads Placeholder and Analytics
 
-- [ ] Add `src/features/ads/AdSlot.jsx` behind `VITE_ADS_ENABLED`.
+- [x] Add `src/features/ads/AdSlot.jsx` behind `VITE_ADS_ENABLED`.
 - [ ] Document planned AdSense wiring and keep the owned TODO on the roadmap.
 - [ ] Add runtime GA4 injection behind `VITE_GA_MEASUREMENT_ID`.
 - [ ] Commit `.env.example` and keep `.env.local` gitignored.

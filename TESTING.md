@@ -61,6 +61,8 @@
   `_blank` and `noopener`, plain text hides it, and mobile shows it inside the bottom sheet.
 - 2026-05-29: Phase 6 local preview verified decoded text copying writes the payload to the
   clipboard, uses matching success feedback, and is present in the mobile bottom sheet.
+- 2026-05-29: Phase 7 local preview verified the advertisement slot is absent by default and appears
+  in the shell bottom slot when built with `VITE_ADS_ENABLED=true`.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

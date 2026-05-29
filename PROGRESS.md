@@ -77,3 +77,6 @@ This log is append-only. New entries go at the bottom.
   copying.
 - Completed decoded text copy feedback; local preview verified clipboard output, the matching
   success animation, and the mobile bottom-sheet affordance.
+- Plan: add the Phase 7 advertisement placeholder slot behind `VITE_ADS_ENABLED`.
+- Completed the advertisement placeholder slot behind `VITE_ADS_ENABLED`; local preview verified the
+  slot is absent by default and appears when the flag is true.

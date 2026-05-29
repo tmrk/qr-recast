@@ -64,6 +64,18 @@
     max(16px, env(safe-area-inset-left));
 }
 
+.ad-slot {
+  width: min(100%, 520px);
+  min-height: 72px;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgb(var(--qr-palette-outline-mainChannel) / 0.56);
+  border-radius: 18px;
+  background: rgb(var(--qr-palette-surface-containerLowChannel) / 0.72);
+  color: var(--qr-palette-text-secondary);
+}
+
 @media (min-width: 720px) {
   .app-shell__toolbar {
     width: min(100% - 48px, 680px);

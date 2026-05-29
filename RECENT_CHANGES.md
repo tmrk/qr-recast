@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Added the Phase 7 advertisement placeholder slot behind `VITE_ADS_ENABLED`.
 - 2026-05-29: Completed Phase 6 with decoded text copying and matching copied-state feedback.
 - 2026-05-29: Added an `Open link` affordance for decoded URL payloads.
 - 2026-05-29: Added decoded payload kind detection and displayed it in the decoded text panel.
