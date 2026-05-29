@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Expanded `CHANGELOG.md` with release-ready notes for the eventual `v1.0.0` tag.
 - 2026-05-29: Added the manual browser, PWA, camera, and native-export verification protocol.
 - 2026-05-29: Added local export integrity evidence for UI-generated PDF and DOCX files.
 - 2026-05-29: Verified Lighthouse launch budgets and the 157.12 KB gzip main bundle budget.

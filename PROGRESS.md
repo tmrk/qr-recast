@@ -140,3 +140,7 @@ This log is append-only. New entries go at the bottom.
   native-export rows.
 - Completed the manual verification protocol covering deployed browser checks, mobile camera,
   installed PWA behaviour, and native PDF/DOCX app checks.
+- Plan: replace the stub changelog with release-ready content while leaving the `v1.0.0` tag until
+  the manual matrix is complete.
+- Completed the changelog preparation with the PWA, scanning, export, sharing, analytics, testing,
+  and launch-budget notes needed for the eventual `v1.0.0` release.
