@@ -106,6 +106,9 @@
 - 2026-05-29: Phase 9 local preview verified the QR variant matrix through image upload: short
   plain text, long plain text, URL, Wi-Fi, vCard, low contrast, and slightly rotated QR images
   decoded correctly; the partially occluded QR failed gracefully with inline guidance.
+- 2026-05-29: Phase 9 local preview verified automated mobile-shaped upload, Result, decoded
+  bottom sheet, and About sheet flows for iOS Safari latest emulation, iOS Safari previous
+  emulation, Android Chrome emulation, and Android Firefox emulation.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
@@ -124,6 +127,13 @@
 - [x] Playwright Chromium
 - [x] Playwright Firefox
 - [x] Playwright WebKit
+
+## Automated Mobile-Shaped Coverage
+
+- [x] iOS Safari latest emulation
+- [x] iOS Safari previous emulation
+- [x] Android Chrome emulation
+- [x] Android Firefox emulation
 
 ## QR Variant Matrix
 

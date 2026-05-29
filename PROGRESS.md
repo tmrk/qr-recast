@@ -123,3 +123,5 @@ This log is append-only. New entries go at the bottom.
   variant coverage while keeping real-device rows separate.
 - Completed automated Phase 9 matrix coverage: actual Google Chrome plus Playwright Chromium,
   Firefox, and WebKit upload/decode smokes passed, and every QR variant matrix row was verified.
+- Completed automated mobile-shaped coverage for iOS Safari latest and previous emulation, Android
+  Chrome emulation, and Android Firefox emulation.
