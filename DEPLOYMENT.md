@@ -13,8 +13,8 @@ https://tmrk.github.io/qr-recast/
 - GitHub Pages uses GitHub Actions as its source.
 - The PWA manifest source lives at `public/manifest.webmanifest` and is loaded by
   `vite-plugin-pwa` during the build.
-- The deployment workflow builds `dist/`, copies `dist/index.html` to `dist/404.html` for SPA
-  fallback, uploads the Pages artefact, and deploys it.
+- The deployment workflow builds `dist/`, keeps the static `public/404.html` redirect, uploads the
+  Pages artefact, and deploys it.
 
 Pages was enabled on 2026-05-28 with:
 

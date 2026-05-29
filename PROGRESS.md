@@ -116,3 +116,6 @@ This log is append-only. New entries go at the bottom.
   details visible.
 - Completed the About sheet metadata pass; local preview verified version, test build hash, privacy
   note, and MIT licence link, and the Pages workflow now supplies `VITE_BUILD_SHA`.
+- Plan: add a static GitHub Pages 404 page that redirects gracefully to the app root.
+- Completed the static 404 redirect page and removed the copied-index fallback; local preview
+  verified `/qr-recast/404.html` redirects to `/qr-recast/`.
