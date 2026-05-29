@@ -81,6 +81,7 @@ export function ResultView({ onScanAgain, text }) {
   const [shareUrlState, setShareUrlState] = useState({ text: '', url: '' });
   const [copiedShareUrlState, setCopiedShareUrlState] = useState({ text: '', url: '' });
   const [shareUrlSvgState, setShareUrlSvgState] = useState({ url: '', svg: '' });
+  const [copiedDecodedText, setCopiedDecodedText] = useState('');
   const hasCoarsePointer = useMediaQuery('(pointer: coarse)');
 
   useEffect(() => {
@@ -111,6 +112,7 @@ export function ResultView({ onScanAgain, text }) {
   const payloadUrl = useMemo(() => extractPayloadUrl(text), [text]);
   const payloadKindLabel =
     strings.result.payloadKinds[payloadKind] ?? strings.result.payloadKinds.text;
+  const decodedTextCopied = copiedDecodedText === text;
   const shareUrl = shareUrlState.text === text ? shareUrlState.url : '';
   const copiedShareUrl = copiedShareUrlState.text === text ? copiedShareUrlState.url : '';
   const shareUrlSvg = shareUrlSvgState.url === copiedShareUrl ? shareUrlSvgState.svg : '';
@@ -126,12 +128,16 @@ export function ResultView({ onScanAgain, text }) {
   const urlActionClassName = `result-view__url-action${
     urlActionCopied ? ' result-view__url-action--copied' : ''
   }`;
-  const urlActionStyle = urlActionCopied
-    ? {
-        backgroundColor: 'var(--qr-palette-success-main)',
-        color: 'var(--qr-palette-success-contrastText)',
-      }
-    : undefined;
+  const copiedActionStyle = {
+    backgroundColor: 'var(--qr-palette-success-main)',
+    color: 'var(--qr-palette-success-contrastText)',
+  };
+  const urlActionStyle = urlActionCopied ? copiedActionStyle : undefined;
+  const TextCopyIcon = decodedTextCopied ? CheckRounded : ContentCopyRounded;
+  const textCopyActionClassName = `result-view__text-copy-action${
+    decodedTextCopied ? ' result-view__text-copy-action--copied' : ''
+  }`;
+  const textCopyActionStyle = decodedTextCopied ? copiedActionStyle : undefined;
   const showDesktopSharePreview = Boolean(
     !hasCoarsePointer && copiedShareUrl && copiedShareUrl === shareUrl && !shareUrlTooLarge,
   );
@@ -143,19 +149,43 @@ export function ResultView({ onScanAgain, text }) {
   );
   const decodedPanelBody = (
     <Stack spacing={1.5}>
-      {payloadUrl ? (
+      <div className="result-view__decoded-tools">
+        {payloadUrl ? (
+          <Button
+            className="result-view__external-link"
+            component="a"
+            href={payloadUrl}
+            rel="noopener noreferrer"
+            startIcon={<OpenInNewRounded />}
+            target="_blank"
+            variant="outlined"
+          >
+            {strings.result.openLink}
+          </Button>
+        ) : null}
         <Button
-          className="result-view__external-link"
-          component="a"
-          href={payloadUrl}
-          rel="noopener noreferrer"
-          startIcon={<OpenInNewRounded />}
-          target="_blank"
-          variant="outlined"
+          className={textCopyActionClassName}
+          color={decodedTextCopied ? 'success' : 'primary'}
+          disabled={Boolean(busyAction)}
+          onClick={runCopyDecodedText}
+          startIcon={
+            busyAction === 'text-copy' ? (
+              <CircularProgress size={18} />
+            ) : (
+              <span
+                key={decodedTextCopied ? 'copied' : 'ready'}
+                className="result-view__text-copy-action-icon"
+              >
+                <TextCopyIcon />
+              </span>
+            )
+          }
+          style={textCopyActionStyle}
+          variant="contained"
         >
-          {strings.result.openLink}
+          {strings.result.copyText}
         </Button>
-      ) : null}
+      </div>
       {decodedPayloadBlock}
     </Stack>
   );
@@ -250,7 +280,19 @@ export function ResultView({ onScanAgain, text }) {
     });
   }
 
-  async function runBusyAction(actionName, work) {
+  async function runCopyDecodedText() {
+    await runBusyAction(
+      'text-copy',
+      async () => {
+        await navigator.clipboard.writeText(text);
+        setCopiedDecodedText(text);
+        setMessage(strings.result.copied);
+      },
+      strings.result.copyError,
+    );
+  }
+
+  async function runBusyAction(actionName, work, errorMessage = strings.result.exportError) {
     setError('');
     setMessage('');
 
@@ -259,7 +301,7 @@ export function ResultView({ onScanAgain, text }) {
     try {
       await work();
     } catch {
-      setError(strings.result.exportError);
+      setError(errorMessage);
     } finally {
       window.clearTimeout(timer);
       setBusyAction('');

@@ -59,6 +59,8 @@
   Wi-Fi payloads.
 - 2026-05-29: Phase 6 local preview verified URL payloads show an `Open link` affordance with
   `_blank` and `noopener`, plain text hides it, and mobile shows it inside the bottom sheet.
+- 2026-05-29: Phase 6 local preview verified decoded text copying writes the payload to the
+  clipboard, uses matching success feedback, and is present in the mobile bottom sheet.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

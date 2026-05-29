@@ -51,6 +51,7 @@ export const strings = Object.freeze({
       geo: 'Location',
     },
     openLink: 'Open link',
+    copyText: 'Copy text',
     showText: 'Show text',
     scanAgain: 'Scan again',
     decodedText: 'Decoded text',
@@ -62,6 +63,7 @@ export const strings = Object.freeze({
     cancelled: 'Cancelled',
     qrError: 'The QR code could not be generated.',
     exportError: 'That export could not be created.',
+    copyError: 'The text could not be copied.',
     shareUrlError: 'The share URL could not be prepared.',
     urlTooLarge: 'This payload is too large to share as a URL.',
     urlTooLargeGuidance:

@@ -73,3 +73,7 @@ This log is append-only. New entries go at the bottom.
 - Plan: add a decoded-panel external-link affordance for HTTP and HTTPS URL payloads.
 - Completed the URL payload external-link affordance; local preview verified it appears for URL
   payloads, stays hidden for plain text, and renders inside the mobile bottom sheet.
+- Plan: add decoded text copying with the same check icon, success colour, and scale feedback as URL
+  copying.
+- Completed decoded text copy feedback; local preview verified clipboard output, the matching
+  success animation, and the mobile bottom-sheet affordance.
