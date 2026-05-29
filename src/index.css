@@ -318,6 +318,45 @@
   border-radius: 18px;
 }
 
+.result-view__desktop-share {
+  display: none;
+}
+
+.result-view__copied-url {
+  min-width: 0;
+}
+
+.result-view__url-pill {
+  max-width: 100%;
+  justify-content: flex-start;
+  border-radius: 999px;
+  background: rgb(var(--qr-palette-primary-mainChannel) / 0.08);
+}
+
+.result-view__url-pill .MuiChip-label {
+  min-width: 0;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-view__share-qr {
+  width: 104px;
+  aspect-ratio: 1;
+  padding: 8px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.64);
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.result-view__share-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .result-view__payload {
   max-height: 160px;
   margin: 0;
@@ -345,6 +384,19 @@
 @media (min-width: 560px) {
   .result-view__actions {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 720px) {
+  .result-view__desktop-share {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.72);
+    border-radius: 22px;
+    background: rgb(var(--qr-palette-surface-containerLowChannel) / 0.82);
   }
 }
 

@@ -10,6 +10,7 @@ import TextSnippetRounded from '@mui/icons-material/TextSnippetRounded';
 import {
   Alert,
   Button,
+  Chip,
   CircularProgress,
   Dialog,
   DialogContent,
@@ -74,6 +75,8 @@ export function ResultView({ onScanAgain, text }) {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [shareUrlState, setShareUrlState] = useState({ text: '', url: '' });
+  const [copiedShareUrlState, setCopiedShareUrlState] = useState({ text: '', url: '' });
+  const [shareUrlSvgState, setShareUrlSvgState] = useState({ url: '', svg: '' });
   const hasCoarsePointer = useMediaQuery('(pointer: coarse)');
 
   useEffect(() => {
@@ -101,11 +104,16 @@ export function ResultView({ onScanAgain, text }) {
 
   const payloadPreview = useMemo(() => text.trim() || strings.result.emptyPayload, [text]);
   const shareUrl = shareUrlState.text === text ? shareUrlState.url : '';
+  const copiedShareUrl = copiedShareUrlState.text === text ? copiedShareUrlState.url : '';
+  const shareUrlSvg = shareUrlSvgState.url === copiedShareUrl ? shareUrlSvgState.svg : '';
   const shareUrlTooLarge = shareUrl.length > SHARE_URL_MAX_LENGTH;
   const shareUrlDisabled = Boolean(busyAction) || !shareUrl || shareUrlTooLarge;
   const canShareUrlNatively =
     hasCoarsePointer && typeof navigator !== 'undefined' && Boolean(navigator.share);
   const ShareUrlIcon = canShareUrlNatively ? ShareRounded : ContentCopyRounded;
+  const showDesktopSharePreview = Boolean(
+    !hasCoarsePointer && copiedShareUrl && copiedShareUrl === shareUrl && !shareUrlTooLarge,
+  );
 
   useEffect(() => {
     let active = true;
@@ -126,6 +134,30 @@ export function ResultView({ onScanAgain, text }) {
       active = false;
     };
   }, [text]);
+
+  useEffect(() => {
+    if (!showDesktopSharePreview || shareUrlSvgState.url === copiedShareUrl) {
+      return undefined;
+    }
+
+    let active = true;
+
+    createQrSvg(copiedShareUrl)
+      .then((svg) => {
+        if (active) {
+          setShareUrlSvgState({ url: copiedShareUrl, svg });
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setError(strings.result.shareUrlError);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [copiedShareUrl, shareUrlSvgState.url, showDesktopSharePreview]);
 
   async function runExport(action) {
     if (!svgString || !fileStem) {
@@ -157,6 +189,10 @@ export function ResultView({ onScanAgain, text }) {
 
     await runBusyAction('url', async () => {
       const status = await shareOrCopyUrl(shareUrl, { useNativeShare: canShareUrlNatively });
+      if (status === 'copied') {
+        setCopiedShareUrlState({ text, url: shareUrl });
+      }
+
       setMessage(statusToMessage(status, strings.result));
     });
   }
@@ -245,6 +281,39 @@ export function ResultView({ onScanAgain, text }) {
           <Alert id="share-url-guidance" severity="warning" variant="outlined">
             {strings.result.urlTooLargeGuidance}
           </Alert>
+        ) : null}
+
+        {showDesktopSharePreview ? (
+          <Paper
+            aria-label={strings.result.copiedUrlPreview}
+            className="result-view__desktop-share"
+            elevation={0}
+            role="status"
+          >
+            <Stack className="result-view__copied-url" spacing={1}>
+              <Typography color="text.secondary" variant="overline">
+                {strings.result.copiedUrl}
+              </Typography>
+              <Chip
+                className="result-view__url-pill"
+                icon={<ContentCopyRounded />}
+                label={copiedShareUrl}
+                variant="outlined"
+              />
+            </Stack>
+            {shareUrlSvg ? (
+              <div
+                aria-label={strings.result.shareUrlQrAlt}
+                className="result-view__share-qr"
+                dangerouslySetInnerHTML={{ __html: shareUrlSvg }}
+                role="img"
+              />
+            ) : (
+              <div className="result-view__share-qr result-view__share-qr--loading">
+                <CircularProgress aria-label={strings.result.generatingShareUrlQr} size={24} />
+              </div>
+            )}
+          </Paper>
         ) : null}
 
         <Button onClick={onScanAgain} startIcon={<QrCodeScannerRounded />} variant="outlined">

@@ -3,6 +3,8 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Added the desktop copied URL pill with a secondary QR preview for the generated
+  share link.
 - 2026-05-29: Made the Phase 5 URL action share natively on mobile-style browsers and copy the
   generated link on desktop.
 - 2026-05-29: Disabled URL sharing when compressed links exceed 2000 characters and added inline

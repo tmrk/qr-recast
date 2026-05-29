@@ -49,3 +49,7 @@ This log is append-only. New entries go at the bottom.
   copying otherwise.
 - Completed the responsive URL action: desktop copies the generated `?q=` URL, while mobile-style
   browsers with Web Share available use native sharing.
+- Plan: add the Phase 5 desktop copied URL pill and secondary QR preview after successful URL
+  copying.
+- Completed the desktop copied URL pill and secondary share-link QR preview; local preview verified
+  it appears only after desktop copying and stays hidden on the mobile native-share path.
