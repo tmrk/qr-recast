@@ -125,3 +125,5 @@ This log is append-only. New entries go at the bottom.
   Firefox, and WebKit upload/decode smokes passed, and every QR variant matrix row was verified.
 - Completed automated mobile-shaped coverage for iOS Safari latest and previous emulation, Android
   Chrome emulation, and Android Firefox emulation.
+- Completed automatable PWA matrix checks: offline reload after first load, status bar and
+  splash-capable manifest metadata, icon sizes, and safe-area inset coverage.

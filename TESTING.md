@@ -109,6 +109,11 @@
 - 2026-05-29: Phase 9 local preview verified automated mobile-shaped upload, Result, decoded
   bottom sheet, and About sheet flows for iOS Safari latest emulation, iOS Safari previous
   emulation, Android Chrome emulation, and Android Firefox emulation.
+- 2026-05-29: Phase 9 local preview verified offline reload after first load through the generated
+  service worker.
+- 2026-05-29: Phase 9 repository audit verified standalone manifest metadata, theme colour,
+  iOS status bar metadata, splash-capable icon sizes, Apple touch icon size, and safe-area inset
+  usage across shell, sheets, scanner controls, and Result surfaces.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
@@ -150,9 +155,9 @@
 
 - [ ] Installable on iOS.
 - [ ] Installable on Android.
-- [ ] Offline-capable after first load.
-- [ ] Correct splash screen and status bar colour.
-- [ ] Safe-area insets respected.
+- [x] Offline-capable after first load.
+- [x] Correct splash screen and status bar colour.
+- [x] Safe-area insets respected.
 
 ## Export Checks
 
