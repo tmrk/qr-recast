@@ -127,3 +127,7 @@ This log is append-only. New entries go at the bottom.
   Chrome emulation, and Android Firefox emulation.
 - Completed automatable PWA matrix checks: offline reload after first load, status bar and
   splash-capable manifest metadata, icon sizes, and safe-area inset coverage.
+- Plan: verify the Phase 9 Lighthouse and bundle-size launch budgets on a fresh production preview.
+- Completed the Phase 9 launch budgets: local preview Lighthouse scores were 96 Performance,
+  100 Accessibility, 100 Best Practices, 91 SEO, and 100 PWA, and the main bundle was 157.12 KB
+  gzip.

@@ -105,8 +105,8 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 ## Phase 9 — Hardening and Launch
 
 - [ ] Complete the cross-device manual test matrix in `TESTING.md`.
-- [ ] Meet Lighthouse budgets for performance, accessibility, best practices, SEO, and PWA.
-- [ ] Keep the main bundle at or below 250 KB gzipped through lazy-loaded exporters.
+- [x] Meet Lighthouse budgets for performance, accessibility, best practices, SEO, and PWA.
+- [x] Keep the main bundle at or below 250 KB gzipped through lazy-loaded exporters.
 - [ ] Tag `v1.0.0`, update `CHANGELOG.md`, and publish a brief GitHub release.
 
 ## Deferred Owned TODOs

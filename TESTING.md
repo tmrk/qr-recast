@@ -114,6 +114,10 @@
 - 2026-05-29: Phase 9 repository audit verified standalone manifest metadata, theme colour,
   iOS status bar metadata, splash-capable icon sizes, Apple touch icon size, and safe-area inset
   usage across shell, sheets, scanner controls, and Result surfaces.
+- 2026-05-29: Phase 9 local preview Lighthouse 11.7.1 launch budget scores were Performance 96,
+  Accessibility 100, Best Practices 100, SEO 91, and PWA 100.
+- 2026-05-29: Phase 9 production build reported the main `index-Bjt741lX.js` bundle at 157.12 KB
+  gzip, below the 250 KB launch budget.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
@@ -126,6 +130,16 @@
 - [x] Desktop Chrome
 - [ ] Desktop Safari
 - [ ] Desktop Firefox
+
+## Manual Test Availability Notes
+
+- 2026-05-29: Desktop Safari remains pending because Safari 26.3 is installed, but WebDriver
+  automation is blocked until `Allow remote automation` is enabled in Safari settings; enabling it
+  through `safaridriver --enable` requires local administrator authentication.
+- 2026-05-29: iOS and Android manual rows remain pending because this machine has only the Xcode
+  command-line tools, no available `simctl`, and no Android SDK, emulator, ADB, or attached Android
+  device.
+- 2026-05-29: Desktop Firefox remains pending because Firefox is not installed locally.
 
 ## Automated Browser Engine Coverage
 
@@ -170,9 +184,9 @@
 
 ## Launch Budgets
 
-- [ ] Lighthouse Performance at least 90.
-- [ ] Lighthouse Accessibility at least 95.
-- [ ] Lighthouse Best Practices at least 95.
-- [ ] Lighthouse SEO at least 90.
-- [ ] Lighthouse PWA installability confirmed.
-- [ ] Main bundle at or below 250 KB gzipped.
+- [x] Lighthouse Performance at least 90.
+- [x] Lighthouse Accessibility at least 95.
+- [x] Lighthouse Best Practices at least 95.
+- [x] Lighthouse SEO at least 90.
+- [x] Lighthouse PWA installability confirmed.
+- [x] Main bundle at or below 250 KB gzipped.
