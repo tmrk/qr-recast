@@ -119,3 +119,7 @@ This log is append-only. New entries go at the bottom.
 - Plan: add a static GitHub Pages 404 page that redirects gracefully to the app root.
 - Completed the static 404 redirect page and removed the copied-index fallback; local preview
   verified `/qr-recast/404.html` redirects to `/qr-recast/`.
+- Plan: advance the Phase 9 cross-device matrix with automated Chromium, Firefox, WebKit, and QR
+  variant coverage while keeping real-device rows separate.
+- Completed automated Phase 9 matrix coverage: actual Google Chrome plus Playwright Chromium,
+  Firefox, and WebKit upload/decode smokes passed, and every QR variant matrix row was verified.

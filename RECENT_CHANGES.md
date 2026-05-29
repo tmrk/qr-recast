@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Added Phase 9 automated browser-engine and QR variant matrix coverage.
 - 2026-05-29: Added a static 404 page that redirects back to the app root.
 - 2026-05-29: Completed the About sheet with version, build hash, privacy note, and MIT licence link.
 - 2026-05-29: Completed the accessibility pass for ARIA, live regions, keyboard QR copy, and

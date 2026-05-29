@@ -99,6 +99,13 @@
   sheet shows version `0.1.0`, build `abcdef1`, the privacy note, and the MIT licence link.
 - 2026-05-29: Phase 8 local preview verified the generated `/qr-recast/404.html` redirects to
   `/qr-recast/`; unknown-path redirect behaviour is verified after Pages deployment.
+- 2026-05-29: Phase 9 local preview verified upload decode and decoded text display in actual
+  Google Chrome desktop.
+- 2026-05-29: Phase 9 local preview verified upload decode and decoded text display in Playwright
+  Chromium, Firefox, and WebKit engines.
+- 2026-05-29: Phase 9 local preview verified the QR variant matrix through image upload: short
+  plain text, long plain text, URL, Wi-Fi, vCard, low contrast, and slightly rotated QR images
+  decoded correctly; the partially occluded QR failed gracefully with inline guidance.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
@@ -108,20 +115,26 @@
 - [ ] iOS installed PWA
 - [ ] Android Chrome
 - [ ] Android Firefox
-- [ ] Desktop Chrome
+- [x] Desktop Chrome
 - [ ] Desktop Safari
 - [ ] Desktop Firefox
 
+## Automated Browser Engine Coverage
+
+- [x] Playwright Chromium
+- [x] Playwright Firefox
+- [x] Playwright WebKit
+
 ## QR Variant Matrix
 
-- [ ] Short plain text
-- [ ] Long plain text
-- [ ] URL
-- [ ] Wi-Fi payload
-- [ ] vCard
-- [ ] Low contrast QR
-- [ ] Slightly rotated QR
-- [ ] Partially occluded QR, failing gracefully
+- [x] Short plain text
+- [x] Long plain text
+- [x] URL
+- [x] Wi-Fi payload
+- [x] vCard
+- [x] Low contrast QR
+- [x] Slightly rotated QR
+- [x] Partially occluded QR, failing gracefully
 
 ## PWA Checks
 
