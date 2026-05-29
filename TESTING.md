@@ -85,6 +85,8 @@
 - 2026-05-29: Phase 8 local preview verified the QR capture flash appears on upload detection,
   `document.startViewTransition` is called when available, and the CSS transition fallback reaches
   Result when the API is unavailable.
+- 2026-05-29: Phase 8 local preview verified touch long-press copies the QR as a PNG and desktop
+  hover shows the `Hold QR to copy PNG` tooltip.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

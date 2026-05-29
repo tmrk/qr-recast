@@ -102,3 +102,6 @@ This log is append-only. New entries go at the bottom.
 - Plan: add the QR capture moment animation and use View Transitions when available.
 - Completed the capture moment animation; local preview verified the flash layer, View Transition
   handoff, and CSS fallback when the API is unavailable.
+- Plan: add long-press QR image copying with a desktop tooltip affordance.
+- Completed long-press QR PNG copying; local preview verified touch press-and-hold copy feedback and
+  the desktop hover tooltip.

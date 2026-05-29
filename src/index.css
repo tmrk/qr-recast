@@ -432,6 +432,17 @@
   border-radius: 28px;
   background: var(--qr-palette-surface-containerLowest);
   box-shadow: 0 22px 60px rgb(0 0 0 / 0.08);
+  touch-action: manipulation;
+  user-select: none;
+  transition:
+    box-shadow 160ms ease,
+    transform 160ms ease;
+  -webkit-touch-callout: none;
+}
+
+.result-view__qr-card--pressing {
+  box-shadow: 0 18px 42px rgb(var(--qr-palette-primary-mainChannel) / 0.18);
+  transform: scale(0.992);
 }
 
 .result-view__qr {
@@ -685,8 +696,10 @@
   .viewfinder__polygon,
   .result-view__url-action-icon,
   .result-view__text-copy-action-icon,
+  .result-view__qr-card,
   .result-view__url-action--copied.MuiButton-contained,
   .result-view__text-copy-action--copied.MuiButton-contained {
+    transition: none;
     animation: none;
   }
 

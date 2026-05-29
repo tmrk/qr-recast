@@ -22,10 +22,11 @@ import {
   Paper,
   Snackbar,
   Stack,
+  Tooltip,
   Typography,
   useMediaQuery,
 } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { trackAnalyticsEvent } from '../analytics/events.js';
 import {
   createDocxExport,
@@ -83,6 +84,8 @@ export function ResultView({ onScanAgain, text }) {
   const [copiedShareUrlState, setCopiedShareUrlState] = useState({ text: '', url: '' });
   const [shareUrlSvgState, setShareUrlSvgState] = useState({ url: '', svg: '' });
   const [copiedDecodedText, setCopiedDecodedText] = useState('');
+  const [qrCopyPressing, setQrCopyPressing] = useState(false);
+  const qrCopyTimerRef = useRef(0);
   const hasCoarsePointer = useMediaQuery('(pointer: coarse)');
 
   useEffect(() => {
@@ -244,6 +247,13 @@ export function ResultView({ onScanAgain, text }) {
     };
   }, [copiedShareUrl, shareUrlSvgState.url, showDesktopSharePreview]);
 
+  useEffect(
+    () => () => {
+      window.clearTimeout(qrCopyTimerRef.current);
+    },
+    [],
+  );
+
   async function runExport(action) {
     if (!svgString || !fileStem) {
       return;
@@ -341,6 +351,56 @@ export function ResultView({ onScanAgain, text }) {
     );
   }
 
+  async function runCopyQrImage() {
+    if (!svgString || busyAction) {
+      return;
+    }
+
+    await runBusyAction(
+      'qr-copy',
+      async () => {
+        if (!navigator.clipboard?.write || typeof ClipboardItem === 'undefined') {
+          throw new Error('Clipboard image writing is unavailable.');
+        }
+
+        const pngBlob = await createPngExport(svgString);
+
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            [pngBlob.type || 'image/png']: pngBlob,
+          }),
+        ]);
+        setMessage(strings.result.qrCopied);
+      },
+      strings.result.qrCopyError,
+    );
+  }
+
+  function startQrCopyPress() {
+    if (!svgString || busyAction || qrCopyTimerRef.current) {
+      return;
+    }
+
+    setQrCopyPressing(true);
+    qrCopyTimerRef.current = window.setTimeout(() => {
+      qrCopyTimerRef.current = 0;
+      setQrCopyPressing(false);
+      runCopyQrImage();
+    }, 560);
+  }
+
+  function cancelQrCopyPress() {
+    window.clearTimeout(qrCopyTimerRef.current);
+    qrCopyTimerRef.current = 0;
+    setQrCopyPressing(false);
+  }
+
+  function preventQrContextMenu(event) {
+    if (hasCoarsePointer || qrCopyPressing) {
+      event.preventDefault();
+    }
+  }
+
   function openDecodedText() {
     trackAnalyticsEvent('decoded_text_open', {
       payload_kind: payloadKind,
@@ -386,6 +446,29 @@ export function ResultView({ onScanAgain, text }) {
     }
   }
 
+  const qrCard = (
+    <Paper
+      className={`result-view__qr-card${qrCopyPressing ? ' result-view__qr-card--pressing' : ''}`}
+      elevation={0}
+      onContextMenu={preventQrContextMenu}
+      onPointerCancel={cancelQrCopyPress}
+      onPointerDown={startQrCopyPress}
+      onPointerLeave={cancelQrCopyPress}
+      onPointerUp={cancelQrCopyPress}
+    >
+      {svgString ? (
+        <div
+          aria-label={strings.result.qrAlt}
+          className="result-view__qr"
+          dangerouslySetInnerHTML={{ __html: svgString }}
+          role="img"
+        />
+      ) : (
+        <CircularProgress aria-label={strings.result.generating} />
+      )}
+    </Paper>
+  );
+
   return (
     <section className="result-view" aria-labelledby="result-title">
       <Stack className="result-view__stack" spacing={2.5}>
@@ -401,18 +484,14 @@ export function ResultView({ onScanAgain, text }) {
           </IconButton>
         </Stack>
 
-        <Paper className="result-view__qr-card" elevation={0}>
-          {svgString ? (
-            <div
-              aria-label={strings.result.qrAlt}
-              className="result-view__qr"
-              dangerouslySetInnerHTML={{ __html: svgString }}
-              role="img"
-            />
-          ) : (
-            <CircularProgress aria-label={strings.result.generating} />
-          )}
-        </Paper>
+        <Tooltip
+          disableFocusListener={hasCoarsePointer}
+          disableHoverListener={hasCoarsePointer}
+          disableTouchListener
+          title={strings.result.copyQrTooltip}
+        >
+          {qrCard}
+        </Tooltip>
 
         <div className="result-view__actions">
           {exportActions.map((action) => {
