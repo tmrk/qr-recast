@@ -136,6 +136,39 @@
 - [ ] Desktop Safari
 - [ ] Desktop Firefox
 
+## Manual Browser Protocol
+
+Use the deployed `https://tmrk.github.io/qr-recast/` site for each manual row. Record the device,
+operating-system version, browser version, date, tester, and any caveats in this file before ticking
+the row.
+
+For every browser row:
+
+- Load the deployed site from a cold tab and confirm the scanner shell renders.
+- Upload a QR image containing `https://tmrk.github.io/qr-recast/manual-browser-check`.
+- Confirm the Result view appears, the decoded text sheet or dialog shows the exact payload, and
+  `Scan again` returns to the scanner.
+- Generate SVG, PNG, PDF, and DOCX exports, or record the browser-specific limitation.
+- Copy or share the generated URL and confirm a fresh tab opens the same payload from `?q=`.
+- Confirm light and dark mode both keep controls legible and usable.
+
+For camera-capable mobile rows:
+
+- Start the rear camera from a user gesture.
+- Scan a printed or second-screen QR containing
+  `https://tmrk.github.io/qr-recast/manual-camera-check`.
+- Confirm the detection animation appears before the Result view.
+- Deny camera permission once and confirm the blocked state offers image upload recovery.
+
+For installed PWA rows:
+
+- Install the app from the browser UI.
+- Launch it from the home screen or launcher and confirm it opens standalone, not as a browser tab.
+- Confirm the splash/status-bar colours match the app theme.
+- Load once online, enable airplane mode or disconnect networking, relaunch, and confirm the shell
+  loads offline.
+- Repeat upload decoding and one export from the installed app.
+
 ## Manual Test Availability Notes
 
 - 2026-05-29: Desktop Safari remains pending because Safari 26.3 is installed, but WebDriver
@@ -193,6 +226,16 @@
 - [x] DOCX relationships reference both SVG and PNG image media.
 - [ ] PDF opens in Preview and Acrobat as vector artwork.
 - [ ] DOCX opens in Microsoft Word with SVG and PNG fallback intact.
+
+## Manual Export Protocol
+
+Use freshly generated exports from the deployed app before ticking native-app rows.
+
+- Open the PDF in macOS Preview and Adobe Acrobat, zoom to at least 800%, and confirm the QR edges
+  remain vector-sharp without embedded raster artefacts.
+- Open the DOCX in Microsoft Word, confirm the SVG renders as the primary QR image, then inspect
+  compatibility behaviour or document XML to confirm the PNG fallback remains packaged.
+- Record the app names, versions, date, tester, and any rendering caveats in this file.
 
 ## Launch Budgets
 

@@ -136,3 +136,7 @@ This log is append-only. New entries go at the bottom.
 - Completed local export integrity verification: the UI-generated PDF is valid and vector-only by
   PDF structure, Quick Look renders it, and the UI-generated DOCX contains linked SVG and
   1024 x 1024 PNG fallback media.
+- Plan: add a precise manual verification protocol for the remaining Phase 9 device, PWA, and
+  native-export rows.
+- Completed the manual verification protocol covering deployed browser checks, mobile camera,
+  installed PWA behaviour, and native PDF/DOCX app checks.
