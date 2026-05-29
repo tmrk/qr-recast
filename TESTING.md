@@ -47,6 +47,8 @@
   a mobile-style browser with Web Share available used the native `Share URL` path.
 - 2026-05-29: Phase 5 local preview verified the desktop copied URL pill and secondary share-link
   QR appear only after copying and stay hidden on the mobile native-share path.
+- 2026-05-29: Phase 5 local preview verified URL copy feedback morphs to a check icon, settles on
+  the success colour, runs the scale animation, and stays separate from mobile native sharing.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

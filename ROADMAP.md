@@ -72,7 +72,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 - [x] Disable URL sharing for payload URLs over 2000 characters with inline guidance.
 - [x] Share the URL on mobile and copy it on desktop.
 - [x] Show the copied URL pill and secondary QR preview on desktop.
-- [ ] Add copy feedback with icon morph, success colour, and subtle scale animation.
+- [x] Add copy feedback with icon morph, success colour, and subtle scale animation.
 - [ ] Load valid `?q=` payloads directly into the Result view and clear the query string.
 
 ## Phase 6 — Decoded Text Panel

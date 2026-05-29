@@ -53,3 +53,7 @@ This log is append-only. New entries go at the bottom.
   copying.
 - Completed the desktop copied URL pill and secondary share-link QR preview; local preview verified
   it appears only after desktop copying and stays hidden on the mobile native-share path.
+- Plan: add the Phase 5 copied-state icon morph, success colour, and subtle scale animation to the
+  URL copy action.
+- Completed the URL copy feedback with a check icon morph, success button colour, and subtle scale
+  animation; local preview verified the copied state and mobile native-share separation.

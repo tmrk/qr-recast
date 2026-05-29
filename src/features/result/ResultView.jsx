@@ -1,4 +1,5 @@
 import ArticleRounded from '@mui/icons-material/ArticleRounded';
+import CheckRounded from '@mui/icons-material/CheckRounded';
 import CloseRounded from '@mui/icons-material/CloseRounded';
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded';
 import DescriptionRounded from '@mui/icons-material/DescriptionRounded';
@@ -111,6 +112,19 @@ export function ResultView({ onScanAgain, text }) {
   const canShareUrlNatively =
     hasCoarsePointer && typeof navigator !== 'undefined' && Boolean(navigator.share);
   const ShareUrlIcon = canShareUrlNatively ? ShareRounded : ContentCopyRounded;
+  const urlActionCopied = Boolean(
+    copiedShareUrl && copiedShareUrl === shareUrl && !shareUrlTooLarge,
+  );
+  const UrlActionIcon = urlActionCopied ? CheckRounded : ShareUrlIcon;
+  const urlActionClassName = `result-view__url-action${
+    urlActionCopied ? ' result-view__url-action--copied' : ''
+  }`;
+  const urlActionStyle = urlActionCopied
+    ? {
+        backgroundColor: 'var(--qr-palette-success-main)',
+        color: 'var(--qr-palette-success-contrastText)',
+      }
+    : undefined;
   const showDesktopSharePreview = Boolean(
     !hasCoarsePointer && copiedShareUrl && copiedShareUrl === shareUrl && !shareUrlTooLarge,
   );
@@ -260,9 +274,23 @@ export function ResultView({ onScanAgain, text }) {
           })}
           <Button
             aria-describedby={shareUrlTooLarge ? 'share-url-guidance' : undefined}
+            className={urlActionClassName}
+            color={urlActionCopied ? 'success' : 'primary'}
             disabled={shareUrlDisabled}
             onClick={runShareUrl}
-            startIcon={busyAction === 'url' ? <CircularProgress size={18} /> : <ShareUrlIcon />}
+            startIcon={
+              busyAction === 'url' ? (
+                <CircularProgress size={18} />
+              ) : (
+                <span
+                  key={urlActionCopied ? 'copied' : 'ready'}
+                  className="result-view__url-action-icon"
+                >
+                  <UrlActionIcon />
+                </span>
+              )
+            }
+            style={urlActionStyle}
             variant="contained"
           >
             {canShareUrlNatively ? strings.result.shareUrl : strings.result.copyUrl}

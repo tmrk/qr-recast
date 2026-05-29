@@ -318,6 +318,31 @@
   border-radius: 18px;
 }
 
+.result-view__url-action.MuiButton-root {
+  transform-origin: center;
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease;
+}
+
+.result-view__url-action-icon {
+  width: 1.25em;
+  height: 1.25em;
+  display: inline-grid;
+  place-items: center;
+  animation: qr-url-icon-morph 180ms ease-out both;
+}
+
+.result-view__url-action-icon svg {
+  font-size: 1.25rem;
+}
+
+.result-view__url-action--copied.MuiButton-contained {
+  box-shadow: 0 8px 18px rgb(var(--qr-palette-success-mainChannel) / 0.24);
+  animation: qr-url-action-confirm 340ms cubic-bezier(0.2, 0, 0, 1);
+}
+
 .result-view__desktop-share {
   display: none;
 }
@@ -420,9 +445,34 @@
   }
 }
 
+@keyframes qr-url-action-confirm {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  48% {
+    transform: scale(1.035);
+  }
+}
+
+@keyframes qr-url-icon-morph {
+  from {
+    opacity: 0;
+    transform: rotate(-16deg) scale(0.72);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .viewfinder__sweep,
-  .viewfinder__polygon {
+  .viewfinder__polygon,
+  .result-view__url-action-icon,
+  .result-view__url-action--copied.MuiButton-contained {
     animation: none;
   }
 }
