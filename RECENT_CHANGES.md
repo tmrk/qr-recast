@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Added an `Open link` affordance for decoded URL payloads.
 - 2026-05-29: Added decoded payload kind detection and displayed it in the decoded text panel.
 - 2026-05-29: Tightened decoded payload code-block scrolling for long content.
 - 2026-05-29: Started Phase 6 with a decoded text bottom sheet on mobile and a dialog on desktop.

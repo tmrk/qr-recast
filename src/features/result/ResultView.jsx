@@ -4,6 +4,7 @@ import CloseRounded from '@mui/icons-material/CloseRounded';
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded';
 import DescriptionRounded from '@mui/icons-material/DescriptionRounded';
 import ImageRounded from '@mui/icons-material/ImageRounded';
+import OpenInNewRounded from '@mui/icons-material/OpenInNewRounded';
 import PictureAsPdfRounded from '@mui/icons-material/PictureAsPdfRounded';
 import QrCodeScannerRounded from '@mui/icons-material/QrCodeScannerRounded';
 import ShareRounded from '@mui/icons-material/ShareRounded';
@@ -32,7 +33,7 @@ import {
   createSvgExport,
 } from '../../lib/exporters.js';
 import { shareOrCopyUrl, shareOrSaveBlob, statusToMessage } from '../../lib/files.js';
-import { detectPayloadKind } from '../../lib/payload.js';
+import { detectPayloadKind, extractPayloadUrl } from '../../lib/payload.js';
 import { SHARE_URL_MAX_LENGTH, buildShareUrl, createQrSvg, hashTextPrefix } from '../../lib/qr.js';
 import { strings } from '../../strings.js';
 
@@ -107,6 +108,7 @@ export function ResultView({ onScanAgain, text }) {
 
   const payloadPreview = useMemo(() => text.trim() || strings.result.emptyPayload, [text]);
   const payloadKind = useMemo(() => detectPayloadKind(text), [text]);
+  const payloadUrl = useMemo(() => extractPayloadUrl(text), [text]);
   const payloadKindLabel =
     strings.result.payloadKinds[payloadKind] ?? strings.result.payloadKinds.text;
   const shareUrl = shareUrlState.text === text ? shareUrlState.url : '';
@@ -138,6 +140,24 @@ export function ResultView({ onScanAgain, text }) {
     <pre className="result-view__payload">
       <code>{payloadPreview}</code>
     </pre>
+  );
+  const decodedPanelBody = (
+    <Stack spacing={1.5}>
+      {payloadUrl ? (
+        <Button
+          className="result-view__external-link"
+          component="a"
+          href={payloadUrl}
+          rel="noopener noreferrer"
+          startIcon={<OpenInNewRounded />}
+          target="_blank"
+          variant="outlined"
+        >
+          {strings.result.openLink}
+        </Button>
+      ) : null}
+      {decodedPayloadBlock}
+    </Stack>
   );
   const decodedPanelHeading = (
     <Stack alignItems="center" className="result-view__decoded-heading" direction="row" spacing={1}>
@@ -391,7 +411,7 @@ export function ResultView({ onScanAgain, text }) {
             <CloseRounded />
           </IconButton>
         </Stack>
-        <div className="result-view__sheet-content">{decodedPayloadBlock}</div>
+        <div className="result-view__sheet-content">{decodedPanelBody}</div>
       </Drawer>
 
       <Dialog
@@ -408,7 +428,7 @@ export function ResultView({ onScanAgain, text }) {
         >
           <CloseRounded />
         </IconButton>
-        <DialogContent>{decodedPayloadBlock}</DialogContent>
+        <DialogContent>{decodedPanelBody}</DialogContent>
       </Dialog>
 
       <Snackbar autoHideDuration={2800} onClose={() => setMessage('')} open={Boolean(message)}>

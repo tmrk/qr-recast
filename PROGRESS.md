@@ -70,3 +70,6 @@ This log is append-only. New entries go at the bottom.
 - Plan: detect common decoded payload kinds and display the kind in the decoded text panel.
 - Completed payload kind detection and display; local preview verified URL, plain text, and Wi-Fi
   payload chips in the decoded text panel.
+- Plan: add a decoded-panel external-link affordance for HTTP and HTTPS URL payloads.
+- Completed the URL payload external-link affordance; local preview verified it appears for URL
+  payloads, stays hidden for plain text, and renders inside the mobile bottom sheet.

@@ -57,6 +57,8 @@
   `pre`/`code` block with preserved wrapping.
 - 2026-05-29: Phase 6 local preview verified decoded payload kind chips for URL, plain text, and
   Wi-Fi payloads.
+- 2026-05-29: Phase 6 local preview verified URL payloads show an `Open link` affordance with
+  `_blank` and `noopener`, plain text hides it, and mobile shows it inside the bottom sheet.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

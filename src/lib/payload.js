@@ -24,6 +24,12 @@ export function detectPayloadKind(text) {
   return matchedKind?.[0] ?? 'text';
 }
 
+export function extractPayloadUrl(text) {
+  const trimmedText = text.trim();
+
+  return isHttpUrl(trimmedText) ? trimmedText : '';
+}
+
 function isHttpUrl(text) {
   try {
     const url = new URL(text);

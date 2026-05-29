@@ -394,6 +394,11 @@
   font-weight: 680;
 }
 
+.result-view__external-link.MuiButton-root {
+  align-self: flex-start;
+  border-radius: 18px;
+}
+
 .result-view__payload {
   max-height: min(42svh, 320px);
   margin: 0;

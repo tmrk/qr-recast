@@ -50,6 +50,7 @@ export const strings = Object.freeze({
       sms: 'SMS',
       geo: 'Location',
     },
+    openLink: 'Open link',
     showText: 'Show text',
     scanAgain: 'Scan again',
     decodedText: 'Decoded text',
