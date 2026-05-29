@@ -63,6 +63,8 @@
   clipboard, uses matching success feedback, and is present in the mobile bottom sheet.
 - 2026-05-29: Phase 7 local preview verified the advertisement slot is absent by default and appears
   in the shell bottom slot when built with `VITE_ADS_ENABLED=true`.
+- 2026-05-29: Phase 7 local preview verified GA is absent by default and runtime GA4 injection
+  appears when built with `VITE_GA_MEASUREMENT_ID=G-TEST123`.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

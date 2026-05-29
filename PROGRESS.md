@@ -83,3 +83,6 @@ This log is append-only. New entries go at the bottom.
 - Plan: document the planned AdSense wiring while keeping the owned ads TODO on the roadmap.
 - Completed the AdSense wiring notes in `DEPLOYMENT.md` and kept `TODO(ads)` open in the deferred
   roadmap section.
+- Plan: add runtime GA4 script injection behind `VITE_GA_MEASUREMENT_ID`.
+- Completed runtime GA4 injection behind `VITE_GA_MEASUREMENT_ID`; local preview verified GA is
+  absent by default and injected when a test measurement ID is set.
