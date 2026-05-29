@@ -118,6 +118,11 @@
   Accessibility 100, Best Practices 100, SEO 91, and PWA 100.
 - 2026-05-29: Phase 9 production build reported the main `index-Bjt741lX.js` bundle at 157.12 KB
   gzip, below the 250 KB launch budget.
+- 2026-05-29: Phase 9 local preview generated fresh PDF and DOCX exports through the production
+  UI for `https://tmrk.github.io/qr-recast/export-verification`.
+- 2026-05-29: Phase 9 export integrity checks verified the PDF is valid, A4, vector-only by PDF
+  structure, and renderable by macOS Quick Look; the DOCX contains SVG media plus a 1024 x 1024 PNG
+  fallback wired through document relationships.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
@@ -140,6 +145,9 @@
   command-line tools, no available `simctl`, and no Android SDK, emulator, ADB, or attached Android
   device.
 - 2026-05-29: Desktop Firefox remains pending because Firefox is not installed locally.
+- 2026-05-29: PDF and DOCX native-app export checks remain pending because Acrobat and Microsoft
+  Word are not installed locally; Preview launched for the generated PDF, but AppleScript querying
+  did not return a verifiable document state.
 
 ## Automated Browser Engine Coverage
 
@@ -179,6 +187,10 @@
 - [x] PNG downloads from local preview at 1024 x 1024.
 - [x] PDF downloads from local preview through the vector exporter.
 - [x] DOCX downloads from local preview with SVG data and PNG fallback.
+- [x] PDF passes `qpdf --check`, has zero image objects, and uses vector path operators.
+- [x] PDF renders through macOS Quick Look.
+- [x] DOCX package contains SVG media and 1024 x 1024 PNG fallback media.
+- [x] DOCX relationships reference both SVG and PNG image media.
 - [ ] PDF opens in Preview and Acrobat as vector artwork.
 - [ ] DOCX opens in Microsoft Word with SVG and PNG fallback intact.
 

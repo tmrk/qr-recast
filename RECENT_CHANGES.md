@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Added local export integrity evidence for UI-generated PDF and DOCX files.
 - 2026-05-29: Verified Lighthouse launch budgets and the 157.12 KB gzip main bundle budget.
 - 2026-05-29: Verified automatable PWA matrix checks for offline reload, metadata, icons, and
   safe-area coverage.

@@ -131,3 +131,8 @@ This log is append-only. New entries go at the bottom.
 - Completed the Phase 9 launch budgets: local preview Lighthouse scores were 96 Performance,
   100 Accessibility, 100 Best Practices, 91 SEO, and 100 PWA, and the main bundle was 157.12 KB
   gzip.
+- Plan: generate fresh production-preview exports and verify whatever export integrity can be
+  proved locally without replacing the remaining native-app checks.
+- Completed local export integrity verification: the UI-generated PDF is valid and vector-only by
+  PDF structure, Quick Look renders it, and the UI-generated DOCX contains linked SVG and
+  1024 x 1024 PNG fallback media.
