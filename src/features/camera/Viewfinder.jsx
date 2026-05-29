@@ -7,7 +7,9 @@ import QrCodeScannerRounded from '@mui/icons-material/QrCodeScannerRounded';
 import ShieldRounded from '@mui/icons-material/ShieldRounded';
 import { Box, Button, IconButton, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { trackAnalyticsEvent } from '../analytics/events.js';
 import { decodeImageFile, decodeVideoFrame } from '../../lib/decode.js';
+import { detectPayloadKind } from '../../lib/payload.js';
 import { strings } from '../../strings.js';
 
 const CAMERA_CONSTRAINTS = {
@@ -77,13 +79,17 @@ export function Viewfinder({ onDetected }) {
   }, []);
 
   const handleDetected = useCallback(
-    (text) => {
+    (text, source = 'camera') => {
       if (!text || detectedRef.current) {
         return;
       }
 
       detectedRef.current = true;
       setDetected(true);
+      trackAnalyticsEvent('qr_detected', {
+        payload_kind: detectPayloadKind(text),
+        source,
+      });
       navigator.vibrate?.(15);
 
       window.setTimeout(() => {
@@ -183,7 +189,7 @@ export function Viewfinder({ onDetected }) {
         const result = await decodeImageFile(file);
 
         if (result?.data) {
-          handleDetected(result.data);
+          handleDetected(result.data, 'upload');
           return;
         }
 
@@ -216,7 +222,7 @@ export function Viewfinder({ onDetected }) {
           setDetectedPolygon(
             mapQrLocation(result.location, videoRef.current, canvasRef.current, sectionRef.current),
           );
-          handleDetected(result.data);
+          handleDetected(result.data, 'camera');
         }
       } catch (error) {
         setErrorMessage(error instanceof Error ? error.message : strings.camera.errorBody);

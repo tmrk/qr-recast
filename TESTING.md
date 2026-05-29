@@ -67,6 +67,12 @@
   appears when built with `VITE_GA_MEASUREMENT_ID=G-TEST123`.
 - 2026-05-29: Phase 7 repository audit verified `.env.example` is tracked, while `.env`,
   `.env.local`, and `.env.production` are ignored.
+- 2026-05-29: Phase 7 GA preview verified shared-link, decoded-text, share URL, and SVG export
+  events use only whitelisted metadata and do not contain the source QR payload.
+- 2026-05-29: Phase 7 GA preview verified upload decoding emits `qr_detected` with source and
+  payload kind only, without the decoded QR text.
+- 2026-05-29: Phase 7 default preview verified GA stays disabled without
+  `VITE_GA_MEASUREMENT_ID` and upload decoding still reaches the Result view.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

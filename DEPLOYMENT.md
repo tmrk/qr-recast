@@ -35,6 +35,19 @@ VITE_ADSENSE_CLIENT=
 Local values live in `.env.local`, which is gitignored. Production values are configured as GitHub
 Actions repository secrets and passed into the build step.
 
+## Analytics Events
+
+GA4 loads only when `VITE_GA_MEASUREMENT_ID` is set. Event tracking is routed through
+`src/features/analytics/events.js`, which accepts only fixed event names and whitelisted metadata
+values.
+
+Current events cover QR detection, shared URL loading, QR export, URL sharing, decoded-text viewing,
+decoded-text copying, external payload-link opening, and scan-again actions. The metadata is limited
+to values such as payload kind, source, export format, method, result, and surface.
+
+QR payload text, generated share URLs, hashes, filenames, image data, and exported document content
+must not be passed to analytics.
+
 ## Planned AdSense Wiring
 
 The committed app only renders the local placeholder from `src/features/ads/AdSlot.jsx` when

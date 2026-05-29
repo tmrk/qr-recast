@@ -89,7 +89,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 - [x] Document planned AdSense wiring and keep the owned TODO on the roadmap.
 - [x] Add runtime GA4 injection behind `VITE_GA_MEASUREMENT_ID`.
 - [x] Commit `.env.example` and keep `.env.local` gitignored.
-- [ ] Track privacy-safe events without sending QR content.
+- [x] Track privacy-safe events without sending QR content.
 - [ ] Respect Do Not Track and provide a one-click analytics opt-out in the About sheet.
 
 ## Phase 8 — Polish

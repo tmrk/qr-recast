@@ -1,5 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { trackAnalyticsEvent } from '../analytics/events.js';
+import { detectPayloadKind } from '../../lib/payload.js';
 import { decodePayloadFromShareUrl } from '../../lib/qr.js';
 import { strings } from '../../strings.js';
 import { Viewfinder } from '../camera/Viewfinder.jsx';
@@ -29,12 +31,26 @@ export function HomeView() {
 
         if (payload) {
           setDecodedText(payload);
+          trackAnalyticsEvent('shared_url_loaded', {
+            payload_kind: detectPayloadKind(payload),
+            result: 'success',
+            source: 'shared_url',
+          });
+        } else {
+          trackAnalyticsEvent('shared_url_loaded', {
+            result: 'error',
+            source: 'shared_url',
+          });
         }
 
         navigate('/', { replace: true });
       })
       .catch(() => {
         if (active) {
+          trackAnalyticsEvent('shared_url_loaded', {
+            result: 'error',
+            source: 'shared_url',
+          });
           navigate('/', { replace: true });
         }
       });

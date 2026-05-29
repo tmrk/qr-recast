@@ -26,6 +26,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
+import { trackAnalyticsEvent } from '../analytics/events.js';
 import {
   createDocxExport,
   createPdfExport,
@@ -155,6 +156,7 @@ export function ResultView({ onScanAgain, text }) {
             className="result-view__external-link"
             component="a"
             href={payloadUrl}
+            onClick={openPayloadLink}
             rel="noopener noreferrer"
             startIcon={<OpenInNewRounded />}
             target="_blank"
@@ -247,17 +249,34 @@ export function ResultView({ onScanAgain, text }) {
       return;
     }
 
-    await runBusyAction(action.format, async () => {
-      const blob = await action.createBlob(svgString);
-      const exportBlob = blob.type ? blob : new Blob([blob], { type: action.mime });
-      const status = await shareOrSaveBlob({
-        blob: exportBlob,
-        fileName: `${fileStem}.${action.format}`,
-        title: strings.appName,
-      });
+    await runBusyAction(
+      action.format,
+      async () => {
+        const blob = await action.createBlob(svgString);
+        const exportBlob = blob.type ? blob : new Blob([blob], { type: action.mime });
+        const status = await shareOrSaveBlob({
+          blob: exportBlob,
+          fileName: `${fileStem}.${action.format}`,
+          title: strings.appName,
+        });
 
-      setMessage(statusToMessage(status, strings.result));
-    });
+        trackAnalyticsEvent('qr_export', {
+          format: action.format,
+          method: ['cancelled', 'shared'].includes(status) ? 'file_share' : 'download',
+          payload_kind: payloadKind,
+          result: status,
+        });
+        setMessage(statusToMessage(status, strings.result));
+      },
+      strings.result.exportError,
+      () => {
+        trackAnalyticsEvent('qr_export', {
+          format: action.format,
+          payload_kind: payloadKind,
+          result: 'error',
+        });
+      },
+    );
   }
 
   async function runShareUrl() {
@@ -266,18 +285,38 @@ export function ResultView({ onScanAgain, text }) {
     }
 
     if (shareUrlTooLarge) {
+      trackAnalyticsEvent('share_url', {
+        payload_kind: payloadKind,
+        result: 'too_large',
+      });
       setError(strings.result.urlTooLarge);
       return;
     }
 
-    await runBusyAction('url', async () => {
-      const status = await shareOrCopyUrl(shareUrl, { useNativeShare: canShareUrlNatively });
-      if (status === 'copied') {
-        setCopiedShareUrlState({ text, url: shareUrl });
-      }
+    await runBusyAction(
+      'url',
+      async () => {
+        const status = await shareOrCopyUrl(shareUrl, { useNativeShare: canShareUrlNatively });
+        if (status === 'copied') {
+          setCopiedShareUrlState({ text, url: shareUrl });
+        }
 
-      setMessage(statusToMessage(status, strings.result));
-    });
+        trackAnalyticsEvent('share_url', {
+          method: canShareUrlNatively ? 'native_share' : 'clipboard',
+          payload_kind: payloadKind,
+          result: status,
+        });
+        setMessage(statusToMessage(status, strings.result));
+      },
+      strings.result.shareUrlError,
+      () => {
+        trackAnalyticsEvent('share_url', {
+          method: canShareUrlNatively ? 'native_share' : 'clipboard',
+          payload_kind: payloadKind,
+          result: 'error',
+        });
+      },
+    );
   }
 
   async function runCopyDecodedText() {
@@ -286,13 +325,51 @@ export function ResultView({ onScanAgain, text }) {
       async () => {
         await navigator.clipboard.writeText(text);
         setCopiedDecodedText(text);
+        trackAnalyticsEvent('decoded_text_copy', {
+          payload_kind: payloadKind,
+          result: 'success',
+        });
         setMessage(strings.result.copied);
       },
       strings.result.copyError,
+      () => {
+        trackAnalyticsEvent('decoded_text_copy', {
+          payload_kind: payloadKind,
+          result: 'error',
+        });
+      },
     );
   }
 
-  async function runBusyAction(actionName, work, errorMessage = strings.result.exportError) {
+  function openDecodedText() {
+    trackAnalyticsEvent('decoded_text_open', {
+      payload_kind: payloadKind,
+      surface: 'result',
+    });
+    setTextOpen(true);
+  }
+
+  function openPayloadLink() {
+    trackAnalyticsEvent('payload_link_open', {
+      payload_kind: 'url',
+      surface: 'decoded_text',
+    });
+  }
+
+  function scanAgain() {
+    trackAnalyticsEvent('scan_again', {
+      payload_kind: payloadKind,
+      surface: 'result',
+    });
+    onScanAgain();
+  }
+
+  async function runBusyAction(
+    actionName,
+    work,
+    errorMessage = strings.result.exportError,
+    onError = undefined,
+  ) {
     setError('');
     setMessage('');
 
@@ -301,6 +378,7 @@ export function ResultView({ onScanAgain, text }) {
     try {
       await work();
     } catch {
+      onError?.();
       setError(errorMessage);
     } finally {
       window.clearTimeout(timer);
@@ -318,7 +396,7 @@ export function ResultView({ onScanAgain, text }) {
             </Typography>
             <Typography color="text.secondary">{strings.result.supporting}</Typography>
           </Stack>
-          <IconButton aria-label={strings.result.scanAgain} onClick={onScanAgain}>
+          <IconButton aria-label={strings.result.scanAgain} onClick={scanAgain}>
             <QrCodeScannerRounded />
           </IconButton>
         </Stack>
@@ -378,7 +456,7 @@ export function ResultView({ onScanAgain, text }) {
           </Button>
           <Button
             disabled={Boolean(busyAction)}
-            onClick={() => setTextOpen(true)}
+            onClick={openDecodedText}
             startIcon={<TextSnippetRounded />}
             variant="contained"
           >
@@ -425,7 +503,7 @@ export function ResultView({ onScanAgain, text }) {
           </Paper>
         ) : null}
 
-        <Button onClick={onScanAgain} startIcon={<QrCodeScannerRounded />} variant="outlined">
+        <Button onClick={scanAgain} startIcon={<QrCodeScannerRounded />} variant="outlined">
           {strings.result.scanAgain}
         </Button>
       </Stack>

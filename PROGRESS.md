@@ -89,3 +89,7 @@ This log is append-only. New entries go at the bottom.
 - Plan: verify the committed environment example and local secret ignore rules for Phase 7.
 - Completed the environment-file audit: `.env.example` is tracked, while `.env`, `.env.local`, and
   `.env.production` are ignored by `.gitignore`.
+- Plan: add privacy-safe analytics events for scans, exports, sharing, and text actions without QR
+  payload content.
+- Completed privacy-safe analytics events through a whitelisted wrapper; local GA preview verified
+  scan, shared-link, decoded-text, share URL, and SVG export events without QR payload fragments.
