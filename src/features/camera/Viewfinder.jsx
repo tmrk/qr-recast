@@ -255,7 +255,7 @@ export function Viewfinder({ onDetected }) {
   return (
     <section ref={sectionRef} className="viewfinder" aria-label={strings.camera.viewfinderLabel}>
       <video ref={videoRef} autoPlay className="viewfinder__video" muted playsInline />
-      <canvas ref={canvasRef} className="viewfinder__canvas" />
+      <canvas ref={canvasRef} aria-hidden="true" className="viewfinder__canvas" />
 
       {status === 'ready' || detected ? (
         <Box
@@ -291,7 +291,7 @@ export function Viewfinder({ onDetected }) {
       ) : null}
 
       {showStatusPanel ? (
-        <Paper className="viewfinder__status" elevation={0}>
+        <Paper aria-live="polite" className="viewfinder__status" elevation={0}>
           <QrCodeScannerRounded color="primary" fontSize="large" />
           <Stack spacing={1}>
             <Typography component="h1" variant="h2">

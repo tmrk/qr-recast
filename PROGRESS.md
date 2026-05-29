@@ -108,3 +108,7 @@ This log is append-only. New entries go at the bottom.
 - Plan: verify dark mode parity across scanner, Result, decoded text, and About surfaces.
 - Completed the dark mode parity pass with local preview screenshots for scanner, Result, decoded
   text bottom sheet, and About sheet.
+- Plan: complete the Phase 8 accessibility pass for keyboard, ARIA, focus, live regions, and
+  contrast.
+- Completed the accessibility pass: axe is clean in light and dark mode across scanner, About,
+  Result, and decoded text surfaces, and keyboard QR copy plus Escape close were verified.

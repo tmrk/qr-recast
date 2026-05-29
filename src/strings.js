@@ -50,6 +50,7 @@ export const strings = Object.freeze({
     supporting: 'Export a clean copy of the code you scanned.',
     qrAlt: 'Recast QR code',
     generating: 'Generating QR code',
+    copyQrAction: 'Copy QR image as PNG',
     copyQrTooltip: 'Hold QR to copy PNG',
     svg: 'SVG',
     png: 'PNG',

@@ -91,6 +91,10 @@
   tooltip behaviour.
 - 2026-05-29: Phase 8 local preview captured dark mode screenshots for scanner, About sheet,
   Result, and decoded text bottom sheet at `390 x 844`.
+- 2026-05-29: Phase 8 local preview axe checks passed with no violations on scanner, About,
+  Result, and decoded text surfaces in both light and dark modes.
+- 2026-05-29: Phase 8 local preview keyboard checks verified QR PNG copy from the focused QR card
+  and Escape dismissal of the decoded text dialog.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

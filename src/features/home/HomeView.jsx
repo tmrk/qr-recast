@@ -75,7 +75,9 @@ export function HomeView() {
   if (encodedSharedPayload) {
     return (
       <div key="loading" className="home-view home-view--loading">
-        <div className="result-view__loading">{strings.result.loading}</div>
+        <div aria-live="polite" className="result-view__loading" role="status">
+          {strings.result.loading}
+        </div>
       </div>
     );
   }
@@ -83,7 +85,13 @@ export function HomeView() {
   if (decodedText) {
     return (
       <div key="result" className="home-view home-view--result">
-        <Suspense fallback={<div className="result-view__loading">{strings.result.loading}</div>}>
+        <Suspense
+          fallback={
+            <div aria-live="polite" className="result-view__loading" role="status">
+              {strings.result.loading}
+            </div>
+          }
+        >
           <ResultView onScanAgain={() => setDecodedText('')} text={decodedText} />
         </Suspense>
       </div>

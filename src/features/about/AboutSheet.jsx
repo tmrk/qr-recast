@@ -51,7 +51,9 @@ export function AboutSheet({ open, onClose }) {
       open={open}
       slotProps={{
         paper: {
+          'aria-labelledby': 'about-title',
           className: 'about-sheet',
+          role: 'dialog',
         },
       }}
     >

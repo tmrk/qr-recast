@@ -69,6 +69,7 @@ const exportActions = [
     mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   },
 ];
+const decodedTextTitleId = 'decoded-text-title';
 
 /**
  * @param {{ onScanAgain: () => void, text: string }} props
@@ -196,7 +197,7 @@ export function ResultView({ onScanAgain, text }) {
   );
   const decodedPanelHeading = (
     <Stack alignItems="center" className="result-view__decoded-heading" direction="row" spacing={1}>
-      <Typography component="span" variant="h2">
+      <Typography component="h2" id={decodedTextTitleId} variant="h2">
         {strings.result.decodedText}
       </Typography>
       <Chip className="result-view__kind-chip" label={payloadKindLabel} size="small" />
@@ -401,6 +402,15 @@ export function ResultView({ onScanAgain, text }) {
     }
   }
 
+  function handleQrCopyKeyDown(event) {
+    if (![' ', 'Enter'].includes(event.key)) {
+      return;
+    }
+
+    event.preventDefault();
+    runCopyQrImage();
+  }
+
   function openDecodedText() {
     trackAnalyticsEvent('decoded_text_open', {
       payload_kind: payloadKind,
@@ -448,13 +458,17 @@ export function ResultView({ onScanAgain, text }) {
 
   const qrCard = (
     <Paper
+      aria-label={strings.result.copyQrAction}
       className={`result-view__qr-card${qrCopyPressing ? ' result-view__qr-card--pressing' : ''}`}
       elevation={0}
       onContextMenu={preventQrContextMenu}
+      onKeyDown={handleQrCopyKeyDown}
       onPointerCancel={cancelQrCopyPress}
       onPointerDown={startQrCopyPress}
       onPointerLeave={cancelQrCopyPress}
       onPointerUp={cancelQrCopyPress}
+      role="button"
+      tabIndex={svgString ? 0 : -1}
     >
       {svgString ? (
         <div
@@ -593,7 +607,9 @@ export function ResultView({ onScanAgain, text }) {
         open={textOpen && useTextBottomSheet}
         slotProps={{
           paper: {
+            'aria-labelledby': decodedTextTitleId,
             className: 'result-view__text-sheet',
+            role: 'dialog',
           },
         }}
       >
@@ -614,6 +630,7 @@ export function ResultView({ onScanAgain, text }) {
       </Drawer>
 
       <Dialog
+        aria-labelledby={decodedTextTitleId}
         fullWidth
         maxWidth="sm"
         onClose={() => setTextOpen(false)}
