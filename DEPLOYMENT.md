@@ -35,6 +35,22 @@ VITE_ADSENSE_CLIENT=
 Local values live in `.env.local`, which is gitignored. Production values are configured as GitHub
 Actions repository secrets and passed into the build step.
 
+## Planned AdSense Wiring
+
+The committed app only renders the local placeholder from `src/features/ads/AdSlot.jsx` when
+`VITE_ADS_ENABLED=true`. The production AdSense integration will stay off until an AdSense account
+and client ID are available.
+
+When that is ready:
+
+- Set `VITE_ADS_ENABLED=true` for the Pages build.
+- Set `VITE_ADSENSE_CLIENT` to the assigned `ca-pub-...` client ID.
+- Replace the placeholder strip with the AdSense `ins` tag and script loader.
+- Keep the ad component free of QR payload data; no decoded text, image content, or export metadata
+  is passed to ad code.
+
+The owned follow-up remains tracked in `ROADMAP.md` as `TODO(ads)`.
+
 ## Manual Fallback
 
 If Pages is not yet enabled, set the repository Pages source to GitHub Actions:

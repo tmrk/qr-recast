@@ -80,3 +80,6 @@ This log is append-only. New entries go at the bottom.
 - Plan: add the Phase 7 advertisement placeholder slot behind `VITE_ADS_ENABLED`.
 - Completed the advertisement placeholder slot behind `VITE_ADS_ENABLED`; local preview verified the
   slot is absent by default and appears when the flag is true.
+- Plan: document the planned AdSense wiring while keeping the owned ads TODO on the roadmap.
+- Completed the AdSense wiring notes in `DEPLOYMENT.md` and kept `TODO(ads)` open in the deferred
+  roadmap section.
