@@ -57,3 +57,7 @@ This log is append-only. New entries go at the bottom.
   URL copy action.
 - Completed the URL copy feedback with a check icon morph, success button colour, and subtle scale
   animation; local preview verified the copied state and mobile native-share separation.
+- Plan: load valid Phase 5 `?q=` payloads directly into the Result view and replace the URL without
+  the query string.
+- Completed direct `?q=` loading: valid shared URLs open the Result view and clear the query string,
+  while invalid payloads clear back to the scanner.

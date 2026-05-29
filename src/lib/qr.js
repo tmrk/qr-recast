@@ -69,6 +69,13 @@ export async function encodePayloadForShareUrl(text) {
   return lzString.compressToEncodedURIComponent(text);
 }
 
+export async function decodePayloadFromShareUrl(encodedText) {
+  const { default: lzString } = await import('lz-string');
+  const decodedText = lzString.decompressFromEncodedURIComponent(encodedText);
+
+  return typeof decodedText === 'string' ? decodedText : '';
+}
+
 export async function buildShareUrl(text) {
   const baseUrl = new URL(import.meta.env.BASE_URL, window.location.origin);
   baseUrl.searchParams.set('q', await encodePayloadForShareUrl(text));

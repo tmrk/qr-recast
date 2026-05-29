@@ -49,6 +49,8 @@
   QR appear only after copying and stay hidden on the mobile native-share path.
 - 2026-05-29: Phase 5 local preview verified URL copy feedback morphs to a check icon, settles on
   the success colour, runs the scale animation, and stays separate from mobile native sharing.
+- 2026-05-29: Phase 5 local preview verified a valid compressed `?q=` payload opens the Result view,
+  clears the query string, and exposes the decoded payload; invalid `?q=` clears to the scanner.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
