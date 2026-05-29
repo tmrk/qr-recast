@@ -95,6 +95,8 @@
   Result, and decoded text surfaces in both light and dark modes.
 - 2026-05-29: Phase 8 local preview keyboard checks verified QR PNG copy from the focused QR card
   and Escape dismissal of the decoded text dialog.
+- 2026-05-29: Phase 8 local preview with `VITE_BUILD_SHA=abcdef1234567890` verified the About
+  sheet shows version `0.1.0`, build `abcdef1`, the privacy note, and the MIT licence link.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

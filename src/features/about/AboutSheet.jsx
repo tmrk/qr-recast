@@ -20,6 +20,8 @@ import {
   setAnalyticsOptOut,
 } from '../analytics/events.js';
 
+const buildHash = import.meta.env.VITE_BUILD_SHA?.slice(0, 7) || 'local';
+
 /**
  * @param {{ open: boolean, onClose: () => void }} props
  */
@@ -105,11 +107,19 @@ export function AboutSheet({ open, onClose }) {
           <Typography color="text.secondary">{strings.about.privacyBody}</Typography>
         </Stack>
 
-        <Stack spacing={0.75}>
-          <Typography color="text.secondary" variant="overline">
-            {strings.about.versionLabel}
-          </Typography>
-          <Typography>{packageJson.version}</Typography>
+        <Stack className="about-sheet__metadata" direction="row" flexWrap="wrap" gap={2.5}>
+          <Stack spacing={0.75}>
+            <Typography color="text.secondary" variant="overline">
+              {strings.about.versionLabel}
+            </Typography>
+            <Typography>{packageJson.version}</Typography>
+          </Stack>
+          <Stack spacing={0.75}>
+            <Typography color="text.secondary" variant="overline">
+              {strings.about.buildLabel}
+            </Typography>
+            <Typography>{buildHash}</Typography>
+          </Stack>
         </Stack>
 
         <Button

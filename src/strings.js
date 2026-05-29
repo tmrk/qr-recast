@@ -10,6 +10,7 @@ export const strings = Object.freeze({
     title: 'About QR Recast',
     close: 'Close about',
     versionLabel: 'Version',
+    buildLabel: 'Build',
     privacyBody:
       'Photos, decoded QR text, generated URLs, filenames, hashes, image data, and exported files stay out of analytics.',
     analyticsTitle: 'Analytics',

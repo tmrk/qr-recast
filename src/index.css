@@ -114,6 +114,10 @@
   padding: 14px 0;
 }
 
+.about-sheet__metadata {
+  min-width: 0;
+}
+
 .about-sheet__analytics {
   padding: 14px 16px;
   border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.72);

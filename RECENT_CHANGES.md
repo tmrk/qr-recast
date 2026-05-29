@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Completed the About sheet with version, build hash, privacy note, and MIT licence link.
 - 2026-05-29: Completed the accessibility pass for ARIA, live regions, keyboard QR copy, and
   light/dark contrast checks.
 - 2026-05-29: Verified dark mode parity across scanner, Result, decoded text, and About surfaces.

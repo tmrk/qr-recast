@@ -112,3 +112,7 @@ This log is append-only. New entries go at the bottom.
   contrast.
 - Completed the accessibility pass: axe is clean in light and dark mode across scanner, About,
   Result, and decoded text surfaces, and keyboard QR copy plus Escape close were verified.
+- Plan: finish the About sheet with a build hash while keeping version, privacy, and licence
+  details visible.
+- Completed the About sheet metadata pass; local preview verified version, test build hash, privacy
+  note, and MIT licence link, and the Pages workflow now supplies `VITE_BUILD_SHA`.

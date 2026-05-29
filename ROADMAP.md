@@ -99,7 +99,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 - [x] Add long-press QR copy on mobile and a desktop tooltip.
 - [x] Verify dark mode parity on every screen.
 - [x] Complete accessibility pass for keyboard, ARIA, focus, live regions, and contrast.
-- [ ] Add the About sheet with version, build hash, privacy note, and MIT licence link.
+- [x] Add the About sheet with version, build hash, privacy note, and MIT licence link.
 - [ ] Add a 404 page that redirects gracefully to `/`.
 
 ## Phase 9 — Hardening and Launch

@@ -30,6 +30,7 @@ Committed defaults live in `.env.example`:
 VITE_GA_MEASUREMENT_ID=
 VITE_ADS_ENABLED=false
 VITE_ADSENSE_CLIENT=
+VITE_BUILD_SHA=
 ```
 
 Local values live in `.env.local`, which is gitignored. Production values are configured as GitHub
