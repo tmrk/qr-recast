@@ -90,7 +90,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 - [x] Add runtime GA4 injection behind `VITE_GA_MEASUREMENT_ID`.
 - [x] Commit `.env.example` and keep `.env.local` gitignored.
 - [x] Track privacy-safe events without sending QR content.
-- [ ] Respect Do Not Track and provide a one-click analytics opt-out in the About sheet.
+- [x] Respect Do Not Track and provide a one-click analytics opt-out in the About sheet.
 
 ## Phase 8 — Polish
 

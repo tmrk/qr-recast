@@ -73,6 +73,11 @@
   payload kind only, without the decoded QR text.
 - 2026-05-29: Phase 7 default preview verified GA stays disabled without
   `VITE_GA_MEASUREMENT_ID` and upload decoding still reaches the Result view.
+- 2026-05-29: Phase 7 default preview captured settled About sheet screenshots at `390 x 844` and
+  `1280 x 900`; the analytics switch is visible without scrolling and GA stays disabled.
+- 2026-05-29: Phase 7 GA preview verified default GA initialisation, browser Do Not Track blocking,
+  stored analytics opt-out blocking, one-click opt-out persistence, and suppression of later
+  analytics events after opt-out.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

@@ -1,4 +1,5 @@
 import DarkModeRounded from '@mui/icons-material/DarkModeRounded';
+import InfoRounded from '@mui/icons-material/InfoRounded';
 import LightModeRounded from '@mui/icons-material/LightModeRounded';
 import SettingsBrightnessRounded from '@mui/icons-material/SettingsBrightnessRounded';
 import {
@@ -14,6 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
+import { AboutSheet } from '../features/about/AboutSheet.jsx';
 import { strings } from '../strings.js';
 import { useAppTheme } from '../theme/index.js';
 
@@ -28,6 +30,7 @@ const themeOptions = [
  */
 export function AppShell({ children, bottomSlot = null }) {
   const [anchorElement, setAnchorElement] = useState(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const { mode, setMode } = useAppTheme();
 
   const currentOption = themeOptions.find((option) => option.mode === mode) ?? themeOptions[0];
@@ -50,18 +53,29 @@ export function AppShell({ children, bottomSlot = null }) {
             </Typography>
           </Stack>
 
-          <Tooltip title={strings.theme.menuLabel}>
-            <IconButton
-              aria-controls={anchorElement ? 'theme-menu' : undefined}
-              aria-expanded={anchorElement ? 'true' : undefined}
-              aria-haspopup="menu"
-              aria-label={strings.theme.menuLabel}
-              color="inherit"
-              onClick={(event) => setAnchorElement(event.currentTarget)}
-            >
-              <CurrentIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+          <Stack alignItems="center" className="app-shell__actions" direction="row" spacing={0.5}>
+            <Tooltip title={strings.about.label}>
+              <IconButton
+                aria-label={strings.about.label}
+                color="inherit"
+                onClick={() => setAboutOpen(true)}
+              >
+                <InfoRounded fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={strings.theme.menuLabel}>
+              <IconButton
+                aria-controls={anchorElement ? 'theme-menu' : undefined}
+                aria-expanded={anchorElement ? 'true' : undefined}
+                aria-haspopup="menu"
+                aria-label={strings.theme.menuLabel}
+                color="inherit"
+                onClick={(event) => setAnchorElement(event.currentTarget)}
+              >
+                <CurrentIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Stack>
           <Menu
             anchorEl={anchorElement}
             id="theme-menu"
@@ -87,6 +101,7 @@ export function AppShell({ children, bottomSlot = null }) {
               );
             })}
           </Menu>
+          <AboutSheet open={aboutOpen} onClose={() => setAboutOpen(false)} />
         </Toolbar>
       </AppBar>
 

@@ -54,6 +54,10 @@
   font-weight: 760;
 }
 
+.app-shell__actions {
+  margin-left: auto;
+}
+
 .app-shell__content {
   width: 100%;
   padding: 0;
@@ -76,9 +80,65 @@
   color: var(--qr-palette-text-secondary);
 }
 
+.about-sheet.MuiDrawer-paper {
+  width: min(100%, 560px);
+  height: min(86svh, 680px);
+  margin: 0 auto;
+  padding: 8px max(20px, env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom))
+    max(20px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  border-radius: 26px 26px 0 0;
+  background: var(--qr-palette-surface-containerLow);
+}
+
+.about-sheet__handle {
+  width: 40px;
+  height: 4px;
+  margin: 8px auto 10px;
+  border-radius: 999px;
+  background: rgb(var(--qr-palette-outline-mainChannel) / 0.44);
+}
+
+.about-sheet__header {
+  padding-bottom: 12px;
+}
+
+.about-sheet__content {
+  min-height: 0;
+  overflow: auto;
+}
+
+.about-sheet__privacy {
+  align-items: flex-start;
+  padding: 14px 0;
+}
+
+.about-sheet__analytics {
+  padding: 14px 16px;
+  border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.72);
+  border-radius: 18px;
+  background: rgb(var(--qr-palette-surface-containerLowestChannel) / 0.76);
+}
+
+.about-sheet__section-title {
+  margin: 0;
+  font-weight: 720;
+  line-height: 1.3;
+}
+
+.about-sheet__licence.MuiButton-root {
+  align-self: flex-start;
+  border-radius: 18px;
+}
+
 @media (min-width: 720px) {
   .app-shell__toolbar {
     width: min(100% - 48px, 680px);
+  }
+
+  .about-sheet.MuiDrawer-paper {
+    border-radius: 28px 28px 0 0;
   }
 }
 

@@ -48,6 +48,10 @@ to values such as payload kind, source, export format, method, result, and surfa
 QR payload text, generated share URLs, hashes, filenames, image data, and exported document content
 must not be passed to analytics.
 
+Browser Do Not Track prevents GA4 from loading. Users can also turn analytics off from the About
+sheet; the preference is stored locally under `qr-recast-analytics-opt-out` and blocks future GA4
+script injection and event tracking on that device.
+
 ## Planned AdSense Wiring
 
 The committed app only renders the local placeholder from `src/features/ads/AdSlot.jsx` when

@@ -5,6 +5,23 @@ export const strings = Object.freeze({
     label: 'Advertisement slot',
     placeholder: 'Advertisement',
   },
+  about: {
+    label: 'About QR Recast',
+    title: 'About QR Recast',
+    close: 'Close about',
+    versionLabel: 'Version',
+    privacyBody:
+      'Photos, decoded QR text, generated URLs, filenames, hashes, image data, and exported files stay out of analytics.',
+    analyticsTitle: 'Analytics',
+    analyticsToggle: 'Share anonymised usage events',
+    analyticsEnabled:
+      'Analytics is on. Events use fixed metadata only, such as payload kind and export format.',
+    analyticsOptedOut: 'Analytics is off on this device.',
+    analyticsDoNotTrack: 'Your browser Do Not Track preference is on, so analytics stays off.',
+    analyticsNotConfigured:
+      'Analytics is not configured for this build, and this preference will still be remembered.',
+    licence: 'MIT licence',
+  },
   camera: {
     viewfinderLabel: 'QR camera scanner',
     idleTitle: 'Ready to scan',

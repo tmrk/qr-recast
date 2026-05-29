@@ -1,4 +1,5 @@
 export const gaMeasurementId = import.meta.env.VITE_GA_MEASUREMENT_ID?.trim() ?? '';
+export const analyticsOptOutStorageKey = 'qr-recast-analytics-opt-out';
 
 const safeEventNames = new Set([
   'decoded_text_copy',
@@ -33,7 +34,9 @@ const safeParamValues = Object.freeze({
 let analyticsInitialised = false;
 
 export function initialiseAnalytics() {
-  if (!gaMeasurementId || analyticsInitialised || typeof window === 'undefined') {
+  syncAnalyticsDisabledFlag();
+
+  if (!isAnalyticsAllowed() || analyticsInitialised || typeof window === 'undefined') {
     return;
   }
 
@@ -57,7 +60,7 @@ export function initialiseAnalytics() {
 }
 
 export function trackAnalyticsEvent(eventName, params = {}) {
-  if (!gaMeasurementId || typeof window === 'undefined' || typeof window.gtag !== 'function') {
+  if (!isAnalyticsAllowed() || typeof window === 'undefined' || typeof window.gtag !== 'function') {
     return;
   }
 
@@ -68,8 +71,53 @@ export function trackAnalyticsEvent(eventName, params = {}) {
   window.gtag('event', eventName, sanitiseParams(params));
 }
 
+export function isAnalyticsAllowed() {
+  return Boolean(gaMeasurementId) && !isDoNotTrackEnabled() && !hasAnalyticsOptedOut();
+}
+
+export function isDoNotTrackEnabled() {
+  if (typeof navigator === 'undefined') {
+    return false;
+  }
+
+  const windowPreference = typeof window === 'undefined' ? undefined : window.doNotTrack;
+  const preference = navigator.doNotTrack ?? windowPreference ?? navigator.msDoNotTrack;
+
+  return preference === '1' || preference === 'yes';
+}
+
+export function hasAnalyticsOptedOut() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  return window.localStorage.getItem(analyticsOptOutStorageKey) === 'true';
+}
+
+export function setAnalyticsOptOut(optedOut) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (optedOut) {
+    window.localStorage.setItem(analyticsOptOutStorageKey, 'true');
+  } else {
+    window.localStorage.removeItem(analyticsOptOutStorageKey);
+  }
+
+  syncAnalyticsDisabledFlag();
+}
+
 function sanitiseParams(params) {
   return Object.fromEntries(
     Object.entries(params).filter(([key, value]) => safeParamValues[key]?.has(value)),
   );
+}
+
+function syncAnalyticsDisabledFlag() {
+  if (!gaMeasurementId || typeof window === 'undefined') {
+    return;
+  }
+
+  window[`ga-disable-${gaMeasurementId}`] = !isAnalyticsAllowed();
 }

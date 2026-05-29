@@ -93,3 +93,6 @@ This log is append-only. New entries go at the bottom.
   payload content.
 - Completed privacy-safe analytics events through a whitelisted wrapper; local GA preview verified
   scan, shared-link, decoded-text, share URL, and SVG export events without QR payload fragments.
+- Plan: respect browser Do Not Track and add an About sheet with a one-click analytics opt-out.
+- Completed DNT and analytics opt-out support; local previews verified About sheet layout, default
+  GA-off behaviour, DNT blocking, stored opt-out blocking, and one-click opt-out persistence.
