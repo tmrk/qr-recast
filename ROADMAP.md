@@ -79,7 +79,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 - [x] Open decoded text in a bottom sheet on mobile and a dialog on desktop.
 - [x] Render decoded text in a monospace code block with long-content scrolling.
-- [ ] Detect and display payload kind.
+- [x] Detect and display payload kind.
 - [ ] Add a clear external-link affordance for URL payloads.
 - [ ] Add copy feedback matching the URL share interaction.
 

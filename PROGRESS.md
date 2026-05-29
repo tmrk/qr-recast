@@ -67,3 +67,6 @@ This log is append-only. New entries go at the bottom.
 - Plan: tighten the decoded payload code block so long content scrolls inside the monospace panel.
 - Completed the decoded payload code block scrolling pass; local preview verified long content
   scrolls inside the monospace `pre`/`code` panel.
+- Plan: detect common decoded payload kinds and display the kind in the decoded text panel.
+- Completed payload kind detection and display; local preview verified URL, plain text, and Wi-Fi
+  payload chips in the decoded text panel.

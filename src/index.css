@@ -382,6 +382,18 @@
   height: auto;
 }
 
+.result-view__decoded-heading {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.result-view__kind-chip {
+  max-width: 100%;
+  background: rgb(var(--qr-palette-secondary-mainChannel) / 0.12);
+  color: var(--qr-palette-secondary-dark);
+  font-weight: 680;
+}
+
 .result-view__payload {
   max-height: min(42svh, 320px);
   margin: 0;

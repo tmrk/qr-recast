@@ -32,6 +32,7 @@ import {
   createSvgExport,
 } from '../../lib/exporters.js';
 import { shareOrCopyUrl, shareOrSaveBlob, statusToMessage } from '../../lib/files.js';
+import { detectPayloadKind } from '../../lib/payload.js';
 import { SHARE_URL_MAX_LENGTH, buildShareUrl, createQrSvg, hashTextPrefix } from '../../lib/qr.js';
 import { strings } from '../../strings.js';
 
@@ -105,6 +106,9 @@ export function ResultView({ onScanAgain, text }) {
   }, [text]);
 
   const payloadPreview = useMemo(() => text.trim() || strings.result.emptyPayload, [text]);
+  const payloadKind = useMemo(() => detectPayloadKind(text), [text]);
+  const payloadKindLabel =
+    strings.result.payloadKinds[payloadKind] ?? strings.result.payloadKinds.text;
   const shareUrl = shareUrlState.text === text ? shareUrlState.url : '';
   const copiedShareUrl = copiedShareUrlState.text === text ? copiedShareUrlState.url : '';
   const shareUrlSvg = shareUrlSvgState.url === copiedShareUrl ? shareUrlSvgState.svg : '';
@@ -134,6 +138,14 @@ export function ResultView({ onScanAgain, text }) {
     <pre className="result-view__payload">
       <code>{payloadPreview}</code>
     </pre>
+  );
+  const decodedPanelHeading = (
+    <Stack alignItems="center" className="result-view__decoded-heading" direction="row" spacing={1}>
+      <Typography component="span" variant="h2">
+        {strings.result.decodedText}
+      </Typography>
+      <Chip className="result-view__kind-chip" label={payloadKindLabel} size="small" />
+    </Stack>
   );
 
   useEffect(() => {
@@ -374,9 +386,7 @@ export function ResultView({ onScanAgain, text }) {
           justifyContent="space-between"
           spacing={2}
         >
-          <Typography component="h2" variant="h2">
-            {strings.result.decodedText}
-          </Typography>
+          {decodedPanelHeading}
           <IconButton aria-label={strings.result.closeText} onClick={() => setTextOpen(false)}>
             <CloseRounded />
           </IconButton>
@@ -390,7 +400,7 @@ export function ResultView({ onScanAgain, text }) {
         onClose={() => setTextOpen(false)}
         open={textOpen && !useTextBottomSheet}
       >
-        <DialogTitle>{strings.result.decodedText}</DialogTitle>
+        <DialogTitle component="div">{decodedPanelHeading}</DialogTitle>
         <IconButton
           aria-label={strings.result.closeText}
           className="result-view__dialog-close"

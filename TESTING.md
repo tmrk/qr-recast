@@ -55,6 +55,8 @@
   mobile bottom sheet with the same payload content.
 - 2026-05-29: Phase 6 local preview verified long decoded text scrolls inside a monospace
   `pre`/`code` block with preserved wrapping.
+- 2026-05-29: Phase 6 local preview verified decoded payload kind chips for URL, plain text, and
+  Wi-Fi payloads.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
