@@ -87,6 +87,10 @@
   Result when the API is unavailable.
 - 2026-05-29: Phase 8 local preview verified touch long-press copies the QR as a PNG and desktop
   hover shows the `Hold QR to copy PNG` tooltip.
+- 2026-05-29: Deployed Phase 8 smoke test verified touch long-press QR PNG copying and desktop
+  tooltip behaviour.
+- 2026-05-29: Phase 8 local preview captured dark mode screenshots for scanner, About sheet,
+  Result, and decoded text bottom sheet at `390 x 844`.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

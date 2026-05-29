@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Verified dark mode parity across scanner, Result, decoded text, and About surfaces.
 - 2026-05-29: Added long-press QR PNG copying with a desktop tooltip affordance.
 - 2026-05-29: Added the QR capture flash with a View Transitions API handoff and CSS fallback.
 - 2026-05-29: Added a subtle page transition between the Viewfinder and Result states.

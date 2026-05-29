@@ -105,3 +105,6 @@ This log is append-only. New entries go at the bottom.
 - Plan: add long-press QR image copying with a desktop tooltip affordance.
 - Completed long-press QR PNG copying; local preview verified touch press-and-hold copy feedback and
   the desktop hover tooltip.
+- Plan: verify dark mode parity across scanner, Result, decoded text, and About surfaces.
+- Completed the dark mode parity pass with local preview screenshots for scanner, Result, decoded
+  text bottom sheet, and About sheet.
