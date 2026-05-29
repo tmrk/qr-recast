@@ -383,10 +383,11 @@
 }
 
 .result-view__payload {
-  max-height: 160px;
+  max-height: min(42svh, 320px);
   margin: 0;
   padding: 14px 16px;
   overflow: auto;
+  overscroll-behavior: contain;
   border-radius: 14px;
   background: rgb(var(--qr-palette-surface-containerHighestChannel) / 0.78);
   color: var(--qr-palette-text-primary);

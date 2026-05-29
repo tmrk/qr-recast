@@ -53,6 +53,8 @@
   clears the query string, and exposes the decoded payload; invalid `?q=` clears to the scanner.
 - 2026-05-29: Phase 6 local preview verified decoded text opens in a desktop dialog and in a
   mobile bottom sheet with the same payload content.
+- 2026-05-29: Phase 6 local preview verified long decoded text scrolls inside a monospace
+  `pre`/`code` block with preserved wrapping.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

@@ -64,3 +64,6 @@ This log is append-only. New entries go at the bottom.
 - Plan: make the decoded text panel open as a mobile bottom sheet while keeping the desktop dialog.
 - Completed the responsive decoded text container; local preview verified the desktop dialog and
   mobile bottom sheet both show the decoded payload.
+- Plan: tighten the decoded payload code block so long content scrolls inside the monospace panel.
+- Completed the decoded payload code block scrolling pass; local preview verified long content
+  scrolls inside the monospace `pre`/`code` panel.
