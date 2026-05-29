@@ -45,3 +45,7 @@ This log is append-only. New entries go at the bottom.
   guidance.
 - Completed the URL length guard with the disabled Share URL action and inline guidance; lint, build,
   and local preview Playwright checks passed for short and long QR payloads.
+- Plan: make Phase 5 URL actions use native mobile sharing when available and desktop clipboard
+  copying otherwise.
+- Completed the responsive URL action: desktop copies the generated `?q=` URL, while mobile-style
+  browsers with Web Share available use native sharing.

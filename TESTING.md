@@ -43,6 +43,8 @@
 - 2026-05-29: Phase 5 local preview verified a short QR payload kept Share URL enabled and a
   1,400-character QR-safe payload generated a 2,103-character share URL that disabled Share URL with
   inline guidance.
+- 2026-05-29: Phase 5 local preview verified desktop `Copy URL` copied the generated `?q=` link and
+  a mobile-style browser with Web Share available used the native `Share URL` path.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

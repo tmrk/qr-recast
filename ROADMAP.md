@@ -70,7 +70,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 - [x] Encode payloads with `lz-string.compressToEncodedURIComponent` into `?q=`.
 - [x] Disable URL sharing for payload URLs over 2000 characters with inline guidance.
-- [ ] Share the URL on mobile and copy it on desktop.
+- [x] Share the URL on mobile and copy it on desktop.
 - [ ] Show the copied URL pill and secondary QR preview on desktop.
 - [ ] Add copy feedback with icon morph, success colour, and subtle scale animation.
 - [ ] Load valid `?q=` payloads directly into the Result view and clear the query string.

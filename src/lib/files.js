@@ -26,8 +26,8 @@ export async function shareOrSaveBlob({ blob, fileName, title }) {
   return 'saved';
 }
 
-export async function shareOrCopyUrl(url) {
-  if (navigator.share) {
+export async function shareOrCopyUrl(url, { useNativeShare = false } = {}) {
+  if (useNativeShare && navigator.share) {
     try {
       await navigator.share({ url });
       return 'shared';

@@ -1,5 +1,6 @@
 import ArticleRounded from '@mui/icons-material/ArticleRounded';
 import CloseRounded from '@mui/icons-material/CloseRounded';
+import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded';
 import DescriptionRounded from '@mui/icons-material/DescriptionRounded';
 import ImageRounded from '@mui/icons-material/ImageRounded';
 import PictureAsPdfRounded from '@mui/icons-material/PictureAsPdfRounded';
@@ -18,6 +19,7 @@ import {
   Snackbar,
   Stack,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -72,6 +74,7 @@ export function ResultView({ onScanAgain, text }) {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [shareUrlState, setShareUrlState] = useState({ text: '', url: '' });
+  const hasCoarsePointer = useMediaQuery('(pointer: coarse)');
 
   useEffect(() => {
     let active = true;
@@ -100,6 +103,9 @@ export function ResultView({ onScanAgain, text }) {
   const shareUrl = shareUrlState.text === text ? shareUrlState.url : '';
   const shareUrlTooLarge = shareUrl.length > SHARE_URL_MAX_LENGTH;
   const shareUrlDisabled = Boolean(busyAction) || !shareUrl || shareUrlTooLarge;
+  const canShareUrlNatively =
+    hasCoarsePointer && typeof navigator !== 'undefined' && Boolean(navigator.share);
+  const ShareUrlIcon = canShareUrlNatively ? ShareRounded : ContentCopyRounded;
 
   useEffect(() => {
     let active = true;
@@ -150,7 +156,7 @@ export function ResultView({ onScanAgain, text }) {
     }
 
     await runBusyAction('url', async () => {
-      const status = await shareOrCopyUrl(shareUrl);
+      const status = await shareOrCopyUrl(shareUrl, { useNativeShare: canShareUrlNatively });
       setMessage(statusToMessage(status, strings.result));
     });
   }
@@ -220,10 +226,10 @@ export function ResultView({ onScanAgain, text }) {
             aria-describedby={shareUrlTooLarge ? 'share-url-guidance' : undefined}
             disabled={shareUrlDisabled}
             onClick={runShareUrl}
-            startIcon={busyAction === 'url' ? <CircularProgress size={18} /> : <ShareRounded />}
+            startIcon={busyAction === 'url' ? <CircularProgress size={18} /> : <ShareUrlIcon />}
             variant="contained"
           >
-            {strings.result.shareUrl}
+            {canShareUrlNatively ? strings.result.shareUrl : strings.result.copyUrl}
           </Button>
           <Button
             disabled={Boolean(busyAction)}

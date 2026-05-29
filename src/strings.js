@@ -34,6 +34,7 @@ export const strings = Object.freeze({
     pdf: 'PDF',
     docx: 'DOCX',
     shareUrl: 'Share URL',
+    copyUrl: 'Copy URL',
     showText: 'Show text',
     scanAgain: 'Scan again',
     decodedText: 'Decoded text',
