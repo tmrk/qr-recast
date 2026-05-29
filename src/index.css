@@ -137,6 +137,20 @@
   animation: qr-page-enter 220ms cubic-bezier(0.2, 0, 0, 1) both;
 }
 
+@supports (view-transition-name: qr-page) {
+  .home-view {
+    view-transition-name: qr-page;
+  }
+
+  ::view-transition-old(qr-page) {
+    animation: qr-capture-old 260ms cubic-bezier(0.2, 0, 0, 1) both;
+  }
+
+  ::view-transition-new(qr-page) {
+    animation: qr-capture-new 320ms cubic-bezier(0.2, 0, 0, 1) both;
+  }
+}
+
 @media (min-width: 720px) {
   .app-shell__toolbar {
     width: min(100% - 48px, 680px);
@@ -152,6 +166,28 @@
     opacity: 0;
     filter: blur(2px);
     transform: translateY(8px) scale(0.996);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes qr-capture-old {
+  to {
+    opacity: 0;
+    filter: blur(4px);
+    transform: scale(0.992);
+  }
+}
+
+@keyframes qr-capture-new {
+  from {
+    opacity: 0;
+    filter: blur(5px);
+    transform: translateY(10px) scale(1.012);
   }
 
   to {
@@ -305,6 +341,19 @@
   stroke-linejoin: round;
   stroke-width: 2;
   filter: drop-shadow(0 0 12px rgb(var(--qr-palette-primary-mainChannel) / 0.36));
+}
+
+.viewfinder__capture-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 46%,
+    rgb(var(--qr-palette-primary-mainChannel) / 0.28),
+    rgb(var(--qr-palette-primary-mainChannel) / 0.1) 24%,
+    transparent 56%
+  );
+  animation: qr-capture-flash 360ms ease-out both;
 }
 
 .viewfinder__hint {
@@ -613,8 +662,25 @@
   }
 }
 
+@keyframes qr-capture-flash {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  42% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .home-view,
+  .viewfinder__capture-flash,
   .viewfinder__sweep,
   .viewfinder__polygon,
   .result-view__url-action-icon,
@@ -622,5 +688,9 @@
   .result-view__url-action--copied.MuiButton-contained,
   .result-view__text-copy-action--copied.MuiButton-contained {
     animation: none;
+  }
+
+  .viewfinder__capture-flash {
+    opacity: 0;
   }
 }

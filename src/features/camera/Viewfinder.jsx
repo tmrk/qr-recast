@@ -282,6 +282,8 @@ export function Viewfinder({ onDetected }) {
         </svg>
       ) : null}
 
+      {detected ? <div aria-hidden="true" className="viewfinder__capture-flash" /> : null}
+
       {status === 'ready' ? (
         <Typography className="viewfinder__hint" variant="body1">
           {strings.camera.hint}

@@ -82,6 +82,9 @@
   disabled, and the analytics opt-out stores locally.
 - 2026-05-29: Phase 8 local preview verified the scanner/result page transition class and animation
   after upload decoding, then verified Scan again returns through the scanner frame.
+- 2026-05-29: Phase 8 local preview verified the QR capture flash appears on upload detection,
+  `document.startViewTransition` is called when available, and the CSS transition fallback reaches
+  Result when the API is unavailable.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

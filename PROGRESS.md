@@ -99,3 +99,6 @@ This log is append-only. New entries go at the bottom.
 - Plan: add a subtle Phase 8 page transition between the Viewfinder and Result states.
 - Completed the scanner/result page transition; local preview verified upload-to-result and
   scan-again paths both use the transition wrapper.
+- Plan: add the QR capture moment animation and use View Transitions when available.
+- Completed the capture moment animation; local preview verified the flash layer, View Transition
+  handoff, and CSS fallback when the API is unavailable.

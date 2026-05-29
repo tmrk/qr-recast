@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { trackAnalyticsEvent } from '../analytics/events.js';
 import { detectPayloadKind } from '../../lib/payload.js';
@@ -15,6 +16,17 @@ export function HomeView() {
   const location = useLocation();
   const navigate = useNavigate();
   const encodedSharedPayload = new URLSearchParams(location.search).get('q');
+
+  function showDecodedText(text) {
+    if (!document.startViewTransition) {
+      setDecodedText(text);
+      return;
+    }
+
+    document.startViewTransition(() => {
+      flushSync(() => setDecodedText(text));
+    });
+  }
 
   useEffect(() => {
     if (!encodedSharedPayload) {
@@ -80,7 +92,7 @@ export function HomeView() {
 
   return (
     <div key="scanner" className="home-view home-view--scanner">
-      <Viewfinder onDetected={setDecodedText} />
+      <Viewfinder onDetected={showDecodedText} />
     </div>
   );
 }
