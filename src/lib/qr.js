@@ -61,12 +61,15 @@ export async function hashTextPrefix(text) {
     .slice(0, 8);
 }
 
-export function buildShareUrl(text) {
-  const basePath = new URL(import.meta.env.BASE_URL, window.location.origin);
-  const parameters = new URLSearchParams();
-  return import('lz-string').then(({ default: lzString }) => {
-    parameters.set('q', lzString.compressToEncodedURIComponent(text));
-    basePath.search = parameters.toString();
-    return basePath.toString();
-  });
+export async function encodePayloadForShareUrl(text) {
+  const { default: lzString } = await import('lz-string');
+
+  return lzString.compressToEncodedURIComponent(text);
+}
+
+export async function buildShareUrl(text) {
+  const baseUrl = new URL(import.meta.env.BASE_URL, window.location.origin);
+  baseUrl.searchParams.set('q', await encodePayloadForShareUrl(text));
+
+  return baseUrl.toString();
 }

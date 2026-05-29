@@ -35,3 +35,9 @@ This log is append-only. New entries go at the bottom.
 - Completed Phase 3 and Phase 4 after workflow run `26596003511` passed and the deployed
   `https://tmrk.github.io/qr-recast/` smoke test downloaded SVG, PNG, PDF, and DOCX exports and
   copied a production share URL.
+
+## 2026-05-29
+
+- Plan: formalise Phase 5 compressed share URL encoding and verify the generated `?q=` link.
+- Completed the compressed share URL helper, verified local preview returned HTTP 200, and confirmed
+  a sample payload round-tripped through `lz-string` without exposing the plain payload in the URL.

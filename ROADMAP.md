@@ -68,7 +68,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 ## Phase 5 — Share-as-URL
 
-- [ ] Encode payloads with `lz-string.compressToEncodedURIComponent` into `?q=`.
+- [x] Encode payloads with `lz-string.compressToEncodedURIComponent` into `?q=`.
 - [ ] Disable URL sharing for payload URLs over 2000 characters with inline guidance.
 - [ ] Share the URL on mobile and copy it on desktop.
 - [ ] Show the copied URL pill and secondary QR preview on desktop.
