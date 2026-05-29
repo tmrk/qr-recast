@@ -406,6 +406,31 @@
   right: 8px;
 }
 
+.result-view__text-sheet.MuiDrawer-paper {
+  max-height: min(82svh, 640px);
+  padding: 8px max(20px, env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom))
+    max(20px, env(safe-area-inset-left));
+  border-radius: 26px 26px 0 0;
+  background: var(--qr-palette-surface-containerLow);
+}
+
+.result-view__sheet-handle {
+  width: 40px;
+  height: 4px;
+  margin: 8px auto 10px;
+  border-radius: 999px;
+  background: rgb(var(--qr-palette-outline-mainChannel) / 0.44);
+}
+
+.result-view__sheet-header {
+  padding-bottom: 12px;
+}
+
+.result-view__sheet-content {
+  min-height: 0;
+  overflow: auto;
+}
+
 @media (min-width: 560px) {
   .result-view__actions {
     grid-template-columns: repeat(3, minmax(0, 1fr));

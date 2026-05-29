@@ -77,7 +77,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 ## Phase 6 — Decoded Text Panel
 
-- [ ] Open decoded text in a bottom sheet on mobile and a dialog on desktop.
+- [x] Open decoded text in a bottom sheet on mobile and a dialog on desktop.
 - [ ] Render decoded text in a monospace code block with long-content scrolling.
 - [ ] Detect and display payload kind.
 - [ ] Add a clear external-link affordance for URL payloads.

@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Started Phase 6 with a decoded text bottom sheet on mobile and a dialog on desktop.
 - 2026-05-29: Completed Phase 5 direct shared-link loading from `?q=` with query-string clearing.
 - 2026-05-29: Added copied-state feedback to the URL action with a check icon morph, success colour,
   and subtle scale animation.

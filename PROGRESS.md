@@ -61,3 +61,6 @@ This log is append-only. New entries go at the bottom.
   the query string.
 - Completed direct `?q=` loading: valid shared URLs open the Result view and clear the query string,
   while invalid payloads clear back to the scanner.
+- Plan: make the decoded text panel open as a mobile bottom sheet while keeping the desktop dialog.
+- Completed the responsive decoded text container; local preview verified the desktop dialog and
+  mobile bottom sheet both show the decoded payload.

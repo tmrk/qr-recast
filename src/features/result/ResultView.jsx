@@ -16,6 +16,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  Drawer,
   IconButton,
   Paper,
   Snackbar,
@@ -127,6 +128,12 @@ export function ResultView({ onScanAgain, text }) {
     : undefined;
   const showDesktopSharePreview = Boolean(
     !hasCoarsePointer && copiedShareUrl && copiedShareUrl === shareUrl && !shareUrlTooLarge,
+  );
+  const useTextBottomSheet = hasCoarsePointer;
+  const decodedPayloadBlock = (
+    <pre className="result-view__payload">
+      <code>{payloadPreview}</code>
+    </pre>
   );
 
   useEffect(() => {
@@ -349,7 +356,40 @@ export function ResultView({ onScanAgain, text }) {
         </Button>
       </Stack>
 
-      <Dialog fullWidth maxWidth="sm" onClose={() => setTextOpen(false)} open={textOpen}>
+      <Drawer
+        anchor="bottom"
+        onClose={() => setTextOpen(false)}
+        open={textOpen && useTextBottomSheet}
+        slotProps={{
+          paper: {
+            className: 'result-view__text-sheet',
+          },
+        }}
+      >
+        <div aria-hidden="true" className="result-view__sheet-handle" />
+        <Stack
+          alignItems="center"
+          className="result-view__sheet-header"
+          direction="row"
+          justifyContent="space-between"
+          spacing={2}
+        >
+          <Typography component="h2" variant="h2">
+            {strings.result.decodedText}
+          </Typography>
+          <IconButton aria-label={strings.result.closeText} onClick={() => setTextOpen(false)}>
+            <CloseRounded />
+          </IconButton>
+        </Stack>
+        <div className="result-view__sheet-content">{decodedPayloadBlock}</div>
+      </Drawer>
+
+      <Dialog
+        fullWidth
+        maxWidth="sm"
+        onClose={() => setTextOpen(false)}
+        open={textOpen && !useTextBottomSheet}
+      >
         <DialogTitle>{strings.result.decodedText}</DialogTitle>
         <IconButton
           aria-label={strings.result.closeText}
@@ -358,11 +398,7 @@ export function ResultView({ onScanAgain, text }) {
         >
           <CloseRounded />
         </IconButton>
-        <DialogContent>
-          <pre className="result-view__payload">
-            <code>{payloadPreview}</code>
-          </pre>
-        </DialogContent>
+        <DialogContent>{decodedPayloadBlock}</DialogContent>
       </Dialog>
 
       <Snackbar autoHideDuration={2800} onClose={() => setMessage('')} open={Boolean(message)}>
