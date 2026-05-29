@@ -61,16 +61,26 @@ export function HomeView() {
   }, [encodedSharedPayload, navigate]);
 
   if (encodedSharedPayload) {
-    return <div className="result-view__loading">{strings.result.loading}</div>;
+    return (
+      <div key="loading" className="home-view home-view--loading">
+        <div className="result-view__loading">{strings.result.loading}</div>
+      </div>
+    );
   }
 
   if (decodedText) {
     return (
-      <Suspense fallback={<div className="result-view__loading">{strings.result.loading}</div>}>
-        <ResultView onScanAgain={() => setDecodedText('')} text={decodedText} />
-      </Suspense>
+      <div key="result" className="home-view home-view--result">
+        <Suspense fallback={<div className="result-view__loading">{strings.result.loading}</div>}>
+          <ResultView onScanAgain={() => setDecodedText('')} text={decodedText} />
+        </Suspense>
+      </div>
     );
   }
 
-  return <Viewfinder onDetected={setDecodedText} />;
+  return (
+    <div key="scanner" className="home-view home-view--scanner">
+      <Viewfinder onDetected={setDecodedText} />
+    </div>
+  );
 }

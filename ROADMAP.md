@@ -94,7 +94,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 ## Phase 8 — Polish
 
-- [ ] Add a subtle page transition between Viewfinder and Result.
+- [x] Add a subtle page transition between Viewfinder and Result.
 - [ ] Add the QR capture moment animation with graceful View Transitions fallback.
 - [ ] Add long-press QR copy on mobile and a desktop tooltip.
 - [ ] Verify dark mode parity on every screen.

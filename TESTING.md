@@ -78,6 +78,10 @@
 - 2026-05-29: Phase 7 GA preview verified default GA initialisation, browser Do Not Track blocking,
   stored analytics opt-out blocking, one-click opt-out persistence, and suppression of later
   analytics events after opt-out.
+- 2026-05-29: Deployed Phase 7 smoke test verified the About sheet opens on mobile, default GA stays
+  disabled, and the analytics opt-out stores locally.
+- 2026-05-29: Phase 8 local preview verified the scanner/result page transition class and animation
+  after upload decoding, then verified Scan again returns through the scanner frame.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

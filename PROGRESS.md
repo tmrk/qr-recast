@@ -96,3 +96,6 @@ This log is append-only. New entries go at the bottom.
 - Plan: respect browser Do Not Track and add an About sheet with a one-click analytics opt-out.
 - Completed DNT and analytics opt-out support; local previews verified About sheet layout, default
   GA-off behaviour, DNT blocking, stored opt-out blocking, and one-click opt-out persistence.
+- Plan: add a subtle Phase 8 page transition between the Viewfinder and Result states.
+- Completed the scanner/result page transition; local preview verified upload-to-result and
+  scan-again paths both use the transition wrapper.

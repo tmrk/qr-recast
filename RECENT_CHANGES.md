@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-29: Added a subtle page transition between the Viewfinder and Result states.
 - 2026-05-29: Added an About sheet with Do Not Track support and a persisted analytics opt-out.
 - 2026-05-29: Added privacy-safe analytics events with whitelisted metadata only.
 - 2026-05-29: Verified the tracked `.env.example` and gitignored local environment files.
