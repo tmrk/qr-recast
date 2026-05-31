@@ -284,3 +284,11 @@ Preference storage keys are now all explicit and versioned:
 The analytics preference shape is `{ version: 1, optedOut: true, updatedAt }`. The old
 `qr-recast-analytics-opt-out` key is still read so existing opt-outs are preserved, then removed
 when the user next changes the analytics setting.
+
+### 2026-05-31 — v2 Launch Performance
+
+The PWA service-worker registration is injected with `script-defer` rather than the default blocking
+script so installability and offline support stay intact without delaying first paint. `index.html`
+also includes a small static first-screen fallback that matches the scanner's first-run prompt. React
+replaces it on boot, but if JavaScript is still loading or unavailable the page paints useful,
+privacy-safe guidance instead of an empty root.

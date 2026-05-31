@@ -215,3 +215,10 @@ This log is append-only. New entries go at the bottom.
   persistence, legacy analytics opt-out migration, and horizontal overflow checks all passed.
 - Completed v2 Phase 7 after run `26717220227` deployed successfully and the live site returned
   HTTP 200 with the updated Pages artefact timestamp.
+- Plan: complete v2 Phase 8 by running the final automated checks, Lighthouse and bundle budgets,
+  documenting remaining real-device limits, updating release docs, bumping to `v2.0.0`, tagging,
+  and publishing the GitHub release.
+- Implemented final v2 hardening locally: bumped the package to `2.0.0`, deferred the PWA
+  registration script, added a static first-screen fallback, and updated release documentation.
+- Verified final local gates for `2.0.0`: lint, build, format check, spelling, QR type fixtures,
+  Lighthouse 11.7.1 scores of 91/100/100/91/100, and a 156.25 KB gzip main bundle.

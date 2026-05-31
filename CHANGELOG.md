@@ -6,6 +6,8 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-05-31
+
 ### Added
 
 - Type-aware Result details with icons, structured fields, per-field copy actions, masked sensitive
@@ -55,7 +57,7 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ### Verified
 
-- Lighthouse launch budgets on local production preview: Performance 96, Accessibility 100, Best
+- Lighthouse launch budgets on local production preview: Performance 91, Accessibility 100, Best
   Practices 100, SEO 91, and PWA 100.
-- Main bundle launch budget: 157.12 KB gzip.
+- Main bundle launch budget: 156.25 KB gzip.
 - GitHub Pages deployments from `main` through GitHub Actions.

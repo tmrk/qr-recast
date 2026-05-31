@@ -13,7 +13,34 @@
     <title>QR Recast</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div
+        style="
+          min-height: 100svh;
+          display: grid;
+          place-items: center;
+          padding: 24px;
+          background: #f5fbf8;
+          color: #173b35;
+          font-family: system-ui, sans-serif;
+        "
+      >
+        <main style="width: min(100%, 360px); display: grid; gap: 18px; text-align: center">
+          <img
+            alt=""
+            aria-hidden="true"
+            src="%BASE_URL%favicon.svg"
+            style="width: 56px; height: 56px; margin: 0 auto; border-radius: 14px"
+          />
+          <section style="display: grid; gap: 8px">
+            <h1 style="margin: 0; font-size: 2rem; line-height: 1.1">Point at a QR code</h1>
+            <p style="margin: 0; color: #48645e">
+              Start the camera, then line up a QR code in the frame.
+            </p>
+          </section>
+        </main>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

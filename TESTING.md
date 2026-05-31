@@ -173,6 +173,12 @@
   horizontal overflow appeared.
 - 2026-05-31: v2 Phase 7 GitHub Pages deployment run `26717220227` passed, and
   `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
+- 2026-05-31: v2 Phase 8 final local gates for version `2.0.0` passed: `npm run lint`,
+  `npm run build`, `npm run format:check`, spelling, and QR type fixtures. The production build
+  reported main `index-C5-1uxRz.js` at 156.25 KB gzip.
+- 2026-05-31: v2 Phase 8 Lighthouse 11.7.1 on local production preview scored Performance 91,
+  Accessibility 100, Best Practices 100, SEO 91, and PWA 100 after deferring service-worker
+  registration and adding a static first-screen fallback.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
@@ -234,6 +240,9 @@ For installed PWA rows:
 - 2026-05-29: PDF and DOCX native-app export checks remain pending because Acrobat and Microsoft
   Word are not installed locally; Preview launched for the generated PDF, but AppleScript querying
   did not return a verifiable document state.
+- 2026-05-31: Final v2 release verification still cannot tick real-device scan/share rows or real
+  Microsoft Word/Acrobat rows in this environment because no iOS simulator/device, Android
+  SDK/device, Microsoft Word, or Acrobat installation is available.
 
 ## Automated Browser Engine Coverage
 
