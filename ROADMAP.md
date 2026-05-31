@@ -116,7 +116,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 ## v2 — Type Recognition, Branding & Batch Recast
 
-- [ ] Phase 0 — Orientation and v2 guide updates: current docs and source tree read, baseline
+- [x] Phase 0 — Orientation and v2 guide updates: current docs and source tree read, baseline
       checks green, deployed and local UI audited, `UX_AUDIT.md` written, and living guides updated.
 - [ ] Phase 1 — UX refinement: audit written, refinements implemented, verified on mobile and
       desktop, light and dark.

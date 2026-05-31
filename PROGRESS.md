@@ -149,3 +149,6 @@ This log is append-only. New entries go at the bottom.
 
 - Plan: orient the v2 release, confirm the v1 baseline, audit the current UI, and update the living
   project guides before implementing feature work.
+- Completed v2 Phase 0 after baseline install, lint, build, and format checks passed, the current
+  local and deployed UI were audited, run `26713120391` deployed successfully, and the live site
+  returned HTTP 200.
