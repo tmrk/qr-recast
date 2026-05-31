@@ -179,6 +179,9 @@
 - 2026-05-31: v2 Phase 8 Lighthouse 11.7.1 on local production preview scored Performance 91,
   Accessibility 100, Best Practices 100, SEO 91, and PWA 100 after deferring service-worker
   registration and adding a static first-screen fallback.
+- 2026-05-31: v2.0.0 release-prep deployment run `26717422541` passed, the live site returned HTTP
+  200 with the `2.0.0` artefact timestamp, tag `v2.0.0` was pushed, and the GitHub release was
+  published.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

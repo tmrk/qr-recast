@@ -222,3 +222,6 @@ This log is append-only. New entries go at the bottom.
   registration script, added a static first-screen fallback, and updated release documentation.
 - Verified final local gates for `2.0.0`: lint, build, format check, spelling, QR type fixtures,
   Lighthouse 11.7.1 scores of 91/100/100/91/100, and a 156.25 KB gzip main bundle.
+- Completed v2 Phase 8 after run `26717422541` deployed the `2.0.0` release-prep build, tag
+  `v2.0.0` was pushed, and GitHub release notes were published at
+  `https://github.com/tmrk/qr-recast/releases/tag/v2.0.0`.

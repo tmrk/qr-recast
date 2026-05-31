@@ -134,5 +134,5 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
       platform.
 - [x] Phase 7 — Settings and persistence surface: tidy settings sheet for branding toggle, batch
       management, analytics opt-out, and About/Privacy.
-- [ ] Phase 8 — Hardening, tests, docs, and release: manual matrix, fixtures, Lighthouse and bundle
+- [x] Phase 8 — Hardening, tests, docs, and release: manual matrix, fixtures, Lighthouse and bundle
       budgets, docs finalised, `v2.0.0` tagged, and GitHub release written.
