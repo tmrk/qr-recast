@@ -3,6 +3,8 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-31: Completed v2 Phase 1 after the refined capture and Result flow deployed through
+  GitHub Pages.
 - 2026-05-31: Refined the first-run camera screen and Result action hierarchy for v2 Phase 1,
   including a Download menu and visible payload identity.
 - 2026-05-31: Completed v2 Phase 0 after a green deployment of the orientation, audit, and guide

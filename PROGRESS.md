@@ -159,3 +159,5 @@ This log is append-only. New entries go at the bottom.
   controls plus secondary text/scan controls, and Settings is the app-bar preference entry point.
 - Real mobile verification remains pending because this machine has no attached iOS or Android
   device, no `simctl`, and no `adb`; emulated mobile verification is recorded in `TESTING.md`.
+- Completed v2 Phase 1 after run `26713377605` deployed successfully and the live site returned
+  HTTP 200 with the updated Pages artefact timestamp.

@@ -118,7 +118,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 - [x] Phase 0 — Orientation and v2 guide updates: current docs and source tree read, baseline
       checks green, deployed and local UI audited, `UX_AUDIT.md` written, and living guides updated.
-- [ ] Phase 1 — UX refinement: audit written, refinements implemented, verified on mobile and
+- [x] Phase 1 — UX refinement: audit written, refinements implemented, verified on mobile and
       desktop, light and dark.
 - [ ] Phase 2 — Type-detection engine: pure, testable registry of detectors; integrated into decode
       flow; surfaces a normalised `{ type, label, icon, fields, confidence }` result.
