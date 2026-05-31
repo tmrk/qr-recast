@@ -24,6 +24,12 @@ const BatchFeedback = lazy(() =>
   import('../batch/BatchFeedback.jsx').then((module) => ({ default: module.BatchFeedback })),
 );
 
+const emptyViewfinderControls = Object.freeze({
+  openUpload: () => {},
+  startCamera: () => {},
+  status: 'idle',
+});
+
 export function HomeView() {
   const [decodedText, setDecodedText] = useState('');
   const [batchMode, setBatchMode] = useState(false);
@@ -32,6 +38,7 @@ export function HomeView() {
   const [batchWarning, setBatchWarning] = useState('');
   const [batchExportFormat, setBatchExportFormat] = useState('');
   const [deletedItemState, setDeletedItemState] = useState(null);
+  const [viewfinderControls, setViewfinderControls] = useState(emptyViewfinderControls);
   const [globalBrandingEnabled] = useBrandingPreference();
   const batchStore = useBatchStore();
   const batchScanLockRef = useRef({ payload: '', until: 0 });
@@ -287,11 +294,14 @@ export function HomeView() {
               <BatchPanel
                 batch={batchStore.batch}
                 busyFormat={batchExportFormat}
+                cameraStatus={viewfinderControls.status}
                 onClear={batchStore.clearBatch}
                 onDelete={deleteBatchItem}
                 onExport={exportBatch}
                 onMove={batchStore.moveItem}
                 onRename={batchStore.renameItem}
+                onStartScan={viewfinderControls.startCamera}
+                onUploadImage={viewfinderControls.openUpload}
                 persistenceError={batchStore.persistenceError}
               />
             </Suspense>
@@ -299,6 +309,7 @@ export function HomeView() {
         }
         continueAfterDetected={batchMode}
         onDetected={handleDetected}
+        onControlsChange={setViewfinderControls}
         topSlot={
           <Paper className="batch-mode-control" elevation={0}>
             <div

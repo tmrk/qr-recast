@@ -225,3 +225,11 @@ This log is append-only. New entries go at the bottom.
 - Completed v2 Phase 8 after run `26717422541` deployed the `2.0.0` release-prep build, tag
   `v2.0.0` was pushed, and GitHub release notes were published at
   `https://github.com/tmrk/qr-recast/releases/tag/v2.0.0`.
+- Plan: run a post-v2 hardening pass over the deployed UI, Batch Recast scan entry, and branded
+  Matter/Apple Home setup-card exports before publishing a focused fix.
+- Implemented the hardening pass locally: Batch Recast now exposes scan and upload actions inside
+  the batch panel, Matter QR payloads derive a fixture-tested manual code, and branded setup payloads
+  render as cleaner setup cards with a mark above the QR and a monospace identifier below it.
+- Verified the hardening build with lint, spelling, QR type fixtures, format check, production build,
+  390 x 844 local preview checks, and headless Chrome raster decode checks for Matter and Apple Home
+  branded SVGs.

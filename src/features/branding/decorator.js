@@ -1,18 +1,26 @@
+import { formatMatterManualCode } from '../../lib/qr-types/matter.js';
+
 const decoratedSize = 360;
-const qrSize = 284;
-const qrOrigin = {
-  x: 38,
-  y: 72,
+const setupQrSize = 236;
+const setupQrOrigin = {
+  x: 62,
+  y: 80,
+};
+const utilityQrSize = 252;
+const utilityQrOrigin = {
+  x: 54,
+  y: 80,
 };
 
 const colours = Object.freeze({
   background: '#ffffff',
-  badgeFill: '#edf8f5',
-  badgeStroke: '#bedbd3',
-  iconFill: '#d6f1eb',
+  card: '#ffffff',
+  iconFill: '#e8f4f1',
   primary: '#0f766e',
+  setupInk: '#141817',
+  stroke: '#d9e3de',
   text: '#1f2933',
-  muted: '#5f6f69',
+  muted: '#586762',
 });
 
 const iconRenderers = Object.freeze({
@@ -30,6 +38,7 @@ const iconRenderers = Object.freeze({
   url: renderUrlIcon,
   wifi: renderWifiIcon,
 });
+const setupTypes = new Set(['homekit', 'matter']);
 
 export function createDecoratedQrSvg(canonicalSvg, qrType, { enabled = true } = {}) {
   if (!enabled || !canonicalSvg) {
@@ -45,20 +54,17 @@ export function createDecoratedQrSvg(canonicalSvg, qrType, { enabled = true } = 
   const badge = getBrandingBadge(qrType);
   const ariaLabel = escapeXml(`${badge.label} QR code`);
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${decoratedSize} ${decoratedSize}" role="img" aria-label="${ariaLabel}">
-<title>${ariaLabel}</title>
-<rect width="${decoratedSize}" height="${decoratedSize}" fill="${colours.background}"/>
-<rect x="12" y="12" width="336" height="336" rx="30" fill="#fbfdfb" stroke="${colours.badgeStroke}" stroke-width="1.5"/>
-${renderBadge(badge)}
-<svg x="${qrOrigin.x}" y="${qrOrigin.y}" width="${qrSize}" height="${qrSize}" viewBox="${escapeXml(parsedSvg.viewBox)}" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
-${parsedSvg.innerMarkup}
-</svg>
-</svg>`;
+  if (setupTypes.has(badge.type)) {
+    return renderSetupQrSvg(parsedSvg, badge, ariaLabel);
+  }
+
+  return renderUtilityQrSvg(parsedSvg, badge, ariaLabel);
 }
 
 export function getBrandingBadge(qrType) {
   const type = qrType?.type ?? 'plain-text';
-  const label = truncateSvgText(qrType?.label || 'Plain text', 26);
+  const branding = qrType?.branding ?? {};
+  const label = truncateSvgText(branding.label || qrType?.label || 'Plain text', 28);
   const caption = getCaption(qrType);
   const icon = iconRenderers[type] ?? renderTextIcon;
 
@@ -66,8 +72,90 @@ export function getBrandingBadge(qrType) {
     caption,
     icon,
     label,
+    setupCode: getSetupCode(qrType),
     type,
   };
+}
+
+function renderSetupQrSvg(parsedSvg, badge, ariaLabel) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${decoratedSize} ${decoratedSize}" role="img" aria-label="${ariaLabel}">
+<title>${ariaLabel}</title>
+<rect width="${decoratedSize}" height="${decoratedSize}" fill="${colours.background}"/>
+<rect x="10" y="10" width="340" height="340" rx="22" fill="${colours.card}" stroke="${colours.stroke}" stroke-width="1.25"/>
+${renderSetupHeader(badge)}
+${renderNestedQr(parsedSvg, setupQrOrigin.x, setupQrOrigin.y, setupQrSize)}
+${renderSetupFooter(badge)}
+</svg>`;
+}
+
+function renderUtilityQrSvg(parsedSvg, badge, ariaLabel) {
+  const caption = badge.caption ? escapeXml(badge.caption) : '';
+  const footer = caption
+    ? `<text x="180" y="335" text-anchor="middle" fill="${colours.muted}" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="650" letter-spacing="0.8">${caption}</text>`
+    : '';
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${decoratedSize} ${decoratedSize}" role="img" aria-label="${ariaLabel}">
+<title>${ariaLabel}</title>
+<rect width="${decoratedSize}" height="${decoratedSize}" fill="${colours.background}"/>
+<rect x="10" y="10" width="340" height="340" rx="22" fill="${colours.card}" stroke="${colours.stroke}" stroke-width="1.25"/>
+${renderUtilityHeader(badge)}
+${renderNestedQr(parsedSvg, utilityQrOrigin.x, utilityQrOrigin.y, utilityQrSize)}
+${footer}
+</svg>`;
+}
+
+function renderNestedQr(parsedSvg, x, y, size) {
+  return `<svg x="${x}" y="${y}" width="${size}" height="${size}" viewBox="${escapeXml(parsedSvg.viewBox)}" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+${parsedSvg.innerMarkup}
+</svg>`;
+}
+
+function renderSetupHeader(badge) {
+  if (badge.type === 'matter') {
+    return `<g aria-hidden="true">
+<g transform="translate(88 23)" fill="none" stroke="${colours.setupInk}" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round">
+<path d="M19 5v14"/>
+<path d="M19 19 8 31"/>
+<path d="M19 19 30 31"/>
+<path d="M8 9c5 2 8.5 5.5 11 10"/>
+<path d="M30 9c-5 2-8.5 5.5-11 10"/>
+</g>
+<text x="136" y="52" fill="${colours.setupInk}" font-family="Roboto Flex, Roboto, Arial, sans-serif" font-size="34" font-weight="520">matter</text>
+</g>`;
+  }
+
+  return `<g aria-hidden="true">
+<g transform="translate(77 24)" fill="none" stroke="${colours.setupInk}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M6 20 21 7l15 13"/>
+<path d="M10 19v17h22V19"/>
+<path d="M17 36V25h8v11"/>
+</g>
+<text x="124" y="51" fill="${colours.setupInk}" font-family="Roboto Flex, Roboto, Arial, sans-serif" font-size="28" font-weight="650">Apple Home</text>
+</g>`;
+}
+
+function renderSetupFooter(badge) {
+  const setupCode = badge.setupCode || badge.caption;
+
+  if (!setupCode) {
+    return '';
+  }
+
+  const code = escapeXml(formatSetupCode(badge.type, setupCode));
+
+  return `<text x="180" y="338" text-anchor="middle" fill="${colours.setupInk}" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="${badge.type === 'matter' ? 25 : 24}" font-weight="700" letter-spacing="1.2">${code}</text>`;
+}
+
+function renderUtilityHeader(badge) {
+  const label = escapeXml(badge.label);
+
+  return `<g aria-hidden="true">
+<circle cx="58" cy="43" r="18" fill="${colours.iconFill}"/>
+<g transform="translate(42 27)" color="${colours.primary}" fill="none" stroke="${colours.primary}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+${badge.icon()}
+</g>
+<text x="86" y="50" fill="${colours.text}" font-family="Roboto Flex, Roboto, Arial, sans-serif" font-size="18" font-weight="720">${label}</text>
+</g>`;
 }
 
 function parseCanonicalSvg(svgString) {
@@ -96,28 +184,24 @@ function parseCanonicalSvg(svgString) {
   return { innerMarkup, viewBox };
 }
 
-function renderBadge(badge) {
-  const label = escapeXml(badge.label);
-  const caption = badge.caption ? escapeXml(badge.caption) : '';
-  const labelY = caption ? 34 : 39;
-  const captionMarkup = caption
-    ? `<text x="86" y="50" fill="${colours.muted}" font-family="Roboto Flex, Roboto, Arial, sans-serif" font-size="12">${caption}</text>`
-    : '';
-
-  return `<g aria-hidden="true">
-<rect x="24" y="20" width="312" height="44" rx="18" fill="${colours.badgeFill}" stroke="${colours.badgeStroke}" stroke-width="1"/>
-<circle cx="56" cy="42" r="17" fill="${colours.iconFill}"/>
-<g transform="translate(40 26)" color="${colours.primary}" fill="none" stroke="${colours.primary}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-${badge.icon()}
-</g>
-<text x="86" y="${labelY}" fill="${colours.text}" font-family="Roboto Flex, Roboto, Arial, sans-serif" font-size="16" font-weight="700">${label}</text>
-${captionMarkup}
-</g>`;
-}
-
 function getCaption(qrType) {
+  const brandingCaption = qrType?.branding?.caption;
+
+  if (brandingCaption) {
+    return truncateSvgText(String(brandingCaption), 32);
+  }
+
   const fields = Array.isArray(qrType?.fields) ? qrType.fields : [];
-  const preferredKeys = ['ssid', 'host', 'setupId', 'emailAddress', 'number', 'summary', 'name'];
+  const preferredKeys = [
+    'manualCode',
+    'setupId',
+    'ssid',
+    'host',
+    'emailAddress',
+    'number',
+    'summary',
+    'name',
+  ];
   const field = preferredKeys
     .map((key) => fields.find((candidate) => candidate.key === key))
     .find((candidate) => candidate?.value);
@@ -126,7 +210,33 @@ function getCaption(qrType) {
     return '';
   }
 
-  return truncateSvgText(String(field.value), 34);
+  return truncateSvgText(String(field.value), 32);
+}
+
+function getSetupCode(qrType) {
+  const fields = Array.isArray(qrType?.fields) ? qrType.fields : [];
+
+  if (qrType?.type === 'matter') {
+    return getFieldValue(fields, 'manualCode');
+  }
+
+  if (qrType?.type === 'homekit') {
+    return getFieldValue(fields, 'setupId');
+  }
+
+  return '';
+}
+
+function getFieldValue(fields, key) {
+  return String(fields.find((field) => field.key === key)?.value ?? '').trim();
+}
+
+function formatSetupCode(type, value) {
+  if (type === 'matter') {
+    return formatMatterManualCode(value);
+  }
+
+  return String(value).trim().replace(/\s+/g, '').toUpperCase();
 }
 
 function truncateSvgText(value, maxLength) {
@@ -183,15 +293,15 @@ function renderGeoIcon() {
 }
 
 function renderHomeIcon() {
-  return '<path d="M5 16L16 6l11 10"/><path d="M8 15v11h16V15"/><path d="M13 26v-7h6v7"/>';
+  return '<path d="M5 16 16 6l11 10"/><path d="M8 15v11h16V15"/><path d="M13 26v-7h6v7"/>';
 }
 
 function renderMatterIcon() {
-  return '<path d="M9 10l7-4l7 4v8l-7 4l-7-4z"/><path d="M9 18l7 8l7-8M16 6v20"/><circle cx="9" cy="10" r="2"/><circle cx="23" cy="10" r="2"/><circle cx="16" cy="26" r="2"/>';
+  return '<path d="M9 10l7-4 7 4v8l-7 4-7-4z"/><path d="M9 18l7 8 7-8M16 6v20"/><circle cx="9" cy="10" r="2"/><circle cx="23" cy="10" r="2"/><circle cx="16" cy="26" r="2"/>';
 }
 
 function renderPhoneIcon() {
-  return '<path d="M10 6l4 5l-3 3c2 4 4 6 8 8l3-3l5 4c-1 4-4 5-7 4C12 25 5 18 4 10c-.4-3 1.6-5 6-4Z"/>';
+  return '<path d="M10 6l4 5-3 3c2 4 4 6 8 8l3-3 5 4c-1 4-4 5-7 4C12 25 5 18 4 10c-.4-3 1.6-5 6-4Z"/>';
 }
 
 function renderSmsIcon() {

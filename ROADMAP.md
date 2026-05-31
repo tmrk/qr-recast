@@ -136,3 +136,8 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
       management, analytics opt-out, and About/Privacy.
 - [x] Phase 8 — Hardening, tests, docs, and release: manual matrix, fixtures, Lighthouse and bundle
       budgets, docs finalised, `v2.0.0` tagged, and GitHub release written.
+
+## Post-v2 Hardening
+
+- [x] Fix Batch Recast scan entry, improve setup-card branding for Matter and Apple Home codes, and
+      verify the revised branded SVGs still decode after rasterisation.

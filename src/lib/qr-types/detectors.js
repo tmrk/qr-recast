@@ -1,4 +1,5 @@
 import { strings } from '../../strings.js';
+import { parseMatterQrPayload } from './matter.js';
 
 const fieldLabels = strings.qrTypes.fields;
 const typeLabels = strings.qrTypes.types;
@@ -135,11 +136,13 @@ function detectMatter(raw) {
   const payload = text.slice(3).toUpperCase();
   const chunks = payload.split('*').filter(Boolean);
   const validShape = matterPayloadPattern.test(payload);
+  const setupPayload = parseMatterQrPayload(text);
 
   return createResult({
-    branding: { kind: 'matter', label: typeLabels.matter },
+    branding: { caption: setupPayload?.manualCode ?? '', kind: 'matter', label: 'matter' },
     confidence: validShape ? 0.95 : 0.7,
     fields: compactFields([
+      createField('manualCode', setupPayload?.manualCode),
       createField('onboardingPayload', text),
       createField('payloadFormat', strings.qrTypes.values.matterBase38),
       chunks.length > 1 ? createField('payloadChunks', chunks.length) : null,

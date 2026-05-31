@@ -376,6 +376,10 @@
   bottom: calc(max(20px, env(safe-area-inset-bottom)) + 76px);
 }
 
+.viewfinder--status.viewfinder--with-bottom-slot .viewfinder__bottom-slot {
+  bottom: max(20px, env(safe-area-inset-bottom));
+}
+
 .viewfinder__top-slot > *,
 .viewfinder__bottom-slot > * {
   pointer-events: auto;
@@ -430,7 +434,7 @@
 .batch-panel {
   width: min(100%, 560px);
   min-width: 0;
-  max-height: min(42svh, 360px);
+  max-height: min(44svh, 380px);
   margin: 0 auto;
   padding: 14px;
   display: grid;
@@ -447,6 +451,20 @@
   min-width: 0;
   align-items: center;
   justify-content: space-between;
+}
+
+.batch-panel__header-actions {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.batch-panel__header-actions .MuiButton-root {
+  min-width: 0;
+  min-height: 40px;
+  border-radius: 14px;
 }
 
 .batch-panel__list {
@@ -524,11 +542,24 @@
 }
 
 .batch-panel__empty {
-  min-height: 104px;
+  min-height: 150px;
   display: grid;
   place-items: center;
-  gap: 4px;
+  gap: 8px;
   text-align: center;
+}
+
+.batch-panel__empty-actions {
+  width: min(100%, 360px);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.batch-panel__empty-actions .MuiButton-root {
+  min-width: 0;
+  min-height: 44px;
+  border-radius: 16px;
 }
 
 .batch-name-dialog__close {
@@ -569,6 +600,16 @@
   background: rgb(var(--qr-palette-surface-containerLowChannel) / 0.9);
   backdrop-filter: blur(18px);
   transform: translate(-50%, -50%);
+}
+
+.viewfinder--status.viewfinder--with-bottom-slot .viewfinder__status {
+  top: 34%;
+  padding: clamp(18px, 5vw, 28px);
+  gap: 16px;
+}
+
+.viewfinder--status.viewfinder--with-bottom-slot .viewfinder__privacy {
+  display: none;
 }
 
 .viewfinder__status .MuiStack-root,
@@ -922,6 +963,7 @@
 
 @media (min-width: 560px) {
   .viewfinder__status-actions,
+  .batch-panel__empty-actions,
   .result-view__primary-actions,
   .result-view__secondary-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -929,6 +971,19 @@
 }
 
 @media (max-width: 430px) {
+  .batch-panel__header {
+    align-items: flex-start;
+  }
+
+  .batch-panel__header-actions {
+    max-width: 48%;
+  }
+
+  .batch-panel__header-actions .MuiButton-root {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
   .batch-panel__item {
     grid-template-columns: auto 56px minmax(0, 1fr);
   }

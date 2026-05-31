@@ -182,6 +182,13 @@
 - 2026-05-31: v2.0.0 release-prep deployment run `26717422541` passed, the live site returned HTTP
   200 with the `2.0.0` artefact timestamp, tag `v2.0.0` was pushed, and the GitHub release was
   published.
+- 2026-05-31: post-v2 hardening compared the deployed Batch Recast empty state against a fresh local
+  production preview and confirmed the deployed site lacked a batch-local scan action.
+- 2026-05-31: post-v2 hardening local preview at 390 x 844 verified Batch Recast now shows enabled
+  `Start scanning` and `Upload image` actions in the empty batch panel, with no horizontal overflow.
+- 2026-05-31: post-v2 hardening local preview verified Matter and Apple Home shared-link Results
+  render the revised setup-card branding. Headless Chrome rasterised both branded SVGs to 720 x 720,
+  and `jsQR` decoded them back to `MT:Y.K9042C00KA0648G00` and `X-HM://0081YCYEP3QYT`.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

@@ -3,6 +3,7 @@ import ArrowUpwardRounded from '@mui/icons-material/ArrowUpwardRounded';
 import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import FileDownloadRounded from '@mui/icons-material/FileDownloadRounded';
+import QrCodeScannerRounded from '@mui/icons-material/QrCodeScannerRounded';
 import ImageRounded from '@mui/icons-material/ImageRounded';
 import ArticleRounded from '@mui/icons-material/ArticleRounded';
 import DescriptionRounded from '@mui/icons-material/DescriptionRounded';
@@ -45,22 +46,28 @@ const batchExportActions = [
  * @param {{
  *   batch: { items: Array<object> },
  *   busyFormat: string,
+ *   cameraStatus: string,
  *   onClear: () => void,
  *   onDelete: (itemId: string) => void,
  *   onExport: (format: string) => void,
  *   onMove: (itemId: string, targetIndex: number) => void,
  *   onRename: (itemId: string, name: string) => void,
+ *   onStartScan: () => void,
+ *   onUploadImage: () => void,
  *   persistenceError: boolean,
  * }} props
  */
 export function BatchPanel({
   batch,
   busyFormat,
+  cameraStatus,
   onClear,
   onDelete,
   onExport,
   onMove,
   onRename,
+  onStartScan,
+  onUploadImage,
   persistenceError,
 }) {
   const [clearOpen, setClearOpen] = useState(false);
@@ -72,6 +79,14 @@ export function BatchPanel({
     items.length === 1
       ? strings.batch.oneCode.replace('{count}', String(items.length))
       : strings.batch.manyCodes.replace('{count}', String(items.length));
+  const cameraStarting = cameraStatus === 'pending';
+  const cameraReady = cameraStatus === 'ready';
+  const startScanDisabled = cameraStarting || cameraReady || cameraStatus === 'unsupported';
+  const startScanLabel = cameraReady
+    ? strings.batch.scanning
+    : cameraStarting
+      ? strings.camera.pendingTitle
+      : strings.batch.startScanning;
 
   function confirmClear() {
     onClear();
@@ -89,14 +104,26 @@ export function BatchPanel({
             {countLabel}
           </Typography>
         </Stack>
-        <Button
-          disabled={!items.length}
-          onClick={() => setClearOpen(true)}
-          startIcon={<DeleteRounded />}
-          variant="text"
-        >
-          {strings.batch.clear}
-        </Button>
+        <div className="batch-panel__header-actions">
+          {items.length ? (
+            <Button
+              disabled={startScanDisabled}
+              onClick={onStartScan}
+              startIcon={cameraStarting ? <CircularProgress size={18} /> : <QrCodeScannerRounded />}
+              variant="outlined"
+            >
+              {strings.batch.addCode}
+            </Button>
+          ) : null}
+          <Button
+            disabled={!items.length}
+            onClick={() => setClearOpen(true)}
+            startIcon={<DeleteRounded />}
+            variant="text"
+          >
+            {strings.batch.clear}
+          </Button>
+        </div>
       </Stack>
 
       {persistenceError ? (
@@ -132,6 +159,19 @@ export function BatchPanel({
             {strings.batch.emptyTitle}
           </Typography>
           <Typography color="text.secondary">{strings.batch.emptyBody}</Typography>
+          <div className="batch-panel__empty-actions">
+            <Button
+              disabled={startScanDisabled}
+              onClick={onStartScan}
+              startIcon={cameraStarting ? <CircularProgress size={18} /> : <QrCodeScannerRounded />}
+              variant="contained"
+            >
+              {startScanLabel}
+            </Button>
+            <Button onClick={onUploadImage} startIcon={<ImageRounded />} variant="outlined">
+              {strings.camera.upload}
+            </Button>
+          </div>
         </div>
       )}
 

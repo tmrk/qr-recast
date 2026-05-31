@@ -30,7 +30,10 @@ export const qrTypeFixtures = Object.freeze([
     type: 'homekit',
   },
   {
-    fieldKeys: ['onboardingPayload', 'payloadFormat'],
+    expectedFields: {
+      manualCode: '30219912332',
+    },
+    fieldKeys: ['manualCode', 'onboardingPayload', 'payloadFormat'],
     name: 'Matter onboarding payload',
     payload: 'MT:Y.K9042C00KA0648G00',
     type: 'matter',

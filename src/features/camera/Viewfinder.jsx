@@ -40,11 +40,20 @@ const statusCopy = {
 };
 
 /**
- * @param {{ onDetected: (text: string) => void }} props
+ * @param {{
+ *   bottomSlot?: React.ReactNode,
+ *   onControlsChange?: (controls: {
+ *     openUpload: () => void,
+ *     startCamera: () => void,
+ *     status: string,
+ *   }) => void,
+ *   onDetected: (text: string) => void,
+ * }} props
  */
 export function Viewfinder({
   bottomSlot = null,
   continueAfterDetected = false,
+  onControlsChange = null,
   onDetected,
   topSlot = null,
 }) {
@@ -222,6 +231,18 @@ export function Viewfinder({
     [handleDetected],
   );
 
+  const openUpload = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  useEffect(() => {
+    onControlsChange?.({
+      openUpload,
+      startCamera: () => startCamera(),
+      status,
+    });
+  }, [onControlsChange, openUpload, startCamera, status]);
+
   useEffect(() => {
     if (status !== 'ready') {
       return undefined;
@@ -270,9 +291,21 @@ export function Viewfinder({
 
   const showStatusPanel = status !== 'ready' && !detected;
   const copy = statusCopy[status] ?? statusCopy.error;
+  const hasBottomSlot = Boolean(bottomSlot);
+  const viewfinderClassName = [
+    'viewfinder',
+    showStatusPanel ? 'viewfinder--status' : '',
+    hasBottomSlot ? 'viewfinder--with-bottom-slot' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <section ref={sectionRef} className="viewfinder" aria-label={strings.camera.viewfinderLabel}>
+    <section
+      ref={sectionRef}
+      className={viewfinderClassName}
+      aria-label={strings.camera.viewfinderLabel}
+    >
       {topSlot ? <div className="viewfinder__top-slot">{topSlot}</div> : null}
       <video ref={videoRef} autoPlay className="viewfinder__video" muted playsInline />
       <canvas ref={canvasRef} aria-hidden="true" className="viewfinder__canvas" />
@@ -329,11 +362,7 @@ export function Viewfinder({
                 {strings.camera.start}
               </Button>
             ) : null}
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              startIcon={<PhotoLibraryRounded />}
-              variant="outlined"
-            >
+            <Button onClick={openUpload} startIcon={<PhotoLibraryRounded />} variant="outlined">
               {strings.camera.upload}
             </Button>
           </div>
@@ -346,7 +375,7 @@ export function Viewfinder({
         </Paper>
       ) : null}
 
-      {bottomSlot ? <div className="viewfinder__bottom-slot">{bottomSlot}</div> : null}
+      {hasBottomSlot ? <div className="viewfinder__bottom-slot">{bottomSlot}</div> : null}
 
       {status === 'ready' ? (
         <Stack className="viewfinder__controls" direction="row" spacing={1}>
@@ -368,10 +397,7 @@ export function Viewfinder({
             </Tooltip>
           ) : null}
           <Tooltip title={strings.camera.upload}>
-            <IconButton
-              aria-label={strings.camera.upload}
-              onClick={() => fileInputRef.current?.click()}
-            >
+            <IconButton aria-label={strings.camera.upload} onClick={openUpload}>
               <PhotoLibraryRounded />
             </IconButton>
           </Tooltip>

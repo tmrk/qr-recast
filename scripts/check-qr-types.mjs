@@ -18,6 +18,16 @@ for (const fixture of qrTypeFixtures) {
       failures.push(`${fixture.name}: missing field "${key}".`);
     }
   }
+
+  for (const [key, expectedValue] of Object.entries(fixture.expectedFields ?? {})) {
+    const field = result.fields.find((candidate) => candidate.key === key);
+
+    if (field?.value !== expectedValue) {
+      failures.push(
+        `${fixture.name}: expected field "${key}" to be "${expectedValue}", received "${field?.value ?? ''}".`,
+      );
+    }
+  }
 }
 
 for (const payload of ['', 'not a URI', 'WIFI:;', 'MT:???', 'mailto:%']) {
