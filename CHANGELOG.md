@@ -31,6 +31,8 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ### Changed
 
+- Refined the first-run camera copy, narrow mobile wrapping, Result payload identity, export action
+  hierarchy, and app-bar Settings entry point for the v2 UX pass.
 - Lazy-loaded QR, result, and document-export paths so the main bundle stays below the launch gzip
   budget.
 

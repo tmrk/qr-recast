@@ -57,3 +57,16 @@ Date: 2026-05-31
   overloading About.
 - Verify the revised scanner, Result, decoded text, About, and Settings surfaces in light and dark
   mode at 360 px, 390 px, and desktop widths before starting type-detection implementation.
+
+## Phase 1 Result
+
+- Implemented clearer first-run camera copy and stable 360 px wrapping for the status card, upload
+  fallback, and privacy note.
+- Replaced the dense six-button Result grid with primary Copy URL and Download controls, a format
+  menu, and secondary Show text and Scan again controls.
+- Added the current payload identity chip to the Result header so type information is visible before
+  the dedicated v2 type registry lands.
+- Replaced the app-bar About icon with Settings as the preference entry point while keeping the
+  existing analytics, privacy, version, build, and licence content.
+- Verified emulated mobile light and dark layouts with no horizontal overflow, plus a desktop Result
+  screenshot and the mobile Download menu.

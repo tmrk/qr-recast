@@ -152,3 +152,10 @@ This log is append-only. New entries go at the bottom.
 - Completed v2 Phase 0 after baseline install, lint, build, and format checks passed, the current
   local and deployed UI were audited, run `26713120391` deployed successfully, and the live site
   returned HTTP 200.
+- Plan: implement v2 Phase 1 by fixing narrow-width overflow, clarifying first-run camera copy,
+  refining Result action hierarchy, and adding the Settings entry point needed for v2 preferences.
+- Implemented the Phase 1 UX pass locally: first-run copy is clearer, narrow layouts no longer
+  overflow in emulated light or dark mobile viewports, Result actions now use primary share/download
+  controls plus secondary text/scan controls, and Settings is the app-bar preference entry point.
+- Real mobile verification remains pending because this machine has no attached iOS or Android
+  device, no `simctl`, and no `adb`; emulated mobile verification is recorded in `TESTING.md`.

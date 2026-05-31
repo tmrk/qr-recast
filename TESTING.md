@@ -123,6 +123,14 @@
 - 2026-05-29: Phase 9 export integrity checks verified the PDF is valid, A4, vector-only by PDF
   structure, and renderable by macOS Quick Look; the DOCX contains SVG media plus a 1024 x 1024 PNG
   fallback wired through document relationships.
+- 2026-05-31: v2 Phase 1 local preview verified 360 x 780 first-run and 390 x 844 Result screens in
+  emulated light and dark modes; `document.body.scrollWidth` and
+  `document.documentElement.scrollWidth` matched the viewport width in all four checks.
+- 2026-05-31: v2 Phase 1 local preview verified the Result Download menu opens on a 390 x 844 dark
+  mobile viewport and exposes SVG, PNG, PDF, and DOCX choices.
+- 2026-05-31: v2 Phase 1 local preview captured a 1280 x 900 desktop Result screenshot with the
+  payload identity chip, primary share/download controls, and secondary Show text/Scan again
+  controls.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
@@ -177,6 +185,9 @@ For installed PWA rows:
 - 2026-05-29: iOS and Android manual rows remain pending because this machine has only the Xcode
   command-line tools, no available `simctl`, and no Android SDK, emulator, ADB, or attached Android
   device.
+- 2026-05-31: v2 Phase 1 real mobile verification remains pending for the same reason: `simctl` is
+  unavailable, `adb` is not installed, and no iOS or Android device appears in USB system
+  information.
 - 2026-05-29: Desktop Firefox remains pending because Firefox is not installed locally.
 - 2026-05-29: PDF and DOCX native-app export checks remain pending because Acrobat and Microsoft
   Word are not installed locally; Preview launched for the generated PDF, but AppleScript querying

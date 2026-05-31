@@ -1,6 +1,6 @@
 import DarkModeRounded from '@mui/icons-material/DarkModeRounded';
-import InfoRounded from '@mui/icons-material/InfoRounded';
 import LightModeRounded from '@mui/icons-material/LightModeRounded';
+import SettingsRounded from '@mui/icons-material/SettingsRounded';
 import SettingsBrightnessRounded from '@mui/icons-material/SettingsBrightnessRounded';
 import {
   AppBar,
@@ -30,7 +30,7 @@ const themeOptions = [
  */
 export function AppShell({ children, bottomSlot = null }) {
   const [anchorElement, setAnchorElement] = useState(null);
-  const [aboutOpen, setAboutOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { mode, setMode } = useAppTheme();
 
   const currentOption = themeOptions.find((option) => option.mode === mode) ?? themeOptions[0];
@@ -58,9 +58,9 @@ export function AppShell({ children, bottomSlot = null }) {
               <IconButton
                 aria-label={strings.about.label}
                 color="inherit"
-                onClick={() => setAboutOpen(true)}
+                onClick={() => setSettingsOpen(true)}
               >
-                <InfoRounded fontSize="small" />
+                <SettingsRounded fontSize="small" />
               </IconButton>
             </Tooltip>
             <Tooltip title={strings.theme.menuLabel}>
@@ -101,7 +101,7 @@ export function AppShell({ children, bottomSlot = null }) {
               );
             })}
           </Menu>
-          <AboutSheet open={aboutOpen} onClose={() => setAboutOpen(false)} />
+          <AboutSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} />
         </Toolbar>
       </AppBar>
 

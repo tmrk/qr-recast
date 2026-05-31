@@ -299,7 +299,7 @@ export function Viewfinder({ onDetected }) {
             </Typography>
             <Typography color="text.secondary">{errorMessage || copy.body}</Typography>
           </Stack>
-          <Stack direction="row" flexWrap="wrap" gap={1.25}>
+          <div className="viewfinder__status-actions">
             {status !== 'pending' && status !== 'unsupported' ? (
               <Button
                 onClick={() => startCamera()}
@@ -316,7 +316,7 @@ export function Viewfinder({ onDetected }) {
             >
               {strings.camera.upload}
             </Button>
-          </Stack>
+          </div>
           <Stack alignItems="center" className="viewfinder__privacy" direction="row" spacing={1}>
             <ShieldRounded color="primary" fontSize="small" />
             <Typography color="text.secondary" variant="body2">

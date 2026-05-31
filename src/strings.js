@@ -6,9 +6,9 @@ export const strings = Object.freeze({
     placeholder: 'Advertisement',
   },
   about: {
-    label: 'About QR Recast',
-    title: 'About QR Recast',
-    close: 'Close about',
+    label: 'Settings',
+    title: 'Settings',
+    close: 'Close settings',
     versionLabel: 'Version',
     buildLabel: 'Build',
     privacyBody:
@@ -25,8 +25,8 @@ export const strings = Object.freeze({
   },
   camera: {
     viewfinderLabel: 'QR camera scanner',
-    idleTitle: 'Ready to scan',
-    idleBody: 'Start the camera or upload an image from this device.',
+    idleTitle: 'Point at a QR code',
+    idleBody: 'Start the camera, then line up a QR code in the frame.',
     pendingTitle: 'Opening camera',
     pendingBody: 'Waiting for camera access.',
     deniedTitle: 'Camera blocked',
@@ -47,8 +47,8 @@ export const strings = Object.freeze({
   },
   result: {
     loading: 'Preparing result',
-    title: 'Recast QR',
-    supporting: 'Export a clean copy of the code you scanned.',
+    title: 'Your recast QR',
+    supporting: 'Clean, private, and ready to share or save.',
     qrAlt: 'Recast QR code',
     generating: 'Generating QR code',
     copyQrAction: 'Copy QR image as PNG',
@@ -57,6 +57,7 @@ export const strings = Object.freeze({
     png: 'PNG',
     pdf: 'PDF',
     docx: 'DOCX',
+    download: 'Download',
     shareUrl: 'Share URL',
     copyUrl: 'Copy URL',
     copiedUrl: 'Copied URL',
@@ -65,7 +66,7 @@ export const strings = Object.freeze({
     generatingShareUrlQr: 'Generating share URL QR code',
     payloadKinds: {
       text: 'Plain text',
-      url: 'URL',
+      url: 'Web address',
       wifi: 'Wi-Fi',
       vcard: 'vCard',
       calendar: 'Calendar event',

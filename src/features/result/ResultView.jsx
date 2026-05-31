@@ -3,7 +3,9 @@ import CheckRounded from '@mui/icons-material/CheckRounded';
 import CloseRounded from '@mui/icons-material/CloseRounded';
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded';
 import DescriptionRounded from '@mui/icons-material/DescriptionRounded';
+import FileDownloadRounded from '@mui/icons-material/FileDownloadRounded';
 import ImageRounded from '@mui/icons-material/ImageRounded';
+import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded';
 import OpenInNewRounded from '@mui/icons-material/OpenInNewRounded';
 import PictureAsPdfRounded from '@mui/icons-material/PictureAsPdfRounded';
 import QrCodeScannerRounded from '@mui/icons-material/QrCodeScannerRounded';
@@ -19,6 +21,10 @@ import {
   DialogTitle,
   Drawer,
   IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   Paper,
   Snackbar,
   Stack,
@@ -81,6 +87,7 @@ export function ResultView({ onScanAgain, text }) {
   const [textOpen, setTextOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [downloadAnchorElement, setDownloadAnchorElement] = useState(null);
   const [shareUrlState, setShareUrlState] = useState({ text: '', url: '' });
   const [copiedShareUrlState, setCopiedShareUrlState] = useState({ text: '', url: '' });
   const [shareUrlSvgState, setShareUrlSvgState] = useState({ url: '', svg: '' });
@@ -147,6 +154,8 @@ export function ResultView({ onScanAgain, text }) {
     !hasCoarsePointer && copiedShareUrl && copiedShareUrl === shareUrl && !shareUrlTooLarge,
   );
   const useTextBottomSheet = hasCoarsePointer;
+  const downloadMenuOpen = Boolean(downloadAnchorElement);
+  const exportInProgress = exportActions.some((action) => busyAction === action.format);
   const decodedPayloadBlock = (
     <pre className="result-view__payload">
       <code>{payloadPreview}</code>
@@ -259,6 +268,8 @@ export function ResultView({ onScanAgain, text }) {
     if (!svgString || !fileStem) {
       return;
     }
+
+    setDownloadAnchorElement(null);
 
     await runBusyAction(
       action.format,
@@ -486,8 +497,15 @@ export function ResultView({ onScanAgain, text }) {
   return (
     <section className="result-view" aria-labelledby="result-title">
       <Stack className="result-view__stack" spacing={2.5}>
-        <Stack direction="row" justifyContent="space-between" spacing={2}>
+        <Stack
+          alignItems="flex-start"
+          className="result-view__header"
+          direction="row"
+          justifyContent="space-between"
+          spacing={2}
+        >
           <Stack spacing={0.5}>
+            <Chip className="result-view__kind-chip" label={payloadKindLabel} size="small" />
             <Typography component="h1" id="result-title" variant="h1">
               {strings.result.title}
             </Typography>
@@ -507,23 +525,7 @@ export function ResultView({ onScanAgain, text }) {
           {qrCard}
         </Tooltip>
 
-        <div className="result-view__actions">
-          {exportActions.map((action) => {
-            const Icon = action.icon;
-            const loading = busyAction === action.format;
-
-            return (
-              <Button
-                key={action.format}
-                disabled={!svgString || Boolean(busyAction)}
-                onClick={() => runExport(action)}
-                startIcon={loading ? <CircularProgress size={18} /> : <Icon />}
-                variant="contained"
-              >
-                {action.label}
-              </Button>
-            );
-          })}
+        <div className="result-view__primary-actions">
           <Button
             aria-describedby={shareUrlTooLarge ? 'share-url-guidance' : undefined}
             className={urlActionClassName}
@@ -548,12 +550,55 @@ export function ResultView({ onScanAgain, text }) {
             {canShareUrlNatively ? strings.result.shareUrl : strings.result.copyUrl}
           </Button>
           <Button
+            aria-controls={downloadMenuOpen ? 'result-download-menu' : undefined}
+            aria-expanded={downloadMenuOpen ? 'true' : undefined}
+            aria-haspopup="menu"
+            disabled={!svgString || Boolean(busyAction)}
+            endIcon={<KeyboardArrowDownRounded />}
+            onClick={(event) => setDownloadAnchorElement(event.currentTarget)}
+            startIcon={exportInProgress ? <CircularProgress size={18} /> : <FileDownloadRounded />}
+            variant="contained"
+          >
+            {strings.result.download}
+          </Button>
+        </div>
+
+        <Menu
+          anchorEl={downloadAnchorElement}
+          id="result-download-menu"
+          onClose={() => setDownloadAnchorElement(null)}
+          open={downloadMenuOpen}
+        >
+          {exportActions.map((action) => {
+            const Icon = action.icon;
+            const loading = busyAction === action.format;
+
+            return (
+              <MenuItem
+                key={action.format}
+                disabled={!svgString || Boolean(busyAction)}
+                onClick={() => runExport(action)}
+              >
+                <ListItemIcon>
+                  {loading ? <CircularProgress size={18} /> : <Icon fontSize="small" />}
+                </ListItemIcon>
+                <ListItemText>{action.label}</ListItemText>
+              </MenuItem>
+            );
+          })}
+        </Menu>
+
+        <div className="result-view__secondary-actions">
+          <Button
             disabled={Boolean(busyAction)}
             onClick={openDecodedText}
             startIcon={<TextSnippetRounded />}
-            variant="contained"
+            variant="outlined"
           >
             {strings.result.showText}
+          </Button>
+          <Button onClick={scanAgain} startIcon={<QrCodeScannerRounded />} variant="outlined">
+            {strings.result.scanAgain}
           </Button>
         </div>
 
@@ -595,10 +640,6 @@ export function ResultView({ onScanAgain, text }) {
             )}
           </Paper>
         ) : null}
-
-        <Button onClick={scanAgain} startIcon={<QrCodeScannerRounded />} variant="outlined">
-          {strings.result.scanAgain}
-        </Button>
       </Stack>
 
       <Drawer
