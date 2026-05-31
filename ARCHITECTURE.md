@@ -210,10 +210,11 @@ changing the saved default.
 
 ### 2026-05-31 — v2 Batch State Model
 
-Batch Recast will persist only canonical payload data and derived metadata in localStorage. The
-storage key is planned as `qr-recast:batch:v1`; user preferences will use a separate
-`qr-recast:preferences:v1` key. The batch envelope includes a schema version and a migration shim so
-future releases can change shape safely.
+Batch Recast persists only canonical payload data and derived metadata in localStorage. The storage
+key is `qr-recast:batch:v1`; user preferences use the separate `qr-recast:preferences:v1` key. The
+batch envelope includes a schema version and a migration shim so future releases can change shape
+safely. `src/features/batch/store.js` owns reads, writes, migrations, name normalisation, item
+creation, rename, reorder, delete, restore, and clear operations.
 
 Persisted batch shape:
 
@@ -236,6 +237,10 @@ Persisted batch shape:
 ```
 
 Raw photos and decoded camera frames are deliberately excluded.
+
+Type detection is lazy-loaded when a payload is added to the batch so the initial scanner chunk
+stays under the launch budget. Stored items keep a serialised type object and per-item branding
+state, so restored batches do not need to re-parse every payload on startup.
 
 ### 2026-05-31 — v2 Batch Export Layout
 

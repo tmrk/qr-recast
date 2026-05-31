@@ -184,3 +184,12 @@ This log is append-only. New entries go at the bottom.
   export smoke for branding-on and branding-off SVG, PNG, PDF, and DOCX.
 - Completed v2 Phase 4 after run `26715366977` deployed successfully and the live site returned
   HTTP 200 with the updated Pages artefact timestamp.
+- Plan: implement v2 Phase 5 by adding a versioned Batch Recast localStorage store, a clear
+  single/batch mode switch, capture-to-name flow, editable/reorderable batch list, duplicate
+  warning, delete undo, and restore/clear behaviours without touching shared-link loading.
+- Implemented the Phase 5 Batch Recast core locally with a versioned localStorage store, scanner
+  continuation mode, naming dialog, editable tray, reorder controls, duplicate warning, delete undo,
+  and clear confirmation.
+- Verified the Phase 5 local preview with generated QR uploads for Matter and Apple Home payloads:
+  add, name, reorder, delete/undo, reload persistence, duplicate warning, and branded thumbnail
+  metadata all worked without affecting `?q=` shared-link loading.

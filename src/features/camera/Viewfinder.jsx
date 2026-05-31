@@ -9,7 +9,6 @@ import { Box, Button, IconButton, Paper, Stack, Tooltip, Typography } from '@mui
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { trackAnalyticsEvent } from '../analytics/events.js';
 import { decodeImageFile, decodeVideoFrame } from '../../lib/decode.js';
-import { detectPayloadKind } from '../../lib/payload.js';
 import { strings } from '../../strings.js';
 
 const CAMERA_CONSTRAINTS = {
@@ -43,7 +42,12 @@ const statusCopy = {
 /**
  * @param {{ onDetected: (text: string) => void }} props
  */
-export function Viewfinder({ onDetected }) {
+export function Viewfinder({
+  bottomSlot = null,
+  continueAfterDetected = false,
+  onDetected,
+  topSlot = null,
+}) {
   const sectionRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -86,18 +90,33 @@ export function Viewfinder({ onDetected }) {
 
       detectedRef.current = true;
       setDetected(true);
-      trackAnalyticsEvent('qr_detected', {
-        payload_kind: detectPayloadKind(text),
-        source,
-      });
+      import('../../lib/payload.js')
+        .then(({ detectPayloadKind }) => {
+          trackAnalyticsEvent('qr_detected', {
+            payload_kind: detectPayloadKind(text),
+            source,
+          });
+        })
+        .catch(() => {
+          trackAnalyticsEvent('qr_detected', { source });
+        });
       navigator.vibrate?.(15);
 
       window.setTimeout(() => {
+        if (continueAfterDetected) {
+          onDetected(text);
+          detectedRef.current = false;
+          setDetected(false);
+          setDetectedPolygon(null);
+          setStatus(streamRef.current ? 'ready' : 'idle');
+          return;
+        }
+
         stopStream();
         onDetected(text);
       }, 250);
     },
-    [onDetected, stopStream],
+    [continueAfterDetected, onDetected, stopStream],
   );
 
   const startCamera = useCallback(
@@ -254,6 +273,7 @@ export function Viewfinder({ onDetected }) {
 
   return (
     <section ref={sectionRef} className="viewfinder" aria-label={strings.camera.viewfinderLabel}>
+      {topSlot ? <div className="viewfinder__top-slot">{topSlot}</div> : null}
       <video ref={videoRef} autoPlay className="viewfinder__video" muted playsInline />
       <canvas ref={canvasRef} aria-hidden="true" className="viewfinder__canvas" />
 
@@ -325,6 +345,8 @@ export function Viewfinder({ onDetected }) {
           </Stack>
         </Paper>
       ) : null}
+
+      {bottomSlot ? <div className="viewfinder__bottom-slot">{bottomSlot}</div> : null}
 
       {status === 'ready' ? (
         <Stack className="viewfinder__controls" direction="row" spacing={1}>

@@ -20,8 +20,8 @@ QR Recast v2 adds three connected capabilities:
 - Batch Recast for capturing, naming, reordering, persisting, and exporting multiple QR codes as
   tidy two-column SVG, PNG, PDF, and DOCX documents.
 
-Batch progress is stored only in your browser localStorage on your device; source photos and QR
-contents are not sent to a server.
+Batch progress is stored only in your browser localStorage on your device; source photos, QR
+contents, names, and batch metadata are not sent to a server.
 
 ## Development
 

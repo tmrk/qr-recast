@@ -348,6 +348,184 @@
   animation: qr-capture-flash 360ms ease-out both;
 }
 
+.viewfinder__top-slot,
+.viewfinder__bottom-slot {
+  position: absolute;
+  right: max(16px, env(safe-area-inset-right));
+  left: max(16px, env(safe-area-inset-left));
+  z-index: 3;
+  pointer-events: none;
+}
+
+.viewfinder__top-slot {
+  top: calc(14px + env(safe-area-inset-top));
+}
+
+.viewfinder__bottom-slot {
+  bottom: calc(max(20px, env(safe-area-inset-bottom)) + 76px);
+}
+
+.viewfinder__top-slot > *,
+.viewfinder__bottom-slot > * {
+  pointer-events: auto;
+}
+
+.batch-mode-control {
+  width: min(100%, 520px);
+  min-width: 0;
+  margin: 0 auto;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.72);
+  border-radius: 22px;
+  background: rgb(var(--qr-palette-surface-containerLowChannel) / 0.86);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 40px rgb(0 0 0 / 0.14);
+}
+
+.batch-mode-control__buttons {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.batch-mode-control .MuiButton-root {
+  min-height: 44px;
+  min-width: 0;
+  gap: 6px;
+  border-radius: 16px;
+  font-weight: 720;
+}
+
+.batch-mode-control__count {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgb(var(--qr-palette-secondary-mainChannel) / 0.14);
+  color: var(--qr-palette-secondary-dark);
+  font-size: 0.8125rem;
+  font-weight: 680;
+  line-height: 1.2;
+}
+
+.batch-panel {
+  width: min(100%, 560px);
+  min-width: 0;
+  max-height: min(42svh, 360px);
+  margin: 0 auto;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  overflow: hidden;
+  border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.72);
+  border-radius: 24px;
+  background: rgb(var(--qr-palette-surface-containerLowChannel) / 0.92);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 22px 56px rgb(0 0 0 / 0.22);
+}
+
+.batch-panel__header {
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.batch-panel__list {
+  min-height: 0;
+  display: grid;
+  gap: 10px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+}
+
+.batch-panel__item {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto 64px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.64);
+  border-radius: 18px;
+  background: rgb(var(--qr-palette-surface-containerLowestChannel) / 0.78);
+}
+
+.batch-panel__drag {
+  width: 28px;
+  min-height: 44px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--qr-palette-text-secondary);
+  cursor: grab;
+}
+
+.batch-panel__thumbnail {
+  width: 64px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.batch-panel__thumbnail svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.batch-panel__item-main {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.batch-panel__type-chip {
+  max-width: 100%;
+  justify-self: start;
+}
+
+.batch-panel__type-chip .MuiChip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.batch-panel__item-actions {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 44px);
+  gap: 2px;
+}
+
+.batch-panel__item-actions .MuiIconButton-root {
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--qr-palette-primary-main);
+}
+
+.batch-panel__empty {
+  min-height: 104px;
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.batch-name-dialog__close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
 .viewfinder__hint {
   position: absolute;
   top: calc(46% + min(37vw, 170px) + 22px);
@@ -736,6 +914,21 @@
   .result-view__primary-actions,
   .result-view__secondary-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .batch-panel__item {
+    grid-template-columns: auto 56px minmax(0, 1fr);
+  }
+
+  .batch-panel__thumbnail {
+    width: 56px;
+  }
+
+  .batch-panel__item-actions {
+    grid-column: 2 / -1;
+    justify-self: end;
   }
 }
 

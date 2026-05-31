@@ -13,6 +13,9 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 - Type-aware neutral vector branding around recast QR codes, with branding on by default, a
   remembered Settings default, and a per-Result override that flows into SVG, PNG, PDF, and DOCX
   exports.
+- Batch Recast core with a single/batch capture switch, versioned localStorage persistence,
+  capture-to-name flow, editable names, drag and button reordering, duplicate warning, clear
+  confirmation, delete undo, and restored session continuity.
 - QR type-detection registry with fixture coverage for URL, plain text, Wi-Fi, Apple Home, Matter,
   email, SMS/MMS, telephone, geo, calendar, contact, crypto, and app-link payloads.
 - `npm run check:qr-types` to keep QR type fixtures exercised during linting.

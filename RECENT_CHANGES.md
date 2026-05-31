@@ -3,6 +3,8 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-31: Added the v2 Batch Recast core with versioned localStorage persistence, capture
+  naming, editable/reorderable tray, duplicate warnings, delete undo, and clear confirmation.
 - 2026-05-31: Completed v2 Phase 4 after the branding/decorator layer deployed through GitHub
   Pages.
 - 2026-05-31: Added the v2 branding decorator with neutral vector badges, a remembered Settings

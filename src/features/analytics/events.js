@@ -2,6 +2,9 @@ export const gaMeasurementId = import.meta.env.VITE_GA_MEASUREMENT_ID?.trim() ??
 export const analyticsOptOutStorageKey = 'qr-recast-analytics-opt-out';
 
 const safeEventNames = new Set([
+  'batch_exported',
+  'batch_item_added',
+  'batch_started',
   'decoded_text_copy',
   'decoded_text_open',
   'branding_toggled',

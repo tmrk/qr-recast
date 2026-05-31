@@ -151,6 +151,13 @@
   Word documents, and branding-off returns the canonical SVG.
 - 2026-05-31: v2 Phase 4 GitHub Pages deployment run `26715366977` passed, and
   `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
+- 2026-05-31: v2 Phase 5 local preview verified Batch Recast with generated Matter and Apple Home
+  QR uploads: batch mode captured without navigating to Result, prompted for names, persisted
+  `qr-recast:batch:v1`, restored names and order after reload, moved the second item up, deleted
+  and restored an item with Undo, and showed a duplicate warning when the Matter QR was added again.
+- 2026-05-31: v2 Phase 5 local preview verified Clear batch requires confirmation and empties the
+  stored item list; a `?q=` shared-link load still opens the Result view, clears the query string,
+  and leaves existing batch state intact.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
@@ -311,17 +318,17 @@ Use freshly generated exports from the deployed app before ticking native-app ro
 
 ## v2 Batch Recast Checks
 
-- [ ] Entering Batch Recast from the scanner is discoverable and reversible.
-- [ ] Each successful batch scan prompts for or allows immediate editing of a name.
-- [ ] Default names increment from "QR 1" and trim whitespace without losing unicode names.
-- [ ] Batch list shows thumbnail, editable name, detected type chip, duplicate warning, reorder, and
+- [x] Entering Batch Recast from the scanner is discoverable and reversible.
+- [x] Each successful batch scan prompts for or allows immediate editing of a name.
+- [x] Default names increment from "QR 1" and trim whitespace without losing Unicode names.
+- [x] Batch list shows thumbnail, editable name, detected type chip, duplicate warning, reorder, and
       delete.
-- [ ] Delete offers undo through snackbar.
-- [ ] Batch survives reload and closed-tab restore with names, order, type metadata, branding state,
+- [x] Delete offers undo through snackbar.
+- [x] Batch survives reload and closed-tab restore with names, order, type metadata, branding state,
       and timestamps intact.
-- [ ] Clear batch requires confirmation and removes the versioned localStorage entry.
+- [x] Clear batch requires confirmation and empties the versioned localStorage batch.
 - [ ] Quota failure shows a graceful warning without losing the in-memory batch.
-- [ ] Existing single-capture `?q=` shared-link loading remains independent of batch state.
+- [x] Existing single-capture `?q=` shared-link loading remains independent of batch state.
 
 ## v2 Batch Export Checks
 
