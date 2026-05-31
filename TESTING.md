@@ -132,6 +132,11 @@
 - 2026-05-31: v2 Phase 1 local preview captured a 1280 x 900 desktop Result screenshot with the
   payload identity chip, primary share/download controls, and secondary Show text/Scan again
   controls.
+- 2026-05-31: v2 Phase 3 local preview verified a Wi-Fi shared-link Result at 390 x 844 dark mobile
+  width with no horizontal overflow, the type details card, network name/security/hidden fields, a
+  masked password, and password reveal behaviour.
+- 2026-05-31: v2 Phase 3 local preview verified the decoded-text sheet for a Wi-Fi payload shows
+  the detected type header and a labelled raw payload block.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

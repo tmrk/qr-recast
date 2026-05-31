@@ -1,16 +1,31 @@
 import ArticleRounded from '@mui/icons-material/ArticleRounded';
+import AppsRounded from '@mui/icons-material/AppsRounded';
+import CalendarMonthRounded from '@mui/icons-material/CalendarMonthRounded';
 import CheckRounded from '@mui/icons-material/CheckRounded';
 import CloseRounded from '@mui/icons-material/CloseRounded';
+import ContactPageRounded from '@mui/icons-material/ContactPageRounded';
 import ContentCopyRounded from '@mui/icons-material/ContentCopyRounded';
+import CurrencyBitcoinRounded from '@mui/icons-material/CurrencyBitcoinRounded';
 import DescriptionRounded from '@mui/icons-material/DescriptionRounded';
+import DeviceHubRounded from '@mui/icons-material/DeviceHubRounded';
+import EmailRounded from '@mui/icons-material/EmailRounded';
 import FileDownloadRounded from '@mui/icons-material/FileDownloadRounded';
+import HomeRounded from '@mui/icons-material/HomeRounded';
 import ImageRounded from '@mui/icons-material/ImageRounded';
 import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded';
+import LinkRounded from '@mui/icons-material/LinkRounded';
+import LocationOnRounded from '@mui/icons-material/LocationOnRounded';
 import OpenInNewRounded from '@mui/icons-material/OpenInNewRounded';
+import PhoneRounded from '@mui/icons-material/PhoneRounded';
 import PictureAsPdfRounded from '@mui/icons-material/PictureAsPdfRounded';
 import QrCodeScannerRounded from '@mui/icons-material/QrCodeScannerRounded';
 import ShareRounded from '@mui/icons-material/ShareRounded';
+import SmsRounded from '@mui/icons-material/SmsRounded';
+import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded';
 import TextSnippetRounded from '@mui/icons-material/TextSnippetRounded';
+import VisibilityOffRounded from '@mui/icons-material/VisibilityOffRounded';
+import VisibilityRounded from '@mui/icons-material/VisibilityRounded';
+import WifiRounded from '@mui/icons-material/WifiRounded';
 import {
   Alert,
   Button,
@@ -77,6 +92,21 @@ const exportActions = [
   },
 ];
 const decodedTextTitleId = 'decoded-text-title';
+const typeIcons = Object.freeze({
+  'app-link': AppsRounded,
+  calendar: CalendarMonthRounded,
+  contact: ContactPageRounded,
+  crypto: CurrencyBitcoinRounded,
+  email: EmailRounded,
+  geo: LocationOnRounded,
+  homekit: HomeRounded,
+  matter: DeviceHubRounded,
+  'plain-text': TextFieldsRounded,
+  sms: SmsRounded,
+  tel: PhoneRounded,
+  url: LinkRounded,
+  wifi: WifiRounded,
+});
 
 /**
  * @param {{ onScanAgain: () => void, text: string }} props
@@ -93,6 +123,8 @@ export function ResultView({ onScanAgain, text }) {
   const [copiedShareUrlState, setCopiedShareUrlState] = useState({ text: '', url: '' });
   const [shareUrlSvgState, setShareUrlSvgState] = useState({ url: '', svg: '' });
   const [copiedDecodedText, setCopiedDecodedText] = useState('');
+  const [copiedFieldState, setCopiedFieldState] = useState({ key: '', text: '' });
+  const [revealedFieldState, setRevealedFieldState] = useState({ fields: {}, text: '' });
   const [qrCopyPressing, setQrCopyPressing] = useState(false);
   const qrCopyTimerRef = useRef(0);
   const hasCoarsePointer = useMediaQuery('(pointer: coarse)');
@@ -126,6 +158,9 @@ export function ResultView({ onScanAgain, text }) {
   const payloadUrl = useMemo(() => extractPayloadUrl(text), [text]);
   const payloadKindLabel =
     qrType.label || strings.result.payloadKinds[payloadKind] || strings.result.payloadKinds.text;
+  const TypeIcon = typeIcons[qrType.type] ?? TextFieldsRounded;
+  const copiedFieldKey = copiedFieldState.text === text ? copiedFieldState.key : '';
+  const revealedFields = revealedFieldState.text === text ? revealedFieldState.fields : {};
   const decodedTextCopied = copiedDecodedText === text;
   const shareUrl = shareUrlState.text === text ? shareUrlState.url : '';
   const copiedShareUrl = copiedShareUrlState.text === text ? copiedShareUrlState.url : '';
@@ -203,6 +238,9 @@ export function ResultView({ onScanAgain, text }) {
           {strings.result.copyText}
         </Button>
       </div>
+      <Typography color="text.secondary" variant="overline">
+        {strings.result.rawPayload}
+      </Typography>
       {decodedPayloadBlock}
     </Stack>
   );
@@ -211,7 +249,12 @@ export function ResultView({ onScanAgain, text }) {
       <Typography component="h2" id={decodedTextTitleId} variant="h2">
         {strings.result.decodedText}
       </Typography>
-      <Chip className="result-view__kind-chip" label={payloadKindLabel} size="small" />
+      <Chip
+        className="result-view__kind-chip"
+        icon={<TypeIcon />}
+        label={payloadKindLabel}
+        size="small"
+      />
     </Stack>
   );
 
@@ -365,6 +408,28 @@ export function ResultView({ onScanAgain, text }) {
     );
   }
 
+  async function runCopyField(field) {
+    await runBusyAction(
+      `field-copy-${field.key}`,
+      async () => {
+        await navigator.clipboard.writeText(field.value);
+        setCopiedFieldState({ key: field.key, text });
+        setMessage(strings.result.valueCopied);
+      },
+      strings.result.copyError,
+    );
+  }
+
+  function toggleFieldVisibility(field) {
+    setRevealedFieldState((currentState) => ({
+      fields: {
+        ...(currentState.text === text ? currentState.fields : {}),
+        [field.key]: !revealedFields[field.key],
+      },
+      text,
+    }));
+  }
+
   async function runCopyQrImage() {
     if (!svgString || busyAction) {
       return;
@@ -495,6 +560,75 @@ export function ResultView({ onScanAgain, text }) {
       )}
     </Paper>
   );
+  const typeDetails = (
+    <Paper className="result-view__type-card" elevation={0}>
+      <Stack
+        alignItems="center"
+        className="result-view__type-card-heading"
+        direction="row"
+        spacing={1.25}
+      >
+        <span className="result-view__type-icon" aria-hidden="true">
+          <TypeIcon />
+        </span>
+        <Stack minWidth={0} spacing={0.25}>
+          <Typography color="text.secondary" variant="overline">
+            {strings.result.detailsTitle}
+          </Typography>
+          <Typography component="h2" variant="h2">
+            {payloadKindLabel}
+          </Typography>
+        </Stack>
+      </Stack>
+      {qrType.fields.length ? (
+        <div className="result-view__fields">
+          {qrType.fields.map((field) => {
+            const fieldRevealed = !field.sensitive || Boolean(revealedFields[field.key]);
+            const fieldCopied = copiedFieldKey === field.key;
+            const CopyIcon = fieldCopied ? CheckRounded : ContentCopyRounded;
+
+            return (
+              <div key={field.key} className="result-view__field">
+                <div className="result-view__field-text">
+                  <Typography color="text.secondary" variant="overline">
+                    {field.label}
+                  </Typography>
+                  <Typography className="result-view__field-value">
+                    {fieldRevealed ? field.value : strings.result.hiddenValue}
+                  </Typography>
+                </div>
+                <div className="result-view__field-actions">
+                  {field.sensitive ? (
+                    <Tooltip
+                      title={fieldRevealed ? strings.result.hideValue : strings.result.revealValue}
+                    >
+                      <IconButton
+                        aria-label={
+                          fieldRevealed ? strings.result.hideValue : strings.result.revealValue
+                        }
+                        onClick={() => toggleFieldVisibility(field)}
+                      >
+                        {fieldRevealed ? <VisibilityOffRounded /> : <VisibilityRounded />}
+                      </IconButton>
+                    </Tooltip>
+                  ) : null}
+                  <Tooltip title={strings.result.copyValue}>
+                    <IconButton
+                      aria-label={`${strings.result.copyValue}: ${field.label}`}
+                      disabled={field.sensitive && !fieldRevealed}
+                      onClick={() => runCopyField(field)}
+                    >
+                      <CopyIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+    </Paper>
+  );
 
   return (
     <section className="result-view" aria-labelledby="result-title">
@@ -507,7 +641,12 @@ export function ResultView({ onScanAgain, text }) {
           spacing={2}
         >
           <Stack spacing={0.5}>
-            <Chip className="result-view__kind-chip" label={payloadKindLabel} size="small" />
+            <Chip
+              className="result-view__kind-chip"
+              icon={<TypeIcon />}
+              label={payloadKindLabel}
+              size="small"
+            />
             <Typography component="h1" id="result-title" variant="h1">
               {strings.result.title}
             </Typography>
@@ -526,6 +665,8 @@ export function ResultView({ onScanAgain, text }) {
         >
           {qrCard}
         </Tooltip>
+
+        {typeDetails}
 
         <div className="result-view__primary-actions">
           <Button

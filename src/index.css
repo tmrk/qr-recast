@@ -593,6 +593,67 @@
   font-weight: 680;
 }
 
+.result-view__kind-chip .MuiChip-icon {
+  color: currentColor;
+}
+
+.result-view__type-card {
+  min-width: 0;
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.72);
+  border-radius: 22px;
+  background: rgb(var(--qr-palette-surface-containerLowChannel) / 0.78);
+}
+
+.result-view__type-card-heading {
+  min-width: 0;
+}
+
+.result-view__type-icon {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 16px;
+  background: rgb(var(--qr-palette-primary-mainChannel) / 0.12);
+  color: var(--qr-palette-primary-main);
+}
+
+.result-view__fields {
+  display: grid;
+  gap: 10px;
+}
+
+.result-view__field {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.64);
+}
+
+.result-view__field-text {
+  min-width: 0;
+}
+
+.result-view__field-value {
+  overflow-wrap: anywhere;
+}
+
+.result-view__field-actions {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.result-view__field-actions .MuiIconButton-root {
+  color: var(--qr-palette-primary-main);
+}
+
 .result-view__decoded-tools {
   display: flex;
   flex-wrap: wrap;

@@ -167,3 +167,8 @@ This log is append-only. New entries go at the bottom.
   integration; `npm run check:qr-types` now validates all required type fixtures.
 - Completed v2 Phase 2 after run `26713715277` deployed successfully and the live site returned
   HTTP 200 with the updated Pages artefact timestamp.
+- Plan: implement v2 Phase 3 by rendering type-aware Result fields, masking sensitive values, adding
+  per-field copy affordances, and tightening the decoded-text type header.
+- Implemented the Phase 3 type display locally: Result now shows an icon-led type details card,
+  field copy controls, masked sensitive fields with reveal, and a decoded-text sheet with the
+  detected type header and raw payload label.

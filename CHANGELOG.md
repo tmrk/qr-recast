@@ -8,6 +8,8 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ### Added
 
+- Type-aware Result details with icons, structured fields, per-field copy actions, masked sensitive
+  values, and a raw-payload decoded-text header.
 - QR type-detection registry with fixture coverage for URL, plain text, Wi-Fi, Apple Home, Matter,
   email, SMS/MMS, telephone, geo, calendar, contact, crypto, and app-link payloads.
 - `npm run check:qr-types` to keep QR type fixtures exercised during linting.
