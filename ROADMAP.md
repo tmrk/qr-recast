@@ -129,7 +129,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
       default; user-toggleable globally and per result; branding flows through to all exports.
 - [x] Phase 5 — Batch Recast core: batch store with versioned localStorage persistence, capture,
       add, name, edit, reorder, delete, duplicate warning, and clear single/batch mode transitions.
-- [ ] Phase 6 — Batch export pipeline: two-column, paginated SVG, PNG, PDF, and DOCX containing
+- [x] Phase 6 — Batch export pipeline: two-column, paginated SVG, PNG, PDF, and DOCX containing
       every QR with its name and branding; correct pagination and typography; share or download per
       platform.
 - [ ] Phase 7 — Settings and persistence surface: tidy settings sheet for branding toggle, batch

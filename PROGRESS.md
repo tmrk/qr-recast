@@ -204,3 +204,5 @@ This log is append-only. New entries go at the bottom.
 - Verified a seven-item browser-module export smoke: SVG produced two A4-style pages, PNG generated
   as `image/png`, PDF included the second page footer, DOCX generated as a valid ZIP-based Word
   document, and all formats shared the same `qr-recast-batch-{count}-{hash}` stem.
+- Completed v2 Phase 6 after run `26716807897` deployed successfully and the live site returned
+  HTTP 200 with the updated Pages artefact timestamp.

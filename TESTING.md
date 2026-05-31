@@ -164,6 +164,8 @@
   and DOCX: SVG contained two A4-style pages and seven captions, PNG returned `image/png`, PDF
   included the second-page footer, DOCX returned a valid ZIP-based Word document, and filenames used
   the shared `qr-recast-batch-7-{hash}` stem.
+- 2026-05-31: v2 Phase 6 GitHub Pages deployment run `26716807897` passed, and
+  `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
