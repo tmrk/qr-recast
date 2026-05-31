@@ -245,3 +245,62 @@ Use freshly generated exports from the deployed app before ticking native-app ro
 - [x] Lighthouse SEO at least 90.
 - [x] Lighthouse PWA installability confirmed.
 - [x] Main bundle at or below 250 KB gzipped.
+
+## v2 Type Fixture Matrix
+
+- [ ] URL with `https://` is classified as a web address with scheme, host, and path fields.
+- [ ] Bare domain is classified as a web address only when the heuristic is confident.
+- [ ] Plain text falls back cleanly with no invented fields.
+- [ ] Wi-Fi `WIFI:` payload parses auth type, SSID, password, hidden state, and EAP fields where
+      present; password stays masked until reveal.
+- [ ] Apple Home `X-HM://` payload is classified as an Apple Home accessory after format
+      verification; parsed fields are shown only where reliable.
+- [ ] Matter `MT:` payload is classified as a Matter device after CSA format verification; manual
+      code is shown only if derivable without fragile decoding.
+- [ ] Email `mailto:`, `MATMSG:`, and `SMTP:` examples classify with address, subject, and body
+      where available.
+- [ ] SMS and MMS examples classify with number and body.
+- [ ] Telephone `tel:` examples classify with number.
+- [ ] Geo `geo:` examples classify with latitude, longitude, and optional query.
+- [ ] Calendar `BEGIN:VEVENT` examples classify with summary, start, end, and location where
+      available.
+- [ ] vCard and MeCard examples classify with name, phone, email, and organisation where available.
+- [ ] Common app and crypto schemes classify as deep link or crypto without over-parsing.
+
+## v2 Branding Checks
+
+- [ ] Branding defaults on for new sessions.
+- [ ] Global branding toggle persists under the versioned preferences key.
+- [ ] Per-result branding override affects only the current result.
+- [ ] Branding off exports plain canonical QR codes in SVG, PNG, PDF, and DOCX.
+- [ ] Branding on exports decorated QR codes in SVG, PNG, PDF, and DOCX.
+- [ ] Matter, Apple Home, Wi-Fi, and generic branded codes scan on screen with a real phone.
+- [ ] Matter, Apple Home, Wi-Fi, and generic branded codes scan from an exported or printed PDF.
+- [ ] Branding remains outside the QR quiet zone unless centre decoration has been scan-tested.
+
+## v2 Batch Recast Checks
+
+- [ ] Entering Batch Recast from the scanner is discoverable and reversible.
+- [ ] Each successful batch scan prompts for or allows immediate editing of a name.
+- [ ] Default names increment from "QR 1" and trim whitespace without losing unicode names.
+- [ ] Batch list shows thumbnail, editable name, detected type chip, duplicate warning, reorder, and
+      delete.
+- [ ] Delete offers undo through snackbar.
+- [ ] Batch survives reload and closed-tab restore with names, order, type metadata, branding state,
+      and timestamps intact.
+- [ ] Clear batch requires confirmation and removes the versioned localStorage entry.
+- [ ] Quota failure shows a graceful warning without losing the in-memory batch.
+- [ ] Existing single-capture `?q=` shared-link loading remains independent of batch state.
+
+## v2 Batch Export Checks
+
+- [ ] Batch SVG lays out every item as a two-column print-friendly sheet with captions.
+- [ ] Batch PNG exports print-safe raster sheets and paginates when needed.
+- [ ] Batch PDF is true vector A4, paginated, two-column, with margins, gutters, footer, and page
+      numbers; no QR is split across pages.
+- [ ] Batch DOCX opens in Microsoft Word with a reliable two-column layout, SVG media, PNG fallback,
+      and captions.
+- [ ] Filenames follow `qr-recast-batch-{count}-{shortHash}.{ext}`.
+- [ ] Mobile file sharing uses `navigator.share({ files })` where supported and desktop downloads
+      otherwise.
+- [ ] Export pending, success, cancellation, and error states are visible and non-jarring.

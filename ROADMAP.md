@@ -113,3 +113,26 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 - [ ] `TODO(ads)`: replace the placeholder ad strip with the real AdSense `ins` tag once the
       account and client ID are available.
+
+## v2 — Type Recognition, Branding & Batch Recast
+
+- [ ] Phase 0 — Orientation and v2 guide updates: current docs and source tree read, baseline
+      checks green, deployed and local UI audited, `UX_AUDIT.md` written, and living guides updated.
+- [ ] Phase 1 — UX refinement: audit written, refinements implemented, verified on mobile and
+      desktop, light and dark.
+- [ ] Phase 2 — Type-detection engine: pure, testable registry of detectors; integrated into decode
+      flow; surfaces a normalised `{ type, label, icon, fields, confidence }` result.
+- [ ] Phase 3 — Type display: tasteful identity chip or card on the Result view; structured field
+      rendering per type; decoded text panel enhanced with type-aware formatting while keeping the
+      monospace copy affordance.
+- [ ] Phase 4 — Branding/decorator layer: type-appropriate branding around the re-cast QR; on by
+      default; user-toggleable globally and per result; branding flows through to all exports.
+- [ ] Phase 5 — Batch Recast core: batch store with versioned localStorage persistence, capture,
+      add, name, edit, reorder, delete, duplicate warning, and clear single/batch mode transitions.
+- [ ] Phase 6 — Batch export pipeline: two-column, paginated SVG, PNG, PDF, and DOCX containing
+      every QR with its name and branding; correct pagination and typography; share or download per
+      platform.
+- [ ] Phase 7 — Settings and persistence surface: tidy settings sheet for branding toggle, batch
+      management, analytics opt-out, and About/Privacy.
+- [ ] Phase 8 — Hardening, tests, docs, and release: manual matrix, fixtures, Lighthouse and bundle
+      budgets, docs finalised, `v2.0.0` tagged, and GitHub release written.

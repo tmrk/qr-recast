@@ -144,3 +144,8 @@ This log is append-only. New entries go at the bottom.
   the manual matrix is complete.
 - Completed the changelog preparation with the PWA, scanning, export, sharing, analytics, testing,
   and launch-budget notes needed for the eventual `v1.0.0` release.
+
+## 2026-05-31
+
+- Plan: orient the v2 release, confirm the v1 baseline, audit the current UI, and update the living
+  project guides before implementing feature work.

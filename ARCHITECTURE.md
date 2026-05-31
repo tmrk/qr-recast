@@ -127,3 +127,79 @@ all exports. SVG is saved directly, PNG is rasterised through a 1024 x 1024 canv
 through `jspdf` and `svg2pdf.js`, and DOCX embeds UTF-8 SVG bytes with a PNG fallback because Word
 expects both when an SVG image is present. The heavier generation libraries are loaded only from
 export handlers so the initial scanner bundle stays small.
+
+### 2026-05-31 — v2 Type-detection Registry
+
+QR Recast v2 will add `src/lib/qr-types/` as a registry of pure detector functions rather than
+expanding the existing lightweight `payload.js` helper. The resolver will run every detector,
+discard `null` results, and choose the highest-confidence result, with a plain-text fallback. This
+keeps the decode pipeline stable, makes detectors fixture-testable, and avoids mixing UI labels with
+camera or export logic.
+
+The normalised detector result shape is:
+
+```js
+{
+  type: 'wifi',
+  label: 'Wi-Fi network',
+  icon: 'wifi',
+  fields: [{ key: 'ssid', label: 'Network name', value: 'Example' }],
+  raw: 'WIFI:T:WPA;S:Example;P:secret;;',
+  confidence: 0.92,
+  branding: { kind: 'wifi', caption: 'Example' },
+}
+```
+
+Existing analytics `payload_kind` values will be mapped from this richer type object so analytics
+still never receives QR payload content.
+
+### 2026-05-31 — v2 Branding Assets and Trademark Handling
+
+Branding will be implemented as local vector decorators under `src/features/branding/` with any
+reusable art kept in `src/assets/branding/`. Third-party marks such as Matter and Apple Home will
+only be embedded if their current brand guidance permits the app's offline export use. Until that is
+confirmed, v2 will use neutral original badges labelled "Matter device" and "Apple Home accessory"
+rather than copying protected marks. This preserves the user value, keeps exports lawful, and avoids
+hotlinked assets.
+
+Decorators wrap the canonical QR SVG; they do not alter modules unless a later scan test proves the
+centre treatment remains reliable. The default layout will place badges and captions outside the QR
+quiet zone.
+
+### 2026-05-31 — v2 Batch State Model
+
+Batch Recast will persist only canonical payload data and derived metadata in localStorage. The
+storage key is planned as `qr-recast:batch:v1`; user preferences will use a separate
+`qr-recast:preferences:v1` key. The batch envelope includes a schema version and a migration shim so
+future releases can change shape safely.
+
+Persisted batch shape:
+
+```js
+{
+  version: 1,
+  updatedAt: '2026-05-31T12:00:00.000Z',
+  items: [
+    {
+      id: 'crypto-random-id',
+      name: 'Living room thermostat',
+      payload: 'MT:...',
+      type: { type: 'matter', label: 'Matter device', confidence: 0.9 },
+      branding: { enabled: true, kind: 'matter' },
+      createdAt: '2026-05-31T12:00:00.000Z',
+      updatedAt: '2026-05-31T12:00:00.000Z'
+    }
+  ]
+}
+```
+
+Raw photos and decoded camera frames are deliberately excluded.
+
+### 2026-05-31 — v2 Batch Export Layout
+
+Single and batch exports will share one decorated QR rendering path. Batch SVG and PNG exports will
+use generated sheet SVGs; PNG will rasterise each sheet at print-safe resolution. PDF will stay true
+vector with `jspdf` and `svg2pdf.js`, using A4 pages, two columns, fixed margins, gutters, captions,
+footers, and page numbers. DOCX will use a table-based two-column layout because it is the most
+predictable Word rendering path, with SVG media and PNG fallback for each QR. Heavy PDF and DOCX
+libraries remain lazy-loaded from export handlers.

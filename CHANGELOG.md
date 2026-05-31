@@ -8,6 +8,8 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ### Added
 
+- Started the v2 release track for type recognition, branding, Batch Recast, and the supporting UX
+  audit and architecture notes.
 - Mobile-first Material UI PWA shell with light and dark colour schemes, safe-area support,
   generated app icons, and GitHub Pages base-path handling.
 - On-device QR scanning with an environment-camera viewfinder, upload fallback, explicit permission

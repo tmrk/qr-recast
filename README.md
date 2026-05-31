@@ -8,6 +8,21 @@ the browser.
 
 Live app: <https://tmrk.github.io/qr-recast/>
 
+## v2 Roadmap
+
+QR Recast v2 adds three connected capabilities:
+
+- Type recognition for common QR payloads including web addresses, Wi-Fi networks, Apple Home
+  accessories, Matter setup codes, email, SMS, telephone, geo, contacts, calendar events, app links,
+  crypto links, and plain text.
+- Optional branding around the re-cast QR, on by default and user-toggleable, so exported codes are
+  easier to identify while staying scannable.
+- Batch Recast for capturing, naming, reordering, persisting, and exporting multiple QR codes as
+  tidy two-column SVG, PNG, PDF, and DOCX documents.
+
+Batch progress is stored only in your browser localStorage on your device; source photos and QR
+contents are not sent to a server.
+
 ## Development
 
 ```sh

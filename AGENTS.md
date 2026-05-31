@@ -16,6 +16,20 @@ share the same payload by URL from `https://tmrk.github.io/qr-recast/`.
 - Keep committed code free of `console.log`, dead code, commented-out blocks, and unowned TODOs.
 - Keep prettier, eslint, spelling checks, and builds clean before every commit.
 
+## v2 Subsystems
+
+- QR type detection lives behind a registry of pure detector functions. Detectors accept only the raw
+  decoded string, never mutate state, never throw for arbitrary input, and use fixture payloads for
+  unit-style coverage.
+- Branding is a decorator layer around the canonical QR SVG. Branding is on by default, always
+  user-toggleable, and must preserve the quiet zone and scannability in every export format.
+- Batch Recast stores canonical payloads, names, ordering, type metadata, branding state, and
+  timestamps in localStorage under a versioned key. Do not store source photos or camera frames.
+- Single capture, `?q=` shared links, branding preferences, analytics preferences, and batch state
+  use independent versioned storage keys so future migrations are safe.
+- Type display and batch exports must fail soft: classify confidently where possible, show the raw
+  payload when parsing is under-specified, and never invent structured values.
+
 ## Working Loop
 
 1. Read `ROADMAP.md`.
