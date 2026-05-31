@@ -149,6 +149,8 @@
   PNG, PDF, and DOCX exporter functions; branding-on artefacts include the Wi-Fi branding text,
   branding-off artefacts omit it, PNG blobs generated successfully, DOCX blobs are valid ZIP-based
   Word documents, and branding-off returns the canonical SVG.
+- 2026-05-31: v2 Phase 4 GitHub Pages deployment run `26715366977` passed, and
+  `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

@@ -182,3 +182,5 @@ This log is append-only. New entries go at the bottom.
   the current QR without changing the saved preference.
 - Verified the decorated SVG path locally with `jsQR` raster decoding and a direct browser-module
   export smoke for branding-on and branding-off SVG, PNG, PDF, and DOCX.
+- Completed v2 Phase 4 after run `26715366977` deployed successfully and the live site returned
+  HTTP 200 with the updated Pages artefact timestamp.

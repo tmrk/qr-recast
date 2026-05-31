@@ -125,7 +125,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 - [x] Phase 3 — Type display: tasteful identity chip or card on the Result view; structured field
       rendering per type; decoded text panel enhanced with type-aware formatting while keeping the
       monospace copy affordance.
-- [ ] Phase 4 — Branding/decorator layer: type-appropriate branding around the re-cast QR; on by
+- [x] Phase 4 — Branding/decorator layer: type-appropriate branding around the re-cast QR; on by
       default; user-toggleable globally and per result; branding flows through to all exports.
 - [ ] Phase 5 — Batch Recast core: batch store with versioned localStorage persistence, capture,
       add, name, edit, reorder, delete, duplicate warning, and clear single/batch mode transitions.
