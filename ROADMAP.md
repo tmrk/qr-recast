@@ -122,7 +122,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
       desktop, light and dark.
 - [x] Phase 2 — Type-detection engine: pure, testable registry of detectors; integrated into decode
       flow; surfaces a normalised `{ type, label, icon, fields, confidence }` result.
-- [ ] Phase 3 — Type display: tasteful identity chip or card on the Result view; structured field
+- [x] Phase 3 — Type display: tasteful identity chip or card on the Result view; structured field
       rendering per type; decoded text panel enhanced with type-aware formatting while keeping the
       monospace copy affordance.
 - [ ] Phase 4 — Branding/decorator layer: type-appropriate branding around the re-cast QR; on by

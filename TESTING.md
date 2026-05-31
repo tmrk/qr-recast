@@ -137,6 +137,8 @@
   masked password, and password reveal behaviour.
 - 2026-05-31: v2 Phase 3 local preview verified the decoded-text sheet for a Wi-Fi payload shows
   the detected type header and a labelled raw payload block.
+- 2026-05-31: v2 Phase 3 GitHub Pages deployment run `26714804670` passed, and
+  `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
