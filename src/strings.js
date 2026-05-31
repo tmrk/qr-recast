@@ -17,6 +17,10 @@ export const strings = Object.freeze({
     buildLabel: 'Build',
     privacyBody:
       'Photos, decoded QR text, generated URLs, filenames, hashes, image data, and exported files stay out of analytics.',
+    brandingTitle: 'Branding',
+    brandingToggle: 'Brand QR exports',
+    brandingStatus:
+      'Branding is on by default and stays on this device; each Result can still override it.',
     analyticsTitle: 'Analytics',
     analyticsToggle: 'Share anonymised usage events',
     analyticsEnabled:
@@ -88,6 +92,7 @@ export const strings = Object.freeze({
     copyValue: 'Copy value',
     showText: 'Show text',
     scanAgain: 'Scan again',
+    brandingToggle: 'Brand this QR',
     detailsTitle: 'Detected details',
     decodedText: 'Decoded text',
     rawPayload: 'Raw payload',

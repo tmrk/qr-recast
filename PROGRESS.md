@@ -174,3 +174,11 @@ This log is append-only. New entries go at the bottom.
   detected type header and raw payload label.
 - Completed v2 Phase 3 after run `26714804670` deployed successfully and the live site returned
   HTTP 200 with the updated Pages artefact timestamp.
+- Plan: implement v2 Phase 4 with a shared SVG branding decorator, persisted branding preference,
+  per-result override, and export support for SVG, PNG, PDF, and DOCX without embedding third-party
+  trademark assets.
+- Implemented the Phase 4 branding layer locally: recast QRs now render with neutral type badges by
+  default, Settings persists the branding default, and the Result view can override branding for
+  the current QR without changing the saved preference.
+- Verified the decorated SVG path locally with `jsQR` raster decoding and a direct browser-module
+  export smoke for branding-on and branding-off SVG, PNG, PDF, and DOCX.

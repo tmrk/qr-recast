@@ -15,8 +15,8 @@ QR Recast v2 adds three connected capabilities:
 - Type recognition for common QR payloads including web addresses, Wi-Fi networks, Apple Home
   accessories, Matter setup codes, email, SMS, telephone, geo, contacts, calendar events, app links,
   crypto links, and plain text.
-- Optional branding around the re-cast QR, on by default and user-toggleable, so exported codes are
-  easier to identify while staying scannable.
+- Optional neutral vector branding around the re-cast QR, on by default and user-toggleable, so
+  exported codes are easier to identify while staying scannable and offline-safe.
 - Batch Recast for capturing, naming, reordering, persisting, and exporting multiple QR codes as
   tidy two-column SVG, PNG, PDF, and DOCX documents.
 

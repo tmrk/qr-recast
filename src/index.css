@@ -112,7 +112,7 @@
   min-width: 0;
 }
 
-.about-sheet__analytics {
+.about-sheet__settings-section {
   padding: 14px 16px;
   border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.72);
   border-radius: 18px;
@@ -578,6 +578,21 @@
   display: block;
   width: 100%;
   height: auto;
+}
+
+.result-view__branding-control {
+  min-width: 0;
+  padding: 4px 10px 4px 14px;
+  display: flex;
+  justify-content: flex-end;
+  border: 1px solid rgb(var(--qr-palette-outline-variantChannel) / 0.64);
+  border-radius: 18px;
+  background: rgb(var(--qr-palette-surface-containerLowChannel) / 0.72);
+}
+
+.result-view__branding-control .MuiFormControlLabel-root {
+  margin: 0;
+  min-height: 44px;
 }
 
 .result-view__decoded-heading {

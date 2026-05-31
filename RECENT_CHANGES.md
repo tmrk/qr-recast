@@ -3,6 +3,8 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-31: Added the v2 branding decorator with neutral vector badges, a remembered Settings
+  default, and a per-Result branding override for exports.
 - 2026-05-31: Completed v2 Phase 3 after the type-aware Result display deployed through GitHub
   Pages.
 - 2026-05-31: Added the v2 type display card, field copy actions, masked sensitive fields, and

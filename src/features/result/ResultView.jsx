@@ -35,6 +35,7 @@ import {
   DialogContent,
   DialogTitle,
   Drawer,
+  FormControlLabel,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -43,12 +44,15 @@ import {
   Paper,
   Snackbar,
   Stack,
+  Switch,
   Tooltip,
   Typography,
   useMediaQuery,
 } from '@mui/material';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { trackAnalyticsEvent } from '../analytics/events.js';
+import { createDecoratedQrSvg } from '../branding/decorator.js';
+import { useBrandingPreference } from '../branding/preferences.js';
 import {
   createDocxExport,
   createPdfExport,
@@ -112,8 +116,7 @@ const typeIcons = Object.freeze({
  * @param {{ onScanAgain: () => void, text: string }} props
  */
 export function ResultView({ onScanAgain, text }) {
-  const [svgString, setSvgString] = useState('');
-  const [fileStem, setFileStem] = useState('');
+  const [qrAssetState, setQrAssetState] = useState({ fileStem: '', svg: '', text: '' });
   const [busyAction, setBusyAction] = useState('');
   const [textOpen, setTextOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -125,7 +128,9 @@ export function ResultView({ onScanAgain, text }) {
   const [copiedDecodedText, setCopiedDecodedText] = useState('');
   const [copiedFieldState, setCopiedFieldState] = useState({ key: '', text: '' });
   const [revealedFieldState, setRevealedFieldState] = useState({ fields: {}, text: '' });
+  const [brandingOverrideState, setBrandingOverrideState] = useState({ enabled: null, text: '' });
   const [qrCopyPressing, setQrCopyPressing] = useState(false);
+  const [globalBrandingEnabled] = useBrandingPreference();
   const qrCopyTimerRef = useRef(0);
   const hasCoarsePointer = useMediaQuery('(pointer: coarse)');
 
@@ -138,8 +143,7 @@ export function ResultView({ onScanAgain, text }) {
           return;
         }
 
-        setSvgString(svg);
-        setFileStem(`qr-recast-${hash}`);
+        setQrAssetState({ fileStem: `qr-recast-${hash}`, svg, text });
       })
       .catch(() => {
         if (active) {
@@ -156,9 +160,18 @@ export function ResultView({ onScanAgain, text }) {
   const qrType = useMemo(() => detectQrType(text), [text]);
   const payloadKind = useMemo(() => payloadKindFromQrType(qrType), [qrType]);
   const payloadUrl = useMemo(() => extractPayloadUrl(text), [text]);
+  const canonicalSvgString = qrAssetState.text === text ? qrAssetState.svg : '';
+  const fileStem = qrAssetState.text === text ? qrAssetState.fileStem : '';
   const payloadKindLabel =
     qrType.label || strings.result.payloadKinds[payloadKind] || strings.result.payloadKinds.text;
   const TypeIcon = typeIcons[qrType.type] ?? TextFieldsRounded;
+  const brandingOverride =
+    brandingOverrideState.text === text ? brandingOverrideState.enabled : null;
+  const brandingEnabled = brandingOverride ?? globalBrandingEnabled;
+  const svgString = useMemo(
+    () => createDecoratedQrSvg(canonicalSvgString, qrType, { enabled: brandingEnabled }),
+    [brandingEnabled, canonicalSvgString, qrType],
+  );
   const copiedFieldKey = copiedFieldState.text === text ? copiedFieldState.key : '';
   const revealedFields = revealedFieldState.text === text ? revealedFieldState.fields : {};
   const decodedTextCopied = copiedDecodedText === text;
@@ -430,6 +443,16 @@ export function ResultView({ onScanAgain, text }) {
     }));
   }
 
+  function updateResultBranding(event) {
+    const enabled = event.target.checked;
+
+    setBrandingOverrideState({ enabled, text });
+    trackAnalyticsEvent('branding_toggled', {
+      state: enabled ? 'enabled' : 'disabled',
+      surface: 'result',
+    });
+  }
+
   async function runCopyQrImage() {
     if (!svgString || busyAction) {
       return;
@@ -665,6 +688,19 @@ export function ResultView({ onScanAgain, text }) {
         >
           {qrCard}
         </Tooltip>
+
+        <Paper className="result-view__branding-control" elevation={0}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={brandingEnabled}
+                inputProps={{ 'aria-label': strings.result.brandingToggle }}
+                onChange={updateResultBranding}
+              />
+            }
+            label={strings.result.brandingToggle}
+          />
+        </Paper>
 
         {typeDetails}
 

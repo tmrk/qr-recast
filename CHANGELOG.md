@@ -10,6 +10,9 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 - Type-aware Result details with icons, structured fields, per-field copy actions, masked sensitive
   values, and a raw-payload decoded-text header.
+- Type-aware neutral vector branding around recast QR codes, with branding on by default, a
+  remembered Settings default, and a per-Result override that flows into SVG, PNG, PDF, and DOCX
+  exports.
 - QR type-detection registry with fixture coverage for URL, plain text, Wi-Fi, Apple Home, Matter,
   email, SMS/MMS, telephone, geo, calendar, contact, crypto, and app-link payloads.
 - `npm run check:qr-types` to keep QR type fixtures exercised during linting.

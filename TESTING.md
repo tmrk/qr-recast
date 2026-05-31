@@ -139,6 +139,16 @@
   the detected type header and a labelled raw payload block.
 - 2026-05-31: v2 Phase 3 GitHub Pages deployment run `26714804670` passed, and
   `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
+- 2026-05-31: v2 Phase 4 local preview verified a branded Wi-Fi shared-link Result at 390 x 844 in
+  headless Chrome; the branded SVG rasterised to 720 x 720 and decoded with `jsQR` back to the exact
+  Wi-Fi payload, with no horizontal overflow.
+- 2026-05-31: v2 Phase 4 local preview verified Settings persists
+  `qr-recast:preferences:v1` with `brandingEnabled: false`, and the per-Result override can turn
+  branding back on without mutating that saved default.
+- 2026-05-31: v2 Phase 4 Vite browser-module smoke verified both branding states across the SVG,
+  PNG, PDF, and DOCX exporter functions; branding-on artefacts include the Wi-Fi branding text,
+  branding-off artefacts omit it, PNG blobs generated successfully, DOCX blobs are valid ZIP-based
+  Word documents, and branding-off returns the canonical SVG.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
@@ -288,14 +298,14 @@ Use freshly generated exports from the deployed app before ticking native-app ro
 
 ## v2 Branding Checks
 
-- [ ] Branding defaults on for new sessions.
-- [ ] Global branding toggle persists under the versioned preferences key.
-- [ ] Per-result branding override affects only the current result.
-- [ ] Branding off exports plain canonical QR codes in SVG, PNG, PDF, and DOCX.
-- [ ] Branding on exports decorated QR codes in SVG, PNG, PDF, and DOCX.
+- [x] Branding defaults on for new sessions.
+- [x] Global branding toggle persists under the versioned preferences key.
+- [x] Per-result branding override affects only the current result.
+- [x] Branding off exports plain canonical QR codes in SVG, PNG, PDF, and DOCX.
+- [x] Branding on exports decorated QR codes in SVG, PNG, PDF, and DOCX.
 - [ ] Matter, Apple Home, Wi-Fi, and generic branded codes scan on screen with a real phone.
 - [ ] Matter, Apple Home, Wi-Fi, and generic branded codes scan from an exported or printed PDF.
-- [ ] Branding remains outside the QR quiet zone unless centre decoration has been scan-tested.
+- [x] Branding remains outside the QR quiet zone unless centre decoration has been scan-tested.
 
 ## v2 Batch Recast Checks
 

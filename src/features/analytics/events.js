@@ -4,6 +4,7 @@ export const analyticsOptOutStorageKey = 'qr-recast-analytics-opt-out';
 const safeEventNames = new Set([
   'decoded_text_copy',
   'decoded_text_open',
+  'branding_toggled',
   'payload_link_open',
   'qr_detected',
   'qr_export',
@@ -31,8 +32,9 @@ const safeParamValues = Object.freeze({
     'wifi',
   ]),
   result: new Set(['cancelled', 'copied', 'error', 'saved', 'shared', 'success', 'too_large']),
+  state: new Set(['disabled', 'enabled']),
   source: new Set(['camera', 'shared_url', 'upload']),
-  surface: new Set(['decoded_text', 'result']),
+  surface: new Set(['decoded_text', 'result', 'settings']),
 });
 
 let analyticsInitialised = false;

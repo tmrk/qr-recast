@@ -12,12 +12,14 @@ import {
 import { useState } from 'react';
 import packageJson from '../../../package.json';
 import { strings } from '../../strings.js';
+import { useBrandingPreference } from '../branding/preferences.js';
 import {
   gaMeasurementId,
   hasAnalyticsOptedOut,
   initialiseAnalytics,
   isDoNotTrackEnabled,
   setAnalyticsOptOut,
+  trackAnalyticsEvent,
 } from '../analytics/events.js';
 
 const buildHash = import.meta.env.VITE_BUILD_SHA?.slice(0, 7) || 'local';
@@ -27,6 +29,7 @@ const buildHash = import.meta.env.VITE_BUILD_SHA?.slice(0, 7) || 'local';
  */
 export function AboutSheet({ open, onClose }) {
   const [analyticsOptedOut, setAnalyticsOptedOutState] = useState(() => hasAnalyticsOptedOut());
+  const [brandingEnabled, setBrandingEnabled] = useBrandingPreference();
   const doNotTrackEnabled = isDoNotTrackEnabled();
   const analyticsPreferenceEnabled = !analyticsOptedOut && !doNotTrackEnabled;
   const analyticsStatus = getAnalyticsStatus({
@@ -44,6 +47,16 @@ export function AboutSheet({ open, onClose }) {
     if (!optedOut) {
       initialiseAnalytics();
     }
+  }
+
+  function updateBrandingPreference(event) {
+    const enabled = event.target.checked;
+
+    setBrandingEnabled(enabled);
+    trackAnalyticsEvent('branding_toggled', {
+      state: enabled ? 'enabled' : 'disabled',
+      surface: 'settings',
+    });
   }
 
   return (
@@ -76,7 +89,32 @@ export function AboutSheet({ open, onClose }) {
       </Stack>
 
       <Stack aria-labelledby="about-title" className="about-sheet__content" spacing={2.5}>
-        <section className="about-sheet__analytics" aria-labelledby="about-analytics-title">
+        <section className="about-sheet__settings-section" aria-labelledby="about-branding-title">
+          <Stack spacing={1.5}>
+            <Typography
+              className="about-sheet__section-title"
+              component="h3"
+              id="about-branding-title"
+            >
+              {strings.about.brandingTitle}
+            </Typography>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={brandingEnabled}
+                  inputProps={{ 'aria-label': strings.about.brandingToggle }}
+                  onChange={updateBrandingPreference}
+                />
+              }
+              label={strings.about.brandingToggle}
+            />
+            <Typography color="text.secondary" variant="body2">
+              {strings.about.brandingStatus}
+            </Typography>
+          </Stack>
+        </section>
+
+        <section className="about-sheet__settings-section" aria-labelledby="about-analytics-title">
           <Stack spacing={1.5}>
             <Typography
               className="about-sheet__section-title"
