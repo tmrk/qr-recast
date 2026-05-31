@@ -3,17 +3,26 @@ import ArrowUpwardRounded from '@mui/icons-material/ArrowUpwardRounded';
 import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import FileDownloadRounded from '@mui/icons-material/FileDownloadRounded';
+import ImageRounded from '@mui/icons-material/ImageRounded';
+import ArticleRounded from '@mui/icons-material/ArticleRounded';
+import DescriptionRounded from '@mui/icons-material/DescriptionRounded';
+import PictureAsPdfRounded from '@mui/icons-material/PictureAsPdfRounded';
 import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded';
 import {
   Alert,
   Button,
   Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   Paper,
   Stack,
   TextField,
@@ -25,20 +34,40 @@ import { batchNameMaxLength, normaliseBatchName } from './store.js';
 import { BatchThumbnail } from './BatchThumbnail.jsx';
 import { strings } from '../../strings.js';
 
+const batchExportActions = [
+  { format: 'svg', icon: DescriptionRounded, label: strings.result.svg },
+  { format: 'png', icon: ImageRounded, label: strings.result.png },
+  { format: 'pdf', icon: PictureAsPdfRounded, label: strings.result.pdf },
+  { format: 'docx', icon: ArticleRounded, label: strings.result.docx },
+];
+
 /**
  * @param {{
  *   batch: { items: Array<object> },
+ *   busyFormat: string,
  *   onClear: () => void,
  *   onDelete: (itemId: string) => void,
+ *   onExport: (format: string) => void,
  *   onMove: (itemId: string, targetIndex: number) => void,
  *   onRename: (itemId: string, name: string) => void,
  *   persistenceError: boolean,
  * }} props
  */
-export function BatchPanel({ batch, onClear, onDelete, onMove, onRename, persistenceError }) {
+export function BatchPanel({
+  batch,
+  busyFormat,
+  onClear,
+  onDelete,
+  onExport,
+  onMove,
+  onRename,
+  persistenceError,
+}) {
   const [clearOpen, setClearOpen] = useState(false);
+  const [exportAnchorElement, setExportAnchorElement] = useState(null);
   const [draggedItemId, setDraggedItemId] = useState('');
   const items = batch.items;
+  const exportMenuOpen = Boolean(exportAnchorElement);
   const countLabel =
     items.length === 1
       ? strings.batch.oneCode.replace('{count}', String(items.length))
@@ -106,9 +135,44 @@ export function BatchPanel({ batch, onClear, onDelete, onMove, onRename, persist
         </div>
       )}
 
-      <Button disabled startIcon={<FileDownloadRounded />} variant="contained">
+      <Button
+        aria-controls={exportMenuOpen ? 'batch-export-menu' : undefined}
+        aria-expanded={exportMenuOpen ? 'true' : undefined}
+        aria-haspopup="menu"
+        disabled={!items.length || Boolean(busyFormat)}
+        onClick={(event) => setExportAnchorElement(event.currentTarget)}
+        startIcon={busyFormat ? <CircularProgress size={18} /> : <FileDownloadRounded />}
+        variant="contained"
+      >
         {strings.batch.export}
       </Button>
+      <Menu
+        anchorEl={exportAnchorElement}
+        id="batch-export-menu"
+        onClose={() => setExportAnchorElement(null)}
+        open={exportMenuOpen}
+      >
+        {batchExportActions.map((action) => {
+          const Icon = action.icon;
+          const loading = busyFormat === action.format;
+
+          return (
+            <MenuItem
+              key={action.format}
+              disabled={Boolean(busyFormat)}
+              onClick={() => {
+                setExportAnchorElement(null);
+                onExport(action.format);
+              }}
+            >
+              <ListItemIcon>
+                {loading ? <CircularProgress size={18} /> : <Icon fontSize="small" />}
+              </ListItemIcon>
+              <ListItemText>{action.label}</ListItemText>
+            </MenuItem>
+          );
+        })}
+      </Menu>
 
       <Dialog onClose={() => setClearOpen(false)} open={clearOpen}>
         <DialogTitle>{strings.batch.clearTitle}</DialogTitle>

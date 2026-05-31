@@ -69,6 +69,7 @@ export const strings = Object.freeze({
     emptyBody: 'Scan a QR code to add it.',
     emptyTitle: 'No batch codes yet',
     export: 'Export batch',
+    exportError: 'The batch export could not be created.',
     keepScanning: 'Keep scanning',
     manyCodes: '{count} codes saved',
     modeLabel: 'Capture mode',

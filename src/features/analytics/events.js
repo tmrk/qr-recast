@@ -39,6 +39,7 @@ const safeParamValues = Object.freeze({
   source: new Set(['camera', 'shared_url', 'upload']),
   surface: new Set(['decoded_text', 'result', 'settings']),
 });
+const safeNumberParamKeys = new Set(['count']);
 
 let analyticsInitialised = false;
 
@@ -119,7 +120,11 @@ export function setAnalyticsOptOut(optedOut) {
 
 function sanitiseParams(params) {
   return Object.fromEntries(
-    Object.entries(params).filter(([key, value]) => safeParamValues[key]?.has(value)),
+    Object.entries(params).filter(
+      ([key, value]) =>
+        safeParamValues[key]?.has(value) ||
+        (safeNumberParamKeys.has(key) && Number.isInteger(value) && value >= 0 && value <= 999),
+    ),
   );
 }
 

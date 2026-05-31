@@ -195,3 +195,12 @@ This log is append-only. New entries go at the bottom.
   metadata all worked without affecting `?q=` shared-link loading.
 - Completed v2 Phase 5 after run `26716545553` deployed successfully and the live site returned
   HTTP 200 with the updated Pages artefact timestamp.
+- Plan: implement v2 Phase 6 with a shared two-column batch sheet generator, SVG and PNG sheet
+  exports, vector A4 PDF pagination, DOCX table pagination with SVG plus PNG fallback, shared
+  filenames, export states, and privacy-safe `batch_exported` analytics.
+- Implemented the Phase 6 batch export pipeline locally: Batch Recast can export SVG, PNG, PDF, and
+  DOCX from the tray, all using the shared decorated QR sheet generator and deterministic batch
+  filenames.
+- Verified a seven-item browser-module export smoke: SVG produced two A4-style pages, PNG generated
+  as `image/png`, PDF included the second page footer, DOCX generated as a valid ZIP-based Word
+  document, and all formats shared the same `qr-recast-batch-{count}-{hash}` stem.

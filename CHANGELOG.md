@@ -16,6 +16,8 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 - Batch Recast core with a single/batch capture switch, versioned localStorage persistence,
   capture-to-name flow, editable names, drag and button reordering, duplicate warning, clear
   confirmation, delete undo, and restored session continuity.
+- Batch export pipeline for two-column SVG, PNG, PDF, and DOCX output with captions, branding,
+  deterministic batch filenames, PDF page footers, and DOCX SVG media plus PNG fallbacks.
 - QR type-detection registry with fixture coverage for URL, plain text, Wi-Fi, Apple Home, Matter,
   email, SMS/MMS, telephone, geo, calendar, contact, crypto, and app-link payloads.
 - `npm run check:qr-types` to keep QR type fixtures exercised during linting.

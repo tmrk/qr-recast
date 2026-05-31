@@ -30,6 +30,7 @@ export function HomeView() {
   const [namingItemId, setNamingItemId] = useState('');
   const [batchMessage, setBatchMessage] = useState('');
   const [batchWarning, setBatchWarning] = useState('');
+  const [batchExportFormat, setBatchExportFormat] = useState('');
   const [deletedItemState, setDeletedItemState] = useState(null);
   const [globalBrandingEnabled] = useBrandingPreference();
   const batchStore = useBatchStore();
@@ -129,6 +130,45 @@ export function HomeView() {
     setBatchMessage(strings.batch.restored);
   }
 
+  async function exportBatch(format) {
+    if (!batchStore.batch.items.length || batchExportFormat) {
+      return;
+    }
+
+    setBatchExportFormat(format);
+    setBatchMessage('');
+    setBatchWarning('');
+
+    try {
+      const [{ createBatchExport }, { shareOrSaveBlob, statusToMessage }] = await Promise.all([
+        import('../batch/exporters.js'),
+        import('../../lib/files.js'),
+      ]);
+      const { blob, fileName } = await createBatchExport(batchStore.batch.items, format);
+      const status = await shareOrSaveBlob({
+        blob,
+        fileName,
+        title: strings.appName,
+      });
+
+      trackAnalyticsEvent('batch_exported', {
+        count: batchStore.batch.items.length,
+        format,
+        result: status,
+      });
+      setBatchMessage(statusToMessage(status, strings.result));
+    } catch {
+      trackAnalyticsEvent('batch_exported', {
+        count: batchStore.batch.items.length,
+        format,
+        result: 'error',
+      });
+      setBatchWarning(strings.batch.exportError);
+    } finally {
+      setBatchExportFormat('');
+    }
+  }
+
   useEffect(() => {
     if (!encodedSharedPayload) {
       return undefined;
@@ -213,8 +253,10 @@ export function HomeView() {
             <Suspense fallback={null}>
               <BatchPanel
                 batch={batchStore.batch}
+                busyFormat={batchExportFormat}
                 onClear={batchStore.clearBatch}
                 onDelete={deleteBatchItem}
+                onExport={exportBatch}
                 onMove={batchStore.moveItem}
                 onRename={batchStore.renameItem}
                 persistenceError={batchStore.persistenceError}

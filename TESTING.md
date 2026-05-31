@@ -160,6 +160,10 @@
   and leaves existing batch state intact.
 - 2026-05-31: v2 Phase 5 GitHub Pages deployment run `26716545553` passed, and
   `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
+- 2026-05-31: v2 Phase 6 browser-module smoke generated a seven-item batch across SVG, PNG, PDF,
+  and DOCX: SVG contained two A4-style pages and seven captions, PNG returned `image/png`, PDF
+  included the second-page footer, DOCX returned a valid ZIP-based Word document, and filenames used
+  the shared `qr-recast-batch-7-{hash}` stem.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
@@ -334,13 +338,13 @@ Use freshly generated exports from the deployed app before ticking native-app ro
 
 ## v2 Batch Export Checks
 
-- [ ] Batch SVG lays out every item as a two-column print-friendly sheet with captions.
-- [ ] Batch PNG exports print-safe raster sheets and paginates when needed.
-- [ ] Batch PDF is true vector A4, paginated, two-column, with margins, gutters, footer, and page
+- [x] Batch SVG lays out every item as a two-column print-friendly sheet with captions.
+- [x] Batch PNG exports print-safe raster sheets and paginates when needed.
+- [x] Batch PDF is true vector A4, paginated, two-column, with margins, gutters, footer, and page
       numbers; no QR is split across pages.
 - [ ] Batch DOCX opens in Microsoft Word with a reliable two-column layout, SVG media, PNG fallback,
       and captions.
-- [ ] Filenames follow `qr-recast-batch-{count}-{shortHash}.{ext}`.
+- [x] Filenames follow `qr-recast-batch-{count}-{shortHash}.{ext}`.
 - [ ] Mobile file sharing uses `navigator.share({ files })` where supported and desktop downloads
       otherwise.
-- [ ] Export pending, success, cancellation, and error states are visible and non-jarring.
+- [x] Export pending, success, cancellation, and error states are visible and non-jarring.

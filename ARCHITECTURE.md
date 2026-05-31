@@ -244,9 +244,18 @@ state, so restored batches do not need to re-parse every payload on startup.
 
 ### 2026-05-31 — v2 Batch Export Layout
 
-Single and batch exports will share one decorated QR rendering path. Batch SVG and PNG exports will
-use generated sheet SVGs; PNG will rasterise each sheet at print-safe resolution. PDF will stay true
-vector with `jspdf` and `svg2pdf.js`, using A4 pages, two columns, fixed margins, gutters, captions,
-footers, and page numbers. DOCX will use a table-based two-column layout because it is the most
-predictable Word rendering path, with SVG media and PNG fallback for each QR. Heavy PDF and DOCX
-libraries remain lazy-loaded from export handlers.
+Single and batch exports share one decorated QR rendering path. `src/features/batch/exporters.js`
+first creates renderable items by generating the canonical QR SVG and applying the stored branding
+state through `createDecoratedQrSvg()`.
+
+Batch SVG exports use one tall, print-friendly SVG containing stacked A4-proportioned pages. Each
+page has two columns, three rows, fixed margins/gutters, a caption per item, and a QR Recast footer
+with page numbers. PNG export rasterises that same sheet SVG at 2x resolution, preserving the visual
+pagination in one image blob. This avoids a ZIP dependency for Phase 6 while keeping every QR at a
+scan-safe size.
+
+PDF stays true vector with `jspdf` and `svg2pdf.js`, using real A4 pages, two columns, fixed
+margins/gutters, captions, footers, and page numbers. DOCX uses one table-based two-column section
+per page because table layout is the most predictable Word rendering path; each QR is embedded as
+SVG media with a generated PNG fallback. Heavy PDF and DOCX libraries remain lazy-loaded from export
+handlers.
