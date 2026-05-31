@@ -18,6 +18,8 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
   confirmation, delete undo, and restored session continuity.
 - Batch export pipeline for two-column SVG, PNG, PDF, and DOCX output with captions, branding,
   deterministic batch filenames, PDF page footers, and DOCX SVG media plus PNG fallbacks.
+- Settings surface for branding, Batch Recast resume/clear management, analytics opt-out, and
+  About/Privacy in one mobile-first sheet.
 - QR type-detection registry with fixture coverage for URL, plain text, Wi-Fi, Apple Home, Matter,
   email, SMS/MMS, telephone, geo, calendar, contact, crypto, and app-link payloads.
 - `npm run check:qr-types` to keep QR type fixtures exercised during linting.
@@ -46,6 +48,8 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 - Refined the first-run camera copy, narrow mobile wrapping, Result payload identity, export action
   hierarchy, and app-bar Settings entry point for the v2 UX pass.
+- Migrated analytics opt-out persistence to the versioned `qr-recast:analytics:v1` key while
+  preserving existing local opt-outs.
 - Lazy-loaded QR, result, and document-export paths so the main bundle stays below the launch gzip
   budget.
 

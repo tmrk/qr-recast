@@ -21,6 +21,14 @@ export const strings = Object.freeze({
     brandingToggle: 'Brand QR exports',
     brandingStatus:
       'Branding is on by default and stays on this device; each Result can still override it.',
+    batchTitle: 'Batch Recast',
+    batchEmpty: 'No batch codes are saved on this device.',
+    batchOne: '{count} batch code is saved on this device.',
+    batchMany: '{count} batch codes are saved on this device.',
+    batchStorage: 'Batch names, order, and payload metadata stay in this browser localStorage.',
+    startBatch: 'Start batch',
+    resumeBatch: 'Resume batch',
+    clearBatch: 'Clear batch',
     analyticsTitle: 'Analytics',
     analyticsToggle: 'Share anonymised usage events',
     analyticsEnabled:

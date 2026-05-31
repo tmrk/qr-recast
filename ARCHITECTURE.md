@@ -259,3 +259,28 @@ margins/gutters, captions, footers, and page numbers. DOCX uses one table-based 
 per page because table layout is the most predictable Word rendering path; each QR is embedded as
 SVG media with a generated PNG fallback. Heavy PDF and DOCX libraries remain lazy-loaded from export
 handlers.
+
+### 2026-05-31 — v2 Settings and Preference Storage
+
+The Settings sheet is lazy-loaded from the app bar so Batch Recast management, Switch, Dialog, and
+related controls do not inflate the scanner's initial bundle. The sheet remains the single
+preferences surface for branding, batch management, analytics, and About/Privacy.
+
+Batch management in Settings reads the same `qr-recast:batch:v1` store as the scanner tray. Clear
+batch writes through the shared batch store, while Resume batch dispatches the local
+`qr-recast:batch-resume-requested` browser event that `HomeView` handles by returning to Batch
+Recast mode. This avoids introducing a global route state layer for one shell-to-route action.
+
+Preference storage keys are now all explicit and versioned:
+
+```js
+{
+  branding: 'qr-recast:preferences:v1',
+  analytics: 'qr-recast:analytics:v1',
+  batch: 'qr-recast:batch:v1'
+}
+```
+
+The analytics preference shape is `{ version: 1, optedOut: true, updatedAt }`. The old
+`qr-recast-analytics-opt-out` key is still read so existing opt-outs are preserved, then removed
+when the user next changes the analytics setting.

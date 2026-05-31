@@ -6,7 +6,7 @@ import { flushSync } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { trackAnalyticsEvent } from '../analytics/events.js';
 import { useBrandingPreference } from '../branding/preferences.js';
-import { useBatchStore } from '../batch/store.js';
+import { batchResumeEvent, useBatchStore } from '../batch/store.js';
 import { decodePayloadFromShareUrl } from '../../lib/qr.js';
 import { strings } from '../../strings.js';
 import { Viewfinder } from '../camera/Viewfinder.jsx';
@@ -168,6 +168,39 @@ export function HomeView() {
       setBatchExportFormat('');
     }
   }
+
+  useEffect(() => {
+    function resumeBatchFromSettings() {
+      const applyResume = () => {
+        setDecodedText('');
+        setBatchMode((currentMode) => {
+          if (!currentMode) {
+            trackAnalyticsEvent('batch_started', {
+              result: 'success',
+              source: 'settings',
+            });
+          }
+
+          return true;
+        });
+      };
+
+      if (!document.startViewTransition) {
+        applyResume();
+        return;
+      }
+
+      document.startViewTransition(() => {
+        flushSync(applyResume);
+      });
+    }
+
+    window.addEventListener(batchResumeEvent, resumeBatchFromSettings);
+
+    return () => {
+      window.removeEventListener(batchResumeEvent, resumeBatchFromSettings);
+    };
+  }, []);
 
   useEffect(() => {
     if (!encodedSharedPayload) {

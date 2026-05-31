@@ -1,5 +1,8 @@
 export const gaMeasurementId = import.meta.env.VITE_GA_MEASUREMENT_ID?.trim() ?? '';
-export const analyticsOptOutStorageKey = 'qr-recast-analytics-opt-out';
+export const analyticsPreferencesStorageKey = 'qr-recast:analytics:v1';
+export const legacyAnalyticsOptOutStorageKey = 'qr-recast-analytics-opt-out';
+
+const analyticsPreferenceVersion = 1;
 
 const safeEventNames = new Set([
   'batch_exported',
@@ -36,12 +39,13 @@ const safeParamValues = Object.freeze({
   ]),
   result: new Set(['cancelled', 'copied', 'error', 'saved', 'shared', 'success', 'too_large']),
   state: new Set(['disabled', 'enabled']),
-  source: new Set(['camera', 'shared_url', 'upload']),
+  source: new Set(['camera', 'settings', 'shared_url', 'upload']),
   surface: new Set(['decoded_text', 'result', 'settings']),
 });
 const safeNumberParamKeys = new Set(['count']);
 
 let analyticsInitialised = false;
+let analyticsOptOutFallback = false;
 
 export function initialiseAnalytics() {
   syncAnalyticsDisabledFlag();
@@ -97,25 +101,60 @@ export function isDoNotTrackEnabled() {
 }
 
 export function hasAnalyticsOptedOut() {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  return window.localStorage.getItem(analyticsOptOutStorageKey) === 'true';
+  return readAnalyticsPreferences().optedOut;
 }
 
 export function setAnalyticsOptOut(optedOut) {
   if (typeof window === 'undefined') {
+    analyticsOptOutFallback = Boolean(optedOut);
     return;
   }
 
-  if (optedOut) {
-    window.localStorage.setItem(analyticsOptOutStorageKey, 'true');
-  } else {
-    window.localStorage.removeItem(analyticsOptOutStorageKey);
+  const preferences = {
+    version: analyticsPreferenceVersion,
+    optedOut: Boolean(optedOut),
+    updatedAt: new Date().toISOString(),
+  };
+
+  analyticsOptOutFallback = Boolean(optedOut);
+
+  try {
+    window.localStorage.setItem(analyticsPreferencesStorageKey, JSON.stringify(preferences));
+    window.localStorage.removeItem(legacyAnalyticsOptOutStorageKey);
+  } catch {
+    syncAnalyticsDisabledFlag();
+    return;
   }
 
   syncAnalyticsDisabledFlag();
+}
+
+function readAnalyticsPreferences() {
+  if (typeof window === 'undefined') {
+    return { optedOut: analyticsOptOutFallback };
+  }
+
+  try {
+    const storedValue = window.localStorage.getItem(analyticsPreferencesStorageKey);
+
+    if (storedValue) {
+      const parsedValue = JSON.parse(storedValue);
+
+      if (parsedValue?.version === analyticsPreferenceVersion) {
+        return {
+          optedOut: parsedValue.optedOut === true,
+        };
+      }
+    }
+
+    return {
+      optedOut:
+        analyticsOptOutFallback ||
+        window.localStorage.getItem(legacyAnalyticsOptOutStorageKey) === 'true',
+    };
+  } catch {
+    return { optedOut: analyticsOptOutFallback };
+  }
 }
 
 function sanitiseParams(params) {

@@ -14,10 +14,13 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import { AboutSheet } from '../features/about/AboutSheet.jsx';
+import { lazy, Suspense, useState } from 'react';
 import { strings } from '../strings.js';
 import { useAppTheme } from '../theme/index.js';
+
+const AboutSheet = lazy(() =>
+  import('../features/about/AboutSheet.jsx').then((module) => ({ default: module.AboutSheet })),
+);
 
 const themeOptions = [
   { mode: 'system', label: strings.theme.system, icon: SettingsBrightnessRounded },
@@ -101,7 +104,11 @@ export function AppShell({ children, bottomSlot = null }) {
               );
             })}
           </Menu>
-          <AboutSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+          <Suspense fallback={null}>
+            {settingsOpen ? (
+              <AboutSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+            ) : null}
+          </Suspense>
         </Toolbar>
       </AppBar>
 

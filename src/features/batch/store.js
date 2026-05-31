@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 export const batchStorageKey = 'qr-recast:batch:v1';
 export const batchSchemaVersion = 1;
 export const batchNameMaxLength = 64;
+export const batchResumeEvent = 'qr-recast:batch-resume-requested';
 
 const batchChangeEvent = 'qr-recast:batch-changed';
 const emptyBatch = Object.freeze({
@@ -209,6 +210,14 @@ export function useBatchStore() {
     renameItem,
     restoreItem,
   };
+}
+
+export function requestBatchResume() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.dispatchEvent(new CustomEvent(batchResumeEvent));
 }
 
 function migrateBatch(value) {

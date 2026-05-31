@@ -3,6 +3,8 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-31: Added the v2 Settings surface for branding, Batch Recast management, analytics
+  opt-out migration, and About/Privacy.
 - 2026-05-31: Completed v2 Phase 6 after the Batch Recast export pipeline deployed through GitHub
   Pages.
 - 2026-05-31: Added the v2 batch export pipeline for two-column SVG, PNG, vector PDF, and DOCX

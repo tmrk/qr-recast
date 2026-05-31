@@ -206,3 +206,10 @@ This log is append-only. New entries go at the bottom.
   document, and all formats shared the same `qr-recast-batch-{count}-{hash}` stem.
 - Completed v2 Phase 6 after run `26716807897` deployed successfully and the live site returned
   HTTP 200 with the updated Pages artefact timestamp.
+- Plan: implement v2 Phase 7 by consolidating branding, batch management, analytics opt-out, and
+  About/Privacy into a tidy Settings surface with versioned preference storage.
+- Implemented the Phase 7 Settings surface locally: Settings now shows Batch Recast counts, resumes
+  batch capture, clears the saved batch with confirmation, keeps branding controls, and migrates
+  analytics opt-out into `qr-recast:analytics:v1`.
+- Verified the Phase 7 production preview at 390 px mobile width: batch resume/clear, branding
+  persistence, legacy analytics opt-out migration, and horizontal overflow checks all passed.

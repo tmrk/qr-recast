@@ -166,6 +166,11 @@
   the shared `qr-recast-batch-7-{hash}` stem.
 - 2026-05-31: v2 Phase 6 GitHub Pages deployment run `26716807897` passed, and
   `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
+- 2026-05-31: v2 Phase 7 production preview verified Settings at 390 px mobile width with a stored
+  batch item: the sheet showed the batch count, Resume batch returned to the tray, Clear batch
+  emptied `qr-recast:batch:v1` after confirmation, branding persisted in
+  `qr-recast:preferences:v1`, legacy analytics opt-out migrated to `qr-recast:analytics:v1`, and no
+  horizontal overflow appeared.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

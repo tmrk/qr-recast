@@ -23,6 +23,9 @@ QR Recast v2 adds three connected capabilities:
 Batch progress is stored only in your browser localStorage on your device; source photos, QR
 contents, names, and batch metadata are not sent to a server.
 
+Settings keeps branding, Batch Recast management, analytics opt-out, version/build details, and the
+on-device privacy note in one place.
+
 ## Development
 
 ```sh

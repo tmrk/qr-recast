@@ -119,6 +119,17 @@
   background: rgb(var(--qr-palette-surface-containerLowestChannel) / 0.76);
 }
 
+.about-sheet__section-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.about-sheet__section-actions .MuiButton-root {
+  min-height: 44px;
+  min-width: 0;
+}
+
 .about-sheet__section-title {
   margin: 0;
   font-weight: 720;
