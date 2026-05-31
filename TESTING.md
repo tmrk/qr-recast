@@ -6,6 +6,7 @@
 - `npm run build`
 - `npm run format:check`
 - `npm run check:spelling`
+- `npm run check:qr-types`
 
 ## Local Preview Checks
 
@@ -259,24 +260,24 @@ Use freshly generated exports from the deployed app before ticking native-app ro
 
 ## v2 Type Fixture Matrix
 
-- [ ] URL with `https://` is classified as a web address with scheme, host, and path fields.
-- [ ] Bare domain is classified as a web address only when the heuristic is confident.
-- [ ] Plain text falls back cleanly with no invented fields.
-- [ ] Wi-Fi `WIFI:` payload parses auth type, SSID, password, hidden state, and EAP fields where
+- [x] URL with `https://` is classified as a web address with scheme, host, and path fields.
+- [x] Bare domain is classified as a web address only when the heuristic is confident.
+- [x] Plain text falls back cleanly with no invented fields.
+- [x] Wi-Fi `WIFI:` payload parses auth type, SSID, password, hidden state, and EAP fields where
       present; password stays masked until reveal.
-- [ ] Apple Home `X-HM://` payload is classified as an Apple Home accessory after format
+- [x] Apple Home `X-HM://` payload is classified as an Apple Home accessory after format
       verification; parsed fields are shown only where reliable.
-- [ ] Matter `MT:` payload is classified as a Matter device after CSA format verification; manual
+- [x] Matter `MT:` payload is classified as a Matter device after CSA format verification; manual
       code is shown only if derivable without fragile decoding.
-- [ ] Email `mailto:`, `MATMSG:`, and `SMTP:` examples classify with address, subject, and body
+- [x] Email `mailto:`, `MATMSG:`, and `SMTP:` examples classify with address, subject, and body
       where available.
-- [ ] SMS and MMS examples classify with number and body.
-- [ ] Telephone `tel:` examples classify with number.
-- [ ] Geo `geo:` examples classify with latitude, longitude, and optional query.
-- [ ] Calendar `BEGIN:VEVENT` examples classify with summary, start, end, and location where
+- [x] SMS and MMS examples classify with number and body.
+- [x] Telephone `tel:` examples classify with number.
+- [x] Geo `geo:` examples classify with latitude, longitude, and optional query.
+- [x] Calendar `BEGIN:VEVENT` examples classify with summary, start, end, and location where
       available.
-- [ ] vCard and MeCard examples classify with name, phone, email, and organisation where available.
-- [ ] Common app and crypto schemes classify as deep link or crypto without over-parsing.
+- [x] vCard and MeCard examples classify with name, phone, email, and organisation where available.
+- [x] Common app and crypto schemes classify as deep link or crypto without over-parsing.
 
 ## v2 Branding Checks
 

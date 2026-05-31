@@ -16,9 +16,13 @@ const safeParamValues = Object.freeze({
   format: new Set(['docx', 'pdf', 'png', 'svg']),
   method: new Set(['clipboard', 'download', 'file_share', 'native_share']),
   payload_kind: new Set([
+    'app',
     'calendar',
+    'crypto',
     'email',
     'geo',
+    'homekit',
+    'matter',
     'phone',
     'sms',
     'text',

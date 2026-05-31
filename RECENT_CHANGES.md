@@ -3,6 +3,8 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-05-31: Added the v2 QR type-detection registry with fixtures for URL, Wi-Fi, Apple Home,
+  Matter, email, SMS, telephone, geo, calendar, contact, crypto, app-link, and plain text payloads.
 - 2026-05-31: Completed v2 Phase 1 after the refined capture and Result flow deployed through
   GitHub Pages.
 - 2026-05-31: Refined the first-run camera screen and Result action hierarchy for v2 Phase 1,

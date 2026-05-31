@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint . && npm run check:spelling",
+    "lint": "eslint . && npm run check:spelling && npm run check:qr-types",
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "check:qr-types": "node scripts/check-qr-types.mjs",
     "generate:icons": "node scripts/generate-icons.mjs",
     "check:spelling": "node scripts/check-spelling.mjs",
     "prepare": "husky"

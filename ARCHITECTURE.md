@@ -130,11 +130,11 @@ export handlers so the initial scanner bundle stays small.
 
 ### 2026-05-31 — v2 Type-detection Registry
 
-QR Recast v2 will add `src/lib/qr-types/` as a registry of pure detector functions rather than
-expanding the existing lightweight `payload.js` helper. The resolver will run every detector,
-discard `null` results, and choose the highest-confidence result, with a plain-text fallback. This
-keeps the decode pipeline stable, makes detectors fixture-testable, and avoids mixing UI labels with
-camera or export logic.
+QR Recast v2 adds `src/lib/qr-types/` as a registry of pure detector functions rather than keeping
+the old lightweight `payload.js` pattern. The resolver runs every detector, discards `null` results,
+and chooses the highest-confidence result, with a plain-text fallback. This keeps the decode
+pipeline stable, makes detectors fixture-testable, and avoids mixing camera or export logic with the
+parsing rules.
 
 The normalised detector result shape is:
 
@@ -152,6 +152,23 @@ The normalised detector result shape is:
 
 Existing analytics `payload_kind` values will be mapped from this richer type object so analytics
 still never receives QR payload content.
+
+Apple's public `HMAccessorySetupPayload` documentation confirms HomeKit setup payloads are URLs and
+states that payload content details require the MFi Programme:
+https://developer.apple.com/documentation/homekit/hmaccessorysetuppayload. Community tooling and
+examples consistently use `X-HM://...`, with the first nine characters carrying encoded parameters
+and the remaining characters commonly acting as the setup ID:
+https://github.com/SimonGolms/homekit-code. QR Recast therefore classifies `X-HM://` payloads as
+Apple Home accessories and exposes the encoded payload/setup ID where present, but does not decode
+the private MFi-only setup code.
+
+For Matter, the CSA Matter 1.4 Core Specification is the authoritative source
+(`24-27349-006_Matter-1.4-Core-Specification.pdf`), while Silicon Labs' Matter commissioning guide
+documents scanned QR payloads in the `MT:Y.K9042C00KA0648G00` form and lists the onboarding data
+they carry: https://docs.silabs.com/matter/2.4.0/matter-overview-guides/matter-commissioning. QR
+Recast validates the `MT:` prefix and Base-38 shape (`0-9`, `A-Z`, `-`, `.` and chunk separators)
+but deliberately avoids fragile full onboarding decoding until a small, well-sourced decoder is
+worth the extra surface area.
 
 ### 2026-05-31 — v2 Branding Assets and Trademark Handling
 

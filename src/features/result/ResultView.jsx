@@ -41,7 +41,8 @@ import {
   createSvgExport,
 } from '../../lib/exporters.js';
 import { shareOrCopyUrl, shareOrSaveBlob, statusToMessage } from '../../lib/files.js';
-import { detectPayloadKind, extractPayloadUrl } from '../../lib/payload.js';
+import { extractPayloadUrl } from '../../lib/payload.js';
+import { detectQrType, payloadKindFromQrType } from '../../lib/qr-types/index.js';
 import { SHARE_URL_MAX_LENGTH, buildShareUrl, createQrSvg, hashTextPrefix } from '../../lib/qr.js';
 import { strings } from '../../strings.js';
 
@@ -120,10 +121,11 @@ export function ResultView({ onScanAgain, text }) {
   }, [text]);
 
   const payloadPreview = useMemo(() => text.trim() || strings.result.emptyPayload, [text]);
-  const payloadKind = useMemo(() => detectPayloadKind(text), [text]);
+  const qrType = useMemo(() => detectQrType(text), [text]);
+  const payloadKind = useMemo(() => payloadKindFromQrType(qrType), [qrType]);
   const payloadUrl = useMemo(() => extractPayloadUrl(text), [text]);
   const payloadKindLabel =
-    strings.result.payloadKinds[payloadKind] ?? strings.result.payloadKinds.text;
+    qrType.label || strings.result.payloadKinds[payloadKind] || strings.result.payloadKinds.text;
   const decodedTextCopied = copiedDecodedText === text;
   const shareUrl = shareUrlState.text === text ? shareUrlState.url : '';
   const copiedShareUrl = copiedShareUrlState.text === text ? copiedShareUrlState.url : '';

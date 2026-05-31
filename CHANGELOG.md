@@ -8,6 +8,9 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ### Added
 
+- QR type-detection registry with fixture coverage for URL, plain text, Wi-Fi, Apple Home, Matter,
+  email, SMS/MMS, telephone, geo, calendar, contact, crypto, and app-link payloads.
+- `npm run check:qr-types` to keep QR type fixtures exercised during linting.
 - Started the v2 release track for type recognition, branding, Batch Recast, and the supporting UX
   audit and architecture notes.
 - Mobile-first Material UI PWA shell with light and dark colour schemes, safe-area support,
