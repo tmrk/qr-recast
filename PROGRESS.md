@@ -193,3 +193,5 @@ This log is append-only. New entries go at the bottom.
 - Verified the Phase 5 local preview with generated QR uploads for Matter and Apple Home payloads:
   add, name, reorder, delete/undo, reload persistence, duplicate warning, and branded thumbnail
   metadata all worked without affecting `?q=` shared-link loading.
+- Completed v2 Phase 5 after run `26716545553` deployed successfully and the live site returned
+  HTTP 200 with the updated Pages artefact timestamp.

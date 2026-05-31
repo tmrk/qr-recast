@@ -127,7 +127,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
       monospace copy affordance.
 - [x] Phase 4 — Branding/decorator layer: type-appropriate branding around the re-cast QR; on by
       default; user-toggleable globally and per result; branding flows through to all exports.
-- [ ] Phase 5 — Batch Recast core: batch store with versioned localStorage persistence, capture,
+- [x] Phase 5 — Batch Recast core: batch store with versioned localStorage persistence, capture,
       add, name, edit, reorder, delete, duplicate warning, and clear single/batch mode transitions.
 - [ ] Phase 6 — Batch export pipeline: two-column, paginated SVG, PNG, PDF, and DOCX containing
       every QR with its name and branding; correct pagination and typography; share or download per

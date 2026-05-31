@@ -158,6 +158,8 @@
 - 2026-05-31: v2 Phase 5 local preview verified Clear batch requires confirmation and empties the
   stored item list; a `?q=` shared-link load still opens the Result view, clears the query string,
   and leaves existing batch state intact.
+- 2026-05-31: v2 Phase 5 GitHub Pages deployment run `26716545553` passed, and
+  `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix
