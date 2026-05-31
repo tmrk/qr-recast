@@ -165,3 +165,5 @@ This log is append-only. New entries go at the bottom.
   payload family, analytics mapping, and integration into the existing decode/result flow.
 - Implemented the Phase 2 type registry, fixture check, analytics mapping, and Result identity
   integration; `npm run check:qr-types` now validates all required type fixtures.
+- Completed v2 Phase 2 after run `26713715277` deployed successfully and the live site returned
+  HTTP 200 with the updated Pages artefact timestamp.
