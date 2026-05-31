@@ -213,3 +213,5 @@ This log is append-only. New entries go at the bottom.
   analytics opt-out into `qr-recast:analytics:v1`.
 - Verified the Phase 7 production preview at 390 px mobile width: batch resume/clear, branding
   persistence, legacy analytics opt-out migration, and horizontal overflow checks all passed.
+- Completed v2 Phase 7 after run `26717220227` deployed successfully and the live site returned
+  HTTP 200 with the updated Pages artefact timestamp.

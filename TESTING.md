@@ -171,6 +171,8 @@
   emptied `qr-recast:batch:v1` after confirmation, branding persisted in
   `qr-recast:preferences:v1`, legacy analytics opt-out migrated to `qr-recast:analytics:v1`, and no
   horizontal overflow appeared.
+- 2026-05-31: v2 Phase 7 GitHub Pages deployment run `26717220227` passed, and
+  `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
 - [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
 
 ## Manual Browser Matrix

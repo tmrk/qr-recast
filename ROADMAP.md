@@ -132,7 +132,7 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 - [x] Phase 6 — Batch export pipeline: two-column, paginated SVG, PNG, PDF, and DOCX containing
       every QR with its name and branding; correct pagination and typography; share or download per
       platform.
-- [ ] Phase 7 — Settings and persistence surface: tidy settings sheet for branding toggle, batch
+- [x] Phase 7 — Settings and persistence surface: tidy settings sheet for branding toggle, batch
       management, analytics opt-out, and About/Privacy.
 - [ ] Phase 8 — Hardening, tests, docs, and release: manual matrix, fixtures, Lighthouse and bundle
       budgets, docs finalised, `v2.0.0` tagged, and GitHub release written.
