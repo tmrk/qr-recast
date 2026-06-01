@@ -6,6 +6,21 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-06-01
+
+### Changed
+
+- Refined Apple Home and Matter branded setup-card artwork to match real setup-label conventions:
+  Apple Home uses the supplied house mark with a two-line eight-digit code above the QR, while
+  Matter uses the supplied full-width wordmark with the dashed manual code below the QR.
+- Preserved non-square branded setup-card proportions through preview rendering and SVG, PNG, PDF,
+  DOCX, and Batch Recast export paths.
+
+### Fixed
+
+- Decoded the eight-digit Apple Home setup code from `X-HM://` QR payloads instead of using the
+  four-character setup ID as the printed code.
+
 ## [2.0.0] - 2026-05-31
 
 ### Added

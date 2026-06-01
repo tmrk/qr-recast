@@ -1,4 +1,4 @@
-import { svgToBlob, svgToPngBlob } from './qr.js';
+import { getSvgDimensions, svgToBlob, svgToPngBlob } from './qr.js';
 
 export async function createSvgExport(svgString) {
   return svgToBlob(svgString);
@@ -12,12 +12,16 @@ export async function createPdfExport(svgString) {
   const [{ jsPDF }, { svg2pdf }] = await Promise.all([import('jspdf'), import('svg2pdf.js')]);
   const pdf = new jsPDF({ format: 'a4', orientation: 'portrait', unit: 'mm' });
   const svgElement = parseSvg(svgString);
+  const artworkSize = fitDimensions(getSvgDimensions(svgString), {
+    maxHeight: 176,
+    maxWidth: 128,
+  });
 
   await svg2pdf(svgElement, pdf, {
-    x: 45,
-    y: 58,
-    width: 120,
-    height: 120,
+    height: artworkSize.height,
+    width: artworkSize.width,
+    x: (210 - artworkSize.width) / 2,
+    y: 48,
   });
 
   pdf.setFontSize(10);
@@ -34,6 +38,10 @@ export async function createDocxExport(svgString) {
   ]);
   const svgBytes = new TextEncoder().encode(svgString);
   const pngBuffer = await pngBlob.arrayBuffer();
+  const artworkSize = fitDimensions(getSvgDimensions(svgString), {
+    maxHeight: 430,
+    maxWidth: 320,
+  });
   const document = new Document({
     sections: [
       {
@@ -45,8 +53,8 @@ export async function createDocxExport(svgString) {
                 type: 'svg',
                 data: svgBytes,
                 transformation: {
-                  width: 320,
-                  height: 320,
+                  height: Math.round(artworkSize.height),
+                  width: Math.round(artworkSize.width),
                 },
                 fallback: {
                   type: 'png',
@@ -70,6 +78,19 @@ export async function createDocxExport(svgString) {
   });
 
   return Packer.toBlob(document);
+}
+
+function fitDimensions({ height, width }, { maxHeight, maxWidth }) {
+  if (!Number.isFinite(height) || !Number.isFinite(width) || height <= 0 || width <= 0) {
+    return { height: maxWidth, width: maxWidth };
+  }
+
+  const scale = Math.min(maxWidth / width, maxHeight / height);
+
+  return {
+    height: height * scale,
+    width: width * scale,
+  };
 }
 
 function parseSvg(svgString) {

@@ -218,6 +218,13 @@ This log is append-only. New entries go at the bottom.
 - Plan: complete v2 Phase 8 by running the final automated checks, Lighthouse and bundle budgets,
   documenting remaining real-device limits, updating release docs, bumping to `v2.0.0`, tagging,
   and publishing the GitHub release.
+- Plan: refine Apple Home and Matter branded QR layouts from the supplied examples, preserve setup-card
+  aspect ratios through exports, bump the app version, and verify the result locally before release.
+- Implemented the v2.0.1 setup-card pass locally: Apple Home now decodes and displays the
+  eight-digit setup code in two lines, Matter uses the supplied full-width replica mark and dashed
+  manual code below the QR, and setup-card aspect ratios are preserved in single and batch exports.
+- Verified the v2.0.1 local gates: lint, build, dev-browser previews for Apple Home and Matter, and
+  raster decode checks for both branded setup-card SVGs.
 - Implemented final v2 hardening locally: bumped the package to `2.0.0`, deferred the PWA
   registration script, added a static first-screen fallback, and updated release documentation.
 - Verified final local gates for `2.0.0`: lint, build, format check, spelling, QR type fixtures,

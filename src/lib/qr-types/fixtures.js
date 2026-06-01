@@ -24,7 +24,10 @@ export const qrTypeFixtures = Object.freeze([
     type: 'wifi',
   },
   {
-    fieldKeys: ['setupPayload', 'encodedParameters', 'setupId'],
+    expectedFields: {
+      setupCode: '84131633',
+    },
+    fieldKeys: ['setupCode', 'setupPayload', 'encodedParameters', 'setupId'],
     name: 'Apple Home setup payload',
     payload: 'X-HM://0081YCYEP3QYT',
     type: 'homekit',

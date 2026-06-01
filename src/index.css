@@ -711,7 +711,6 @@
 
 .result-view__qr {
   width: min(100%, 320px);
-  aspect-ratio: 1;
   display: grid;
   place-items: center;
 }

@@ -142,3 +142,5 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 - [x] Fix Batch Recast scan entry, improve setup-card branding for Matter and Apple Home codes, and
       verify the revised branded SVGs still decode after rasterisation.
 - [x] Correct Matter manual setup-code generation from QR onboarding payloads.
+- [x] Refine Apple Home and Matter setup-card layouts from supplied examples, preserve non-square
+      export proportions, and bump the app to `v2.0.1`.

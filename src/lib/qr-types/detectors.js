@@ -110,11 +110,13 @@ function detectHomeKit(raw) {
   const payload = match[1].toUpperCase();
   const encodedParameters = payload.slice(0, 9);
   const setupId = payload.slice(9);
+  const setupCode = decodeHomeKitSetupCode(encodedParameters);
 
   return createResult({
     branding: { kind: 'homekit', label: typeLabels.homekit },
     confidence: payload.length >= 9 ? 0.92 : 0.7,
     fields: compactFields([
+      createField('setupCode', setupCode),
       createField('setupPayload', text),
       createField('encodedParameters', encodedParameters),
       createField('setupId', setupId),
@@ -124,6 +126,26 @@ function detectHomeKit(raw) {
     raw,
     type: 'homekit',
   });
+}
+
+function decodeHomeKitSetupCode(encodedParameters) {
+  if (!/^[0-9A-Z]{9}$/.test(encodedParameters)) {
+    return '';
+  }
+
+  let value = 0n;
+
+  for (const character of encodedParameters) {
+    value = value * 36n + BigInt(parseInt(character, 36));
+  }
+
+  const setupCode = value & 0x7ffffffn;
+
+  if (setupCode <= 0n) {
+    return '';
+  }
+
+  return setupCode.toString().padStart(8, '0');
 }
 
 function detectMatter(raw) {

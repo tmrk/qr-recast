@@ -211,6 +211,7 @@ export const strings = Object.freeze({
       phone: 'Phone',
       query: 'Query',
       scheme: 'Scheme',
+      setupCode: 'Setup code',
       setupId: 'Setup ID',
       setupPayload: 'Setup payload',
       ssid: 'Network name',

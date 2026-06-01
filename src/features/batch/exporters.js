@@ -1,4 +1,4 @@
-import { createQrSvg, hashTextPrefix, svgToBlob } from '../../lib/qr.js';
+import { createQrSvg, getSvgDimensions, hashTextPrefix, svgToBlob } from '../../lib/qr.js';
 import { createDecoratedQrSvg } from '../branding/decorator.js';
 
 const svgPage = Object.freeze({
@@ -263,9 +263,13 @@ async function createDocxCell(item, { AlignmentType, ImageRun, Paragraph, TableC
     });
   }
 
-  const pngBlob = await batchSvgToPngBlob(item.svg, { height: 720, width: 720 });
+  const pngBlob = await batchSvgToPngBlob(item.svg, { contain: true, height: 720, width: 720 });
   const svgBytes = new TextEncoder().encode(item.svg);
   const pngBuffer = await pngBlob.arrayBuffer();
+  const artworkSize = fitDimensions(getSvgDimensions(item.svg), {
+    maxHeight: 210,
+    maxWidth: 170,
+  });
 
   return new TableCell({
     children: [
@@ -275,7 +279,10 @@ async function createDocxCell(item, { AlignmentType, ImageRun, Paragraph, TableC
           new ImageRun({
             type: 'svg',
             data: svgBytes,
-            transformation: { height: 170, width: 170 },
+            transformation: {
+              height: Math.round(artworkSize.height),
+              width: Math.round(artworkSize.width),
+            },
             fallback: {
               type: 'png',
               data: pngBuffer,
@@ -318,7 +325,7 @@ function renderSvgCaption(caption, x, y, maxWidth) {
   return `<text x="${x}" y="${y}" text-anchor="middle" fill="#1f2933" font-family="Roboto Flex, Roboto, Arial, sans-serif" font-size="18" font-weight="700" textLength="${Math.min(maxWidth, caption.length * 9)}" lengthAdjust="spacingAndGlyphs">${escapeXml(caption)}</text>`;
 }
 
-async function batchSvgToPngBlob(svgString, { height, width }) {
+async function batchSvgToPngBlob(svgString, { contain = false, height, width }) {
   const image = new Image();
   const url = URL.createObjectURL(svgToBlob(svgString));
   const scale = 2;
@@ -341,7 +348,11 @@ async function batchSvgToPngBlob(svgString, { height, width }) {
     canvas.height = height * scale;
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    drawImageToCanvas(context, image, svgString, {
+      contain,
+      height: canvas.height,
+      width: canvas.width,
+    });
 
     return await new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
@@ -356,6 +367,33 @@ async function batchSvgToPngBlob(svgString, { height, width }) {
   } finally {
     URL.revokeObjectURL(url);
   }
+}
+
+function drawImageToCanvas(context, image, svgString, { contain, height, width }) {
+  if (!contain) {
+    context.drawImage(image, 0, 0, width, height);
+    return;
+  }
+
+  const sourceSize = getSvgDimensions(svgString);
+  const fittedSize = fitDimensions(sourceSize, { maxHeight: height, maxWidth: width });
+  const x = (width - fittedSize.width) / 2;
+  const y = (height - fittedSize.height) / 2;
+
+  context.drawImage(image, x, y, fittedSize.width, fittedSize.height);
+}
+
+function fitDimensions({ height, width }, { maxHeight, maxWidth }) {
+  if (!Number.isFinite(height) || !Number.isFinite(width) || height <= 0 || width <= 0) {
+    return { height: maxWidth, width: maxWidth };
+  }
+
+  const scale = Math.min(maxWidth / width, maxHeight / height);
+
+  return {
+    height: height * scale,
+    width: width * scale,
+  };
 }
 
 function parseSvg(svgString) {
