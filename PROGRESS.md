@@ -263,3 +263,9 @@ This log is append-only. New entries go at the bottom.
 - Verified the review fix with lint, spelling, QR type fixtures, format check, production build,
   source PDF fill checks, and a fresh 4184 preview showing light backgrounds, no Batch duplicate
   camera action, hidden idle video, and no preview console errors.
+- Plan: centre the idle Batch Recast panel so it matches the Single capture screen hierarchy while
+  keeping the batch tray low during active scanning.
+- Implemented the Batch panel placement fix: idle batch content now uses the viewfinder centreline
+  instead of the bottom slot baseline.
+- Verified a fresh 4185 preview measured the Batch panel centre exactly on the viewfinder centre,
+  with no duplicate camera action.

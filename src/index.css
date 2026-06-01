@@ -476,7 +476,9 @@
 }
 
 .viewfinder--status.viewfinder--with-bottom-slot .viewfinder__bottom-slot {
-  bottom: max(20px, env(safe-area-inset-bottom));
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
 }
 
 .viewfinder__top-slot > *,

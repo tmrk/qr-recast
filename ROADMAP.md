@@ -147,3 +147,4 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 - [x] Fix duplicate Batch Recast camera entry, align Settings controls, and add the in-sheet colour
       scheme selector.
 - [x] Correct Batch Recast light-mode surfaces and make PDF export page backgrounds white.
+- [x] Centre the idle Batch Recast panel to match the Single capture screen.
