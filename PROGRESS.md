@@ -233,3 +233,11 @@ This log is append-only. New entries go at the bottom.
 - Verified the hardening build with lint, spelling, QR type fixtures, format check, production build,
   390 x 844 local preview checks, and headless Chrome raster decode checks for Matter and Apple Home
   branded SVGs.
+
+- Plan: diagnose the Matter setup-code mismatch from the supplied photo and recast screenshot, then correct the branding label so it derives the right install number.
+- Analysed `IMG_3990.HEIC` and the recast screenshot: the decoded QR payload was
+  `MT:OA3126F-034OCH6VQ00`, the screenshot showed `2396-352-0398`, and the printed label showed
+  `2590-602-0391`.
+- Corrected the Matter manual-code chunk packing and bit reader, added fixture coverage for the
+  supplied payload, and verified a fresh local preview showed `25906020391` without the stale
+  `23963520398` value.

@@ -3,6 +3,8 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-06-01: Corrected Matter manual setup-code generation so branded recasts match the code
+  printed on Matter setup labels.
 - 2026-05-31: Hardened Batch Recast entry and setup-code branding with batch-local scan actions,
   Matter manual-code extraction, and cleaner Matter/Apple Home setup-card exports.
 - 2026-05-31: Released QR Recast v2.0.0 with final checks, tag, GitHub release notes, and live

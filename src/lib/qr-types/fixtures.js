@@ -31,11 +31,20 @@ export const qrTypeFixtures = Object.freeze([
   },
   {
     expectedFields: {
-      manualCode: '30219912332',
+      manualCode: '34970112332',
     },
     fieldKeys: ['manualCode', 'onboardingPayload', 'payloadFormat'],
     name: 'Matter onboarding payload',
     payload: 'MT:Y.K9042C00KA0648G00',
+    type: 'matter',
+  },
+  {
+    expectedFields: {
+      manualCode: '25906020391',
+    },
+    fieldKeys: ['manualCode', 'onboardingPayload', 'payloadFormat'],
+    name: 'Matter label setup payload',
+    payload: 'MT:OA3126F-034OCH6VQ00',
     type: 'matter',
   },
   {

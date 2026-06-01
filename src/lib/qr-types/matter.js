@@ -36,23 +36,29 @@ export function parseMatterQrPayload(raw) {
   }
 
   try {
-    const decodedBytes = decodeBase38(match[1].toUpperCase()).reverse();
+    const decodedBytes = decodeBase38(match[1].toUpperCase());
 
     if (decodedBytes.length < 11) {
       return null;
     }
 
     const reader = createBitReader(decodedBytes);
-    reader.read(4);
-    const pincode = reader.read(27);
-    const discriminator = reader.read(12);
-    const discovery = reader.read(8);
-    const flow = reader.read(2);
-    const productId = reader.read(16);
-    const vendorId = reader.read(16);
     const version = reader.read(3);
+    const vendorId = reader.read(16);
+    const productId = reader.read(16);
+    const flow = reader.read(2);
+    const discovery = reader.read(8);
+    const discriminator = reader.read(12);
+    const pincode = reader.read(27);
+    const padding = reader.read(4);
 
-    if (reader.invalid || version !== 0 || pincode < 1 || pincode > matterMaximumSetupPin) {
+    if (
+      reader.invalid ||
+      version !== 0 ||
+      padding !== 0 ||
+      pincode < 1 ||
+      pincode > matterMaximumSetupPin
+    ) {
       return null;
     }
 
@@ -132,7 +138,6 @@ function decodeBase38(input) {
 }
 
 function createBitReader(bytes) {
-  const bits = bytes.map((byte) => byte.toString(2).padStart(8, '0')).join('');
   let offset = 0;
 
   return {
@@ -140,12 +145,21 @@ function createBitReader(bytes) {
     read(length) {
       const nextOffset = offset + length;
 
-      if (nextOffset > bits.length) {
+      if (nextOffset > bytes.length * 8) {
         this.invalid = true;
         return 0;
       }
 
-      const value = Number.parseInt(bits.slice(offset, nextOffset), 2);
+      let value = 0;
+
+      for (let bitsRead = 0; bitsRead < length; bitsRead += 1) {
+        const bitIndex = offset + bitsRead;
+
+        if (bytes[Math.floor(bitIndex / 8)] & (1 << (bitIndex % 8))) {
+          value += 2 ** bitsRead;
+        }
+      }
+
       offset = nextOffset;
 
       return value;
@@ -157,7 +171,7 @@ function createMatterManualCode({ discriminator, flow, pincode, productId, vendo
   const shortDiscriminator = discriminator >> 8;
   const hasVendorProduct = flow !== matterStandardFlow;
   const chunk1 = ((shortDiscriminator >> 2) & 0x3) | (hasVendorProduct ? 0x4 : 0);
-  const chunk2 = ((pincode & 0x3fff) << 2) | (shortDiscriminator & 0x3);
+  const chunk2 = ((shortDiscriminator & 0x3) << 14) | (pincode & 0x3fff);
   const chunk3 = (pincode >> 14) & 0x1fff;
   let payload = `${chunk1}${padNumber(chunk2, 5)}${padNumber(chunk3, 4)}`;
 
