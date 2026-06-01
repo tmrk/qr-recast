@@ -16,6 +16,9 @@ dist-ssr
 !.env.example
 coverage
 
+# Local agent tooling
+.claude/settings.local.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
