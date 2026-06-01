@@ -146,3 +146,4 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
       export proportions, and bump the app to `v2.0.1`.
 - [x] Fix duplicate Batch Recast camera entry, align Settings controls, and add the in-sheet colour
       scheme selector.
+- [x] Correct Batch Recast light-mode surfaces and make PDF export page backgrounds white.

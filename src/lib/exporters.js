@@ -17,6 +17,8 @@ export async function createPdfExport(svgString) {
     maxWidth: 128,
   });
 
+  pdf.setFillColor(255, 255, 255);
+  pdf.rect(0, 0, 210, 297, 'F');
   await svg2pdf(svgElement, pdf, {
     height: artworkSize.height,
     width: artworkSize.width,

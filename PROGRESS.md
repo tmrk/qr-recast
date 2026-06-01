@@ -255,3 +255,11 @@ This log is append-only. New entries go at the bottom.
 - Verified the fix with lint, spelling, QR type fixtures, format check, production build, and a
   fresh local preview that confirmed one Batch camera-start action, the `data-light` theme switch,
   aligned Settings controls, and no preview console errors.
+- Plan: review the Batch Recast and export fixes, remove the idle camera black surface in light
+  mode, and force PDF export pages to print on white.
+- Corrected the review findings locally: the camera video layer is hidden until active, invalid
+  custom surface-channel CSS references now use real theme variables, and single plus batch PDF page
+  fills are explicitly white.
+- Verified the review fix with lint, spelling, QR type fixtures, format check, production build,
+  source PDF fill checks, and a fresh 4184 preview showing light backgrounds, no Batch duplicate
+  camera action, hidden idle video, and no preview console errors.

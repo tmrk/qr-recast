@@ -196,7 +196,7 @@ ${cells}
 }
 
 async function renderPdfPage(pdf, { cellWidth, items, pageCount, pageIndex, svg2pdf }) {
-  pdf.setFillColor(247, 251, 248);
+  pdf.setFillColor(255, 255, 255);
   pdf.rect(0, 0, pdfPage.width, pdfPage.height, 'F');
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(16);

@@ -293,10 +293,12 @@ export function Viewfinder({
 
   const showStatusPanel = showStatusCard && status !== 'ready' && !detected;
   const hasStatusLayout = status !== 'ready' && !detected;
+  const hasActiveCameraLayer = status === 'ready' || detected;
   const copy = statusCopy[status] ?? statusCopy.error;
   const hasBottomSlot = Boolean(bottomSlot);
   const viewfinderClassName = [
     'viewfinder',
+    hasActiveCameraLayer ? 'viewfinder--camera-active' : '',
     hasStatusLayout ? 'viewfinder--status' : '',
     hasBottomSlot ? 'viewfinder--with-bottom-slot' : '',
   ]
