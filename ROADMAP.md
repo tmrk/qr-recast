@@ -144,3 +144,5 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 - [x] Correct Matter manual setup-code generation from QR onboarding payloads.
 - [x] Refine Apple Home and Matter setup-card layouts from supplied examples, preserve non-square
       export proportions, and bump the app to `v2.0.1`.
+- [x] Fix duplicate Batch Recast camera entry, align Settings controls, and add the in-sheet colour
+      scheme selector.

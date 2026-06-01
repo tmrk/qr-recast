@@ -48,6 +48,7 @@ const statusCopy = {
  *     status: string,
  *   }) => void,
  *   onDetected: (text: string) => void,
+ *   showStatusCard?: boolean,
  * }} props
  */
 export function Viewfinder({
@@ -55,6 +56,7 @@ export function Viewfinder({
   continueAfterDetected = false,
   onControlsChange = null,
   onDetected,
+  showStatusCard = true,
   topSlot = null,
 }) {
   const sectionRef = useRef(null);
@@ -289,12 +291,13 @@ export function Viewfinder({
 
   useEffect(() => () => stopStream(), [stopStream]);
 
-  const showStatusPanel = status !== 'ready' && !detected;
+  const showStatusPanel = showStatusCard && status !== 'ready' && !detected;
+  const hasStatusLayout = status !== 'ready' && !detected;
   const copy = statusCopy[status] ?? statusCopy.error;
   const hasBottomSlot = Boolean(bottomSlot);
   const viewfinderClassName = [
     'viewfinder',
-    showStatusPanel ? 'viewfinder--status' : '',
+    hasStatusLayout ? 'viewfinder--status' : '',
     hasBottomSlot ? 'viewfinder--with-bottom-slot' : '',
   ]
     .filter(Boolean)
@@ -366,19 +369,19 @@ export function Viewfinder({
               {strings.camera.upload}
             </Button>
           </div>
-          <Stack alignItems="center" className="viewfinder__privacy" direction="row" spacing={1}>
+          <div className="viewfinder__privacy">
             <ShieldRounded color="primary" fontSize="small" />
             <Typography color="text.secondary" variant="body2">
               {strings.privacyNote}
             </Typography>
-          </Stack>
+          </div>
         </Paper>
       ) : null}
 
       {hasBottomSlot ? <div className="viewfinder__bottom-slot">{bottomSlot}</div> : null}
 
       {status === 'ready' ? (
-        <Stack className="viewfinder__controls" direction="row" spacing={1}>
+        <div className="viewfinder__controls">
           {torchAvailable ? (
             <Tooltip title={torchOn ? strings.camera.torchOff : strings.camera.torchOn}>
               <IconButton
@@ -401,7 +404,7 @@ export function Viewfinder({
               <PhotoLibraryRounded />
             </IconButton>
           </Tooltip>
-        </Stack>
+        </div>
       ) : null}
 
       <input

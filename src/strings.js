@@ -162,6 +162,7 @@ export const strings = Object.freeze({
   },
   theme: {
     menuLabel: 'Choose colour scheme',
+    title: 'Colour scheme',
     system: 'System',
     light: 'Light',
     dark: 'Dark',

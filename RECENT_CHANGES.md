@@ -3,6 +3,8 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-06-01: Fixed the duplicate Batch Recast camera entry, aligned Settings preference controls,
+  and added the Settings colour scheme selector.
 - 2026-06-01: Released QR Recast v2.0.1 with refined Apple Home and Matter setup-card branding,
   Apple Home setup-code decoding, and aspect-aware setup-card exports.
 - 2026-06-01: Corrected Matter manual setup-code generation so branded recasts match the code

@@ -11,15 +11,18 @@ import {
   DialogContentText,
   DialogTitle,
   Drawer,
-  FormControlLabel,
   IconButton,
   Stack,
   Switch,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
 import packageJson from '../../../package.json';
 import { strings } from '../../strings.js';
+import { useAppTheme } from '../../theme/index.js';
+import { themeOptions } from '../../theme/options.js';
 import { requestBatchResume, useBatchStore } from '../batch/store.js';
 import { useBrandingPreference } from '../branding/preferences.js';
 import {
@@ -40,6 +43,7 @@ export function AboutSheet({ open, onClose }) {
   const [analyticsOptedOut, setAnalyticsOptedOutState] = useState(() => hasAnalyticsOptedOut());
   const [clearBatchOpen, setClearBatchOpen] = useState(false);
   const [brandingEnabled, setBrandingEnabled] = useBrandingPreference();
+  const { mode, setMode } = useAppTheme();
   const batchStore = useBatchStore();
   const doNotTrackEnabled = isDoNotTrackEnabled();
   const analyticsPreferenceEnabled = !analyticsOptedOut && !doNotTrackEnabled;
@@ -72,6 +76,12 @@ export function AboutSheet({ open, onClose }) {
     });
   }
 
+  function updateThemePreference(_event, nextMode) {
+    if (nextMode) {
+      setMode(nextMode);
+    }
+  }
+
   function resumeBatch() {
     requestBatchResume();
     onClose();
@@ -97,20 +107,14 @@ export function AboutSheet({ open, onClose }) {
         }}
       >
         <div aria-hidden="true" className="about-sheet__handle" />
-        <Stack
-          alignItems="center"
-          className="about-sheet__header"
-          direction="row"
-          justifyContent="space-between"
-          spacing={2}
-        >
+        <div className="about-sheet__header">
           <Typography component="h2" id="about-title" variant="h2">
             {strings.about.title}
           </Typography>
           <IconButton aria-label={strings.about.close} onClick={onClose}>
             <CloseRounded />
           </IconButton>
-        </Stack>
+        </div>
 
         <Stack aria-labelledby="about-title" className="about-sheet__content" spacing={2.5}>
           <section className="about-sheet__settings-section" aria-labelledby="about-branding-title">
@@ -122,19 +126,54 @@ export function AboutSheet({ open, onClose }) {
               >
                 {strings.about.brandingTitle}
               </Typography>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={brandingEnabled}
-                    onChange={updateBrandingPreference}
-                    slotProps={{ input: { 'aria-label': strings.about.brandingToggle } }}
-                  />
-                }
-                label={strings.about.brandingToggle}
-              />
-              <Typography color="text.secondary" variant="body2">
+              <div className="about-sheet__preference-row">
+                <label className="about-sheet__preference-label" htmlFor="branding-default-toggle">
+                  {strings.about.brandingToggle}
+                </label>
+                <Switch
+                  checked={brandingEnabled}
+                  onChange={updateBrandingPreference}
+                  slotProps={{
+                    input: {
+                      'aria-describedby': 'about-branding-status',
+                      id: 'branding-default-toggle',
+                    },
+                  }}
+                />
+              </div>
+              <Typography color="text.secondary" id="about-branding-status" variant="body2">
                 {strings.about.brandingStatus}
               </Typography>
+            </Stack>
+          </section>
+
+          <section className="about-sheet__settings-section" aria-labelledby="about-theme-title">
+            <Stack spacing={1.5}>
+              <Typography
+                className="about-sheet__section-title"
+                component="h3"
+                id="about-theme-title"
+              >
+                {strings.theme.title}
+              </Typography>
+              <ToggleButtonGroup
+                aria-label={strings.theme.menuLabel}
+                className="about-sheet__theme-selector"
+                exclusive
+                onChange={updateThemePreference}
+                value={mode}
+              >
+                {themeOptions.map((option) => {
+                  const Icon = option.icon;
+
+                  return (
+                    <ToggleButton key={option.mode} aria-label={option.label} value={option.mode}>
+                      <Icon fontSize="small" />
+                      <span>{option.label}</span>
+                    </ToggleButton>
+                  );
+                })}
+              </ToggleButtonGroup>
             </Stack>
           </section>
 
@@ -190,42 +229,50 @@ export function AboutSheet({ open, onClose }) {
               >
                 {strings.about.analyticsTitle}
               </Typography>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={analyticsPreferenceEnabled}
-                    disabled={doNotTrackEnabled}
-                    onChange={updateAnalyticsPreference}
-                    slotProps={{ input: { 'aria-label': strings.about.analyticsToggle } }}
-                  />
-                }
-                label={strings.about.analyticsToggle}
-              />
-              <Typography color="text.secondary" variant="body2">
+              <div className="about-sheet__preference-row">
+                <label
+                  className="about-sheet__preference-label"
+                  htmlFor="analytics-preference-toggle"
+                >
+                  {strings.about.analyticsToggle}
+                </label>
+                <Switch
+                  checked={analyticsPreferenceEnabled}
+                  disabled={doNotTrackEnabled}
+                  onChange={updateAnalyticsPreference}
+                  slotProps={{
+                    input: {
+                      'aria-describedby': 'about-analytics-status',
+                      id: 'analytics-preference-toggle',
+                    },
+                  }}
+                />
+              </div>
+              <Typography color="text.secondary" id="about-analytics-status" variant="body2">
                 {analyticsStatus}
               </Typography>
             </Stack>
           </section>
 
-          <Stack className="about-sheet__privacy" direction="row" spacing={1.25}>
+          <div className="about-sheet__privacy">
             <PrivacyTipRounded color="primary" fontSize="small" />
             <Typography color="text.secondary">{strings.about.privacyBody}</Typography>
-          </Stack>
+          </div>
 
-          <Stack className="about-sheet__metadata" direction="row" flexWrap="wrap" gap={2.5}>
-            <Stack spacing={0.75}>
+          <div className="about-sheet__metadata">
+            <div className="about-sheet__metadata-item">
               <Typography color="text.secondary" variant="overline">
                 {strings.about.versionLabel}
               </Typography>
               <Typography>{packageJson.version}</Typography>
-            </Stack>
-            <Stack spacing={0.75}>
+            </div>
+            <div className="about-sheet__metadata-item">
               <Typography color="text.secondary" variant="overline">
                 {strings.about.buildLabel}
               </Typography>
               <Typography>{buildHash}</Typography>
-            </Stack>
-          </Stack>
+            </div>
+          </div>
 
           <Button
             className="about-sheet__licence"

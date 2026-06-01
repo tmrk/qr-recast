@@ -248,3 +248,10 @@ This log is append-only. New entries go at the bottom.
 - Corrected the Matter manual-code chunk packing and bit reader, added fixture coverage for the
   supplied payload, and verified a fresh local preview showed `25906020391` without the stale
   `23963520398` value.
+- Plan: fix the Batch Recast duplicate camera entry, align the Settings controls, and add an
+  in-sheet colour scheme selector.
+- Implemented the UI fix locally: Batch mode now hides the single-scan status card, Settings uses
+  aligned preference rows, and the colour scheme selector is available inside the Settings sheet.
+- Verified the fix with lint, spelling, QR type fixtures, format check, production build, and a
+  fresh local preview that confirmed one Batch camera-start action, the `data-light` theme switch,
+  aligned Settings controls, and no preview console errors.

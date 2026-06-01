@@ -68,9 +68,7 @@ const sharedComponents = {
 
 export const appTheme = extendTheme({
   cssVarPrefix: 'qr',
-  cssVariables: {
-    colorSchemeSelector: 'data',
-  },
+  colorSchemeSelector: 'data',
   colorSchemes: {
     light: {
       palette: lightTheme.palette,

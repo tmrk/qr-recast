@@ -55,7 +55,11 @@ function AppContent() {
 function App() {
   return (
     <>
-      <InitColorSchemeScript defaultMode="system" modeStorageKey={colourSchemeStorageKey} />
+      <InitColorSchemeScript
+        attribute="data"
+        defaultMode="system"
+        modeStorageKey={colourSchemeStorageKey}
+      />
       <CssVarsProvider
         defaultMode="system"
         disableTransitionOnChange

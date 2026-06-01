@@ -1,7 +1,4 @@
-import DarkModeRounded from '@mui/icons-material/DarkModeRounded';
-import LightModeRounded from '@mui/icons-material/LightModeRounded';
 import SettingsRounded from '@mui/icons-material/SettingsRounded';
-import SettingsBrightnessRounded from '@mui/icons-material/SettingsBrightnessRounded';
 import {
   AppBar,
   Box,
@@ -9,7 +6,6 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Stack,
   Toolbar,
   Tooltip,
   Typography,
@@ -17,16 +13,11 @@ import {
 import { lazy, Suspense, useState } from 'react';
 import { strings } from '../strings.js';
 import { useAppTheme } from '../theme/index.js';
+import { themeOptions } from '../theme/options.js';
 
 const AboutSheet = lazy(() =>
   import('../features/about/AboutSheet.jsx').then((module) => ({ default: module.AboutSheet })),
 );
-
-const themeOptions = [
-  { mode: 'system', label: strings.theme.system, icon: SettingsBrightnessRounded },
-  { mode: 'light', label: strings.theme.light, icon: LightModeRounded },
-  { mode: 'dark', label: strings.theme.dark, icon: DarkModeRounded },
-];
 
 /**
  * @param {{ children: import('react').ReactNode, bottomSlot?: import('react').ReactNode }} props
@@ -43,7 +34,7 @@ export function AppShell({ children, bottomSlot = null }) {
     <Box className="app-shell">
       <AppBar className="app-shell__bar" color="transparent" elevation={0} position="sticky">
         <Toolbar className="app-shell__toolbar" disableGutters>
-          <Stack alignItems="center" direction="row" spacing={1.25}>
+          <div className="app-shell__brand">
             <Box
               alt=""
               aria-hidden="true"
@@ -54,9 +45,9 @@ export function AppShell({ children, bottomSlot = null }) {
             <Typography className="app-shell__title" component="p">
               {strings.appName}
             </Typography>
-          </Stack>
+          </div>
 
-          <Stack alignItems="center" className="app-shell__actions" direction="row" spacing={0.5}>
+          <div className="app-shell__actions">
             <Tooltip title={strings.about.label}>
               <IconButton
                 aria-label={strings.about.label}
@@ -78,7 +69,7 @@ export function AppShell({ children, bottomSlot = null }) {
                 <CurrentIcon fontSize="small" />
               </IconButton>
             </Tooltip>
-          </Stack>
+          </div>
           <Menu
             anchorEl={anchorElement}
             id="theme-menu"

@@ -310,6 +310,7 @@ export function HomeView() {
         continueAfterDetected={batchMode}
         onDetected={handleDetected}
         onControlsChange={setViewfinderControls}
+        showStatusCard={!batchMode}
         topSlot={
           <Paper className="batch-mode-control" elevation={0}>
             <div

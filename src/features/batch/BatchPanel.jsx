@@ -25,7 +25,6 @@ import {
   Menu,
   MenuItem,
   Paper,
-  Stack,
   TextField,
   Tooltip,
   Typography,
@@ -95,15 +94,15 @@ export function BatchPanel({
 
   return (
     <Paper className="batch-panel" elevation={0}>
-      <Stack className="batch-panel__header" direction="row" spacing={1.25}>
-        <Stack minWidth={0} spacing={0.25}>
+      <div className="batch-panel__header">
+        <div className="batch-panel__heading">
           <Typography component="h2" variant="h2">
             {strings.batch.title}
           </Typography>
           <Typography color="text.secondary" variant="body2">
             {countLabel}
           </Typography>
-        </Stack>
+        </div>
         <div className="batch-panel__header-actions">
           {items.length ? (
             <Button
@@ -124,7 +123,7 @@ export function BatchPanel({
             {strings.batch.clear}
           </Button>
         </div>
-      </Stack>
+      </div>
 
       {persistenceError ? (
         <Alert icon={<WarningAmberRounded />} severity="warning" variant="outlined">
