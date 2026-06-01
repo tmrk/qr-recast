@@ -269,3 +269,7 @@ This log is append-only. New entries go at the bottom.
   instead of the bottom slot baseline.
 - Verified a fresh 4185 preview measured the Batch panel centre exactly on the viewfinder centre,
   with no duplicate camera action.
+- Plan: align Settings toggle switches with a fixed control column and scoped switch dimensions.
+- Implemented and verified the Settings switch alignment locally: both toggles now sit in a 72 px
+  control column, the switch root centres exactly in that column, and the thumb centreline matches
+  the row centreline in light and dark previews.

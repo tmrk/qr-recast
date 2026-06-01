@@ -130,16 +130,18 @@ export function AboutSheet({ open, onClose }) {
                 <label className="about-sheet__preference-label" htmlFor="branding-default-toggle">
                   {strings.about.brandingToggle}
                 </label>
-                <Switch
-                  checked={brandingEnabled}
-                  onChange={updateBrandingPreference}
-                  slotProps={{
-                    input: {
-                      'aria-describedby': 'about-branding-status',
-                      id: 'branding-default-toggle',
-                    },
-                  }}
-                />
+                <span className="about-sheet__switch-slot">
+                  <Switch
+                    checked={brandingEnabled}
+                    onChange={updateBrandingPreference}
+                    slotProps={{
+                      input: {
+                        'aria-describedby': 'about-branding-status',
+                        id: 'branding-default-toggle',
+                      },
+                    }}
+                  />
+                </span>
               </div>
               <Typography color="text.secondary" id="about-branding-status" variant="body2">
                 {strings.about.brandingStatus}
@@ -236,17 +238,19 @@ export function AboutSheet({ open, onClose }) {
                 >
                   {strings.about.analyticsToggle}
                 </label>
-                <Switch
-                  checked={analyticsPreferenceEnabled}
-                  disabled={doNotTrackEnabled}
-                  onChange={updateAnalyticsPreference}
-                  slotProps={{
-                    input: {
-                      'aria-describedby': 'about-analytics-status',
-                      id: 'analytics-preference-toggle',
-                    },
-                  }}
-                />
+                <span className="about-sheet__switch-slot">
+                  <Switch
+                    checked={analyticsPreferenceEnabled}
+                    disabled={doNotTrackEnabled}
+                    onChange={updateAnalyticsPreference}
+                    slotProps={{
+                      input: {
+                        'aria-describedby': 'about-analytics-status',
+                        id: 'analytics-preference-toggle',
+                      },
+                    }}
+                  />
+                </span>
               </div>
               <Typography color="text.secondary" id="about-analytics-status" variant="body2">
                 {analyticsStatus}

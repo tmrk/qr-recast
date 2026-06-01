@@ -148,3 +148,4 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
       scheme selector.
 - [x] Correct Batch Recast light-mode surfaces and make PDF export page backgrounds white.
 - [x] Centre the idle Batch Recast panel to match the Single capture screen.
+- [x] Align Settings toggle switches in a fixed control column.

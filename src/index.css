@@ -162,9 +162,9 @@
   min-height: 48px;
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 72px;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .about-sheet__preference-label {
@@ -175,8 +175,41 @@
   line-height: 1.35;
 }
 
-.about-sheet__preference-row .MuiSwitch-root {
-  flex: 0 0 auto;
+.about-sheet__switch-slot {
+  width: 72px;
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+  justify-self: end;
+}
+
+.about-sheet__switch-slot .MuiSwitch-root {
+  width: 52px;
+  height: 32px;
+  padding: 0;
+  overflow: visible;
+}
+
+.about-sheet__switch-slot .MuiSwitch-switchBase.MuiButtonBase-root {
+  min-width: 0;
+  min-height: 0;
+  margin: 4px;
+  padding: 0;
+}
+
+.about-sheet__switch-slot .MuiSwitch-switchBase.Mui-checked {
+  transform: translateX(20px);
+}
+
+.about-sheet__switch-slot .MuiSwitch-thumb {
+  width: 24px;
+  height: 24px;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.22);
+}
+
+.about-sheet__switch-slot .MuiSwitch-track {
+  border-radius: 999px;
+  opacity: 1;
 }
 
 .about-sheet__theme-selector.MuiToggleButtonGroup-root {

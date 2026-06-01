@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-06-01: Aligned Settings toggle switches with a fixed control column and scoped switch sizing.
 - 2026-06-01: Centred the idle Batch Recast panel so it matches the Single capture screen layout.
 - 2026-06-01: Corrected Batch Recast light-mode surfaces and made single and batch PDF pages export
   with white backgrounds for printing.
