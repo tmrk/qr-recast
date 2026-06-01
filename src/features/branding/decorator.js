@@ -1,11 +1,14 @@
 import { formatMatterManualCode } from '../../lib/qr-types/matter.js';
 
-const decoratedSize = 360;
-const utilityQrSize = 252;
-const utilityQrOrigin = {
-  x: 54,
-  y: 80,
-};
+const utilityLayout = Object.freeze({
+  width: 360,
+  margin: 32,
+  headerTop: 28,
+  iconTile: 40,
+  headerGap: 26,
+  captionGap: 28,
+  captionBottom: 30,
+});
 const homeKitLogoPath =
   'M118 406a11 11 0 01-5 0 13 13 0 010-5V218c0-6-5-11-11-11H82L256 69l104 82c8 5 18 0 18-9v-25h15v55a11 11 0 004 8l34 27h-21c-6 0-11 5-11 11v183a13 13 0 010 4 11 11 0 01-5 1zM241 83l-114 90c-7 5-14 14-14 29v177c0 15 9 25 24 25h238c15 0 24-10 24-25V202c0-15-7-24-14-29L271 83c-10-6-22-6-30 0zm-67 261V217c0-4 1-5 2-6l80-63 80 63c1 1 2 1 2 6v127zm82-189c-6 0-9 1-14 5l-58 45c-9 7-9 15-9 20v97c0 12 8 20 19 20h124c11 0 19-8 19-20v-97c0-5 0-13-9-20l-58-46c-5-3-9-4-14-4zm-28 134v-49l28-21 28 21v48zm28-66c-4 0-6 2-10 5l-11 9a15 15 0 00-6 11v26c0 8 6 13 13 13h28c7 0 13-6 13-13v-26a15 15 0 00-6-11l-10-9-11-5';
 const matterLogoPath =
@@ -28,13 +31,13 @@ const setupLayouts = Object.freeze({
 const colours = Object.freeze({
   background: '#ffffff',
   card: '#ffffff',
-  iconFill: '#e8f4f1',
-  primary: '#0f766e',
+  iconFill: '#e6f3ef',
+  primary: '#0e7c72',
   setupInk: '#141817',
-  stroke: '#d9e3de',
-  text: '#1f2933',
-  muted: '#586762',
-  setupBorder: '#080a0b',
+  stroke: '#e3ebe8',
+  text: '#101a18',
+  muted: '#5b6b66',
+  setupBorder: '#0a0c0b',
 });
 
 const iconRenderers = Object.freeze({
@@ -137,17 +140,27 @@ ${codeText}
 }
 
 function renderUtilityQrSvg(parsedSvg, badge, ariaLabel) {
-  const caption = badge.caption ? escapeXml(badge.caption) : '';
+  const { width, margin, headerTop, iconTile, headerGap, captionGap, captionBottom } =
+    utilityLayout;
+  const contentWidth = width - margin * 2;
+  const qrY = headerTop + iconTile + headerGap;
+  const qrSize = contentWidth;
+  const captionText =
+    badge.caption && badge.caption.trim() !== badge.label.trim() ? badge.caption : '';
+  const caption = captionText ? escapeXml(captionText) : '';
+  const captionBaseline = qrY + qrSize + captionGap + 4;
+  const height = caption
+    ? Math.round(captionBaseline + captionBottom)
+    : Math.round(qrY + qrSize + margin);
   const footer = caption
-    ? `<text x="180" y="335" text-anchor="middle" fill="${colours.muted}" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="650">${caption}</text>`
+    ? `<text x="${margin}" y="${captionBaseline}" fill="${colours.muted}" font-family="Roboto Flex, Roboto, Arial, sans-serif" font-size="15" font-weight="520" letter-spacing="0.15">${caption}</text>`
     : '';
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${decoratedSize} ${decoratedSize}" role="img" aria-label="${ariaLabel}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${ariaLabel}">
 <title>${ariaLabel}</title>
-<rect width="${decoratedSize}" height="${decoratedSize}" fill="${colours.background}"/>
-<rect x="10" y="10" width="340" height="340" rx="22" fill="${colours.card}" stroke="${colours.stroke}" stroke-width="1.25"/>
+<rect width="${width}" height="${height}" fill="${colours.background}"/>
 ${renderUtilityHeader(badge)}
-${renderNestedQr(parsedSvg, utilityQrOrigin.x, utilityQrOrigin.y, utilityQrSize)}
+${renderNestedQr(parsedSvg, margin, qrY, qrSize)}
 ${footer}
 </svg>`;
 }
@@ -175,14 +188,19 @@ ${parsedSvg.innerMarkup}
 }
 
 function renderUtilityHeader(badge) {
+  const { margin, headerTop, iconTile } = utilityLayout;
   const label = escapeXml(badge.label);
+  const centreX = margin + iconTile / 2;
+  const centreY = headerTop + iconTile / 2;
+  const labelX = margin + iconTile + 14;
+  const iconOffset = `translate(${centreX - 16} ${centreY - 16})`;
 
   return `<g aria-hidden="true">
-<circle cx="58" cy="43" r="18" fill="${colours.iconFill}"/>
-<g transform="translate(42 27)" color="${colours.primary}" fill="none" stroke="${colours.primary}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="${margin}" y="${headerTop}" width="${iconTile}" height="${iconTile}" rx="12" fill="${colours.iconFill}"/>
+<g transform="${iconOffset}" color="${colours.primary}" fill="none" stroke="${colours.primary}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
 ${badge.icon()}
 </g>
-<text x="86" y="50" fill="${colours.text}" font-family="Roboto Flex, Roboto, Arial, sans-serif" font-size="18" font-weight="720">${label}</text>
+<text x="${labelX}" y="${centreY + 6}" fill="${colours.text}" font-family="Roboto Flex, Roboto, Arial, sans-serif" font-size="17.5" font-weight="640">${label}</text>
 </g>`;
 }
 

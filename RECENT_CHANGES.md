@@ -3,6 +3,10 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-06-01: Overhauled the interface with a refined teal palette, a consistent radius scale,
+  softer layered elevation, and a single aligned branding card whose logo, QR, and caption share
+  one column. Fixed the Batch Recast panel so the export action stays pinned and can no longer be
+  clipped, and tightened batch item, header, and footer alignment.
 - 2026-06-01: Aligned Settings toggle switches with a fixed control column and scoped switch sizing.
 - 2026-06-01: Centred the idle Batch Recast panel so it matches the Single capture screen layout.
 - 2026-06-01: Corrected Batch Recast light-mode surfaces and made single and batch PDF pages export

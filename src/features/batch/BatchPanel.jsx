@@ -104,16 +104,6 @@ export function BatchPanel({
           </Typography>
         </div>
         <div className="batch-panel__header-actions">
-          {items.length ? (
-            <Button
-              disabled={startScanDisabled}
-              onClick={onStartScan}
-              startIcon={cameraStarting ? <CircularProgress size={18} /> : <QrCodeScannerRounded />}
-              variant="outlined"
-            >
-              {strings.batch.addCode}
-            </Button>
-          ) : null}
           <Button
             disabled={!items.length}
             onClick={() => setClearOpen(true)}
@@ -174,17 +164,29 @@ export function BatchPanel({
         </div>
       )}
 
-      <Button
-        aria-controls={exportMenuOpen ? 'batch-export-menu' : undefined}
-        aria-expanded={exportMenuOpen ? 'true' : undefined}
-        aria-haspopup="menu"
-        disabled={!items.length || Boolean(busyFormat)}
-        onClick={(event) => setExportAnchorElement(event.currentTarget)}
-        startIcon={busyFormat ? <CircularProgress size={18} /> : <FileDownloadRounded />}
-        variant="contained"
-      >
-        {strings.batch.export}
-      </Button>
+      <div className={`batch-panel__footer${items.length ? ' batch-panel__footer--split' : ''}`}>
+        {items.length ? (
+          <Button
+            disabled={startScanDisabled}
+            onClick={onStartScan}
+            startIcon={cameraStarting ? <CircularProgress size={18} /> : <QrCodeScannerRounded />}
+            variant="outlined"
+          >
+            {strings.batch.addCode}
+          </Button>
+        ) : null}
+        <Button
+          aria-controls={exportMenuOpen ? 'batch-export-menu' : undefined}
+          aria-expanded={exportMenuOpen ? 'true' : undefined}
+          aria-haspopup="menu"
+          disabled={!items.length || Boolean(busyFormat)}
+          onClick={(event) => setExportAnchorElement(event.currentTarget)}
+          startIcon={busyFormat ? <CircularProgress size={18} /> : <FileDownloadRounded />}
+          variant="contained"
+        >
+          {strings.batch.export}
+        </Button>
+      </div>
       <Menu
         anchorEl={exportAnchorElement}
         id="batch-export-menu"
@@ -268,36 +270,44 @@ function BatchItem({ index, item, itemCount, onDelete, onDragStart, onDrop, onMo
           size="small"
           value={name}
         />
-        <Chip className="batch-panel__type-chip" label={item.type.label} size="small" />
-      </div>
-      <div className="batch-panel__item-actions">
-        <Tooltip title={strings.batch.moveUp}>
-          <span>
-            <IconButton
-              aria-label={strings.batch.moveUp}
-              disabled={index === 0}
-              onClick={() => onMove(item.id, index - 1)}
-            >
-              <ArrowUpwardRounded />
-            </IconButton>
-          </span>
-        </Tooltip>
-        <Tooltip title={strings.batch.moveDown}>
-          <span>
-            <IconButton
-              aria-label={strings.batch.moveDown}
-              disabled={index === itemCount - 1}
-              onClick={() => onMove(item.id, index + 1)}
-            >
-              <ArrowDownwardRounded />
-            </IconButton>
-          </span>
-        </Tooltip>
-        <Tooltip title={strings.batch.delete}>
-          <IconButton aria-label={strings.batch.delete} onClick={() => onDelete(item.id)}>
-            <DeleteRounded />
-          </IconButton>
-        </Tooltip>
+        <div className="batch-panel__item-meta">
+          <Chip className="batch-panel__type-chip" label={item.type.label} size="small" />
+          <div className="batch-panel__item-actions">
+            <Tooltip title={strings.batch.moveUp}>
+              <span>
+                <IconButton
+                  aria-label={strings.batch.moveUp}
+                  disabled={index === 0}
+                  onClick={() => onMove(item.id, index - 1)}
+                  size="small"
+                >
+                  <ArrowUpwardRounded fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title={strings.batch.moveDown}>
+              <span>
+                <IconButton
+                  aria-label={strings.batch.moveDown}
+                  disabled={index === itemCount - 1}
+                  onClick={() => onMove(item.id, index + 1)}
+                  size="small"
+                >
+                  <ArrowDownwardRounded fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title={strings.batch.delete}>
+              <IconButton
+                aria-label={strings.batch.delete}
+                onClick={() => onDelete(item.id)}
+                size="small"
+              >
+                <DeleteRounded fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </div>
+        </div>
       </div>
     </article>
   );

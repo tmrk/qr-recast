@@ -699,6 +699,7 @@ export function ResultView({ onScanAgain, text }) {
               />
             }
             label={strings.result.brandingToggle}
+            labelPlacement="start"
           />
         </Paper>
 

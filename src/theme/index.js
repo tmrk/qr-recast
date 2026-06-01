@@ -10,22 +10,36 @@ const typography = {
     ',',
   ),
   h1: {
-    fontSize: 'clamp(2.15rem, 7vw, 3rem)',
-    lineHeight: 1.04,
-    fontWeight: 760,
+    fontSize: 'clamp(1.85rem, 6vw, 2.4rem)',
+    lineHeight: 1.08,
+    fontWeight: 720,
+    letterSpacing: '-0.022em',
   },
   h2: {
-    fontSize: '1.35rem',
-    lineHeight: 1.18,
-    fontWeight: 700,
+    fontSize: '1.2rem',
+    lineHeight: 1.25,
+    fontWeight: 680,
+    letterSpacing: '-0.012em',
   },
   body1: {
     fontSize: '1rem',
-    lineHeight: 1.65,
-    fontWeight: 430,
+    lineHeight: 1.6,
+    fontWeight: 420,
+  },
+  body2: {
+    fontSize: '0.875rem',
+    lineHeight: 1.55,
+    fontWeight: 420,
+  },
+  overline: {
+    fontSize: '0.6875rem',
+    lineHeight: 1.4,
+    fontWeight: 700,
+    letterSpacing: '0.09em',
   },
   button: {
-    fontWeight: 690,
+    fontWeight: 640,
+    letterSpacing: '0.005em',
     textTransform: 'none',
   },
 };
@@ -44,8 +58,9 @@ const sharedComponents = {
   MuiButton: {
     styleOverrides: {
       root: {
-        borderRadius: 22,
+        borderRadius: 12,
         minHeight: 44,
+        paddingInline: 18,
       },
     },
   },
@@ -54,6 +69,7 @@ const sharedComponents = {
       root: {
         minWidth: 44,
         minHeight: 44,
+        borderRadius: 11,
       },
     },
   },
@@ -61,6 +77,29 @@ const sharedComponents = {
     styleOverrides: {
       root: {
         backgroundImage: 'none',
+      },
+    },
+  },
+  MuiTooltip: {
+    styleOverrides: {
+      tooltip: {
+        borderRadius: 8,
+        fontSize: '0.75rem',
+        fontWeight: 560,
+      },
+    },
+  },
+  MuiMenu: {
+    styleOverrides: {
+      paper: {
+        borderRadius: 14,
+      },
+    },
+  },
+  MuiDialog: {
+    styleOverrides: {
+      paper: {
+        borderRadius: 20,
       },
     },
   },
@@ -78,7 +117,7 @@ export const appTheme = extendTheme({
     },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 14,
   },
   typography,
   components: sharedComponents,
