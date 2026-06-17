@@ -281,3 +281,8 @@ This log is append-only. New entries go at the bottom.
 - Verified: npm run lint, npm run format:check, and npm run build all clean (bundle 156.91 KB gzip). Confirmed fallback dark colours (#0a1413) and style block present in dist/index.html. Local preview server responded with 200 and contained the updated shell.
 - Completed post-v2 polish and version bump to 2.0.2.
 - Pushed commit 843454f to main; GitHub Actions will deploy to Pages.
+- Plan: preserve original QR version and data size from scanned codes instead of always re-encoding with fixed errorCorrectionLevel M.
+- Implemented the fix: threaded version (and chunks) from jsQR decode result through Viewfinder, HomeView, ResultView, and batch paths; updated createQrSvg to accept rich input and force version while falling back sensibly on ECL; updated batch persistence; plain text payloads (e.g. share URLs) unchanged.
+- Ran `npm run lint` and `npm run build` clean. Verified locally via node simulation that forcing version keeps matrix size (e.g. payload that would auto to v3 now stays at scanned v2).
+- Bumped to v2.0.3, updated PROGRESS and RECENT_CHANGES.
+- Will commit with Conventional Commit and push to trigger Pages deploy.

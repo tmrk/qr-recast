@@ -32,17 +32,20 @@ export function readBatch() {
 
 export async function createBatchItem(
   payload,
-  { brandingEnabled = true, name, position = 1 } = {},
+  { brandingEnabled = true, name, position = 1, version } = {},
 ) {
   const { detectQrType } = await import('../../lib/qr-types/index.js');
   const now = new Date().toISOString();
   const qrType = detectQrType(payload);
   const itemName = normaliseBatchName(name, `${stringsSafeDefaultName()} ${position}`);
+  const safeVersion =
+    Number.isInteger(version) && version >= 1 && version <= 40 ? version : undefined;
 
   return {
     id: createId(),
     name: itemName,
     payload,
+    version: safeVersion,
     type: serialiseQrType(qrType),
     branding: {
       enabled: Boolean(brandingEnabled),
@@ -70,11 +73,12 @@ export function useBatchStore() {
   }, []);
 
   const addPayload = useCallback(
-    async (payload, { brandingEnabled } = {}) => {
+    async (payload, { brandingEnabled, version } = {}) => {
       const duplicate = batch.items.some((item) => item.payload === payload);
       const item = await createBatchItem(payload, {
         brandingEnabled,
         position: batch.items.length + 1,
+        version,
       });
       const nextBatch = stampBatch({
         ...batch,
@@ -239,11 +243,16 @@ function normaliseStoredItem(item) {
 
   const qrType = item.type?.type ? item.type : createFallbackQrType();
   const fallbackName = `${stringsSafeDefaultName()} 1`;
+  const safeVersion =
+    Number.isInteger(item.version) && item.version >= 1 && item.version <= 40
+      ? item.version
+      : undefined;
 
   return {
     id: String(item.id),
     name: normaliseBatchName(item.name, fallbackName),
     payload: item.payload,
+    version: safeVersion,
     type: serialiseQrType(qrType),
     branding: {
       enabled: item.branding?.enabled !== false,

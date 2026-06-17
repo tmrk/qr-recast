@@ -1,13 +1,75 @@
 export const SHARE_URL_MAX_LENGTH = 2000;
 
-export async function createQrSvg(text) {
+export async function createQrSvg(input) {
   const { default: QRCode } = await import('qrcode');
 
-  return QRCode.toString(text, {
+  const isRich =
+    input != null &&
+    typeof input === 'object' &&
+    Object.prototype.hasOwnProperty.call(input, 'text');
+  const text = isRich ? input.text || '' : input || '';
+  const version = isRich ? input.version : undefined;
+  const chunks = isRich ? input.chunks : undefined;
+
+  const baseOpts = {
     type: 'svg',
-    errorCorrectionLevel: 'M',
     margin: 2,
-  });
+  };
+
+  const hasForcedVersion = Number.isInteger(version) && version >= 1 && version <= 40;
+
+  if (!hasForcedVersion) {
+    return QRCode.toString(text, {
+      ...baseOpts,
+      errorCorrectionLevel: 'M',
+    });
+  }
+
+  // Scanned QR: force the original version to preserve data size (matrix size).
+  // Use chunks (when available) to keep the original encoding modes/segments.
+  let data = text;
+  if (Array.isArray(chunks) && chunks.length > 0) {
+    data = chunks.map((chunk) => {
+      let segmentData = chunk && typeof chunk.text === 'string' ? chunk.text : '';
+      if (!segmentData && Array.isArray(chunk && chunk.bytes)) {
+        try {
+          segmentData = new TextDecoder().decode(Uint8Array.from(chunk.bytes));
+        } catch {
+          segmentData = '';
+        }
+      }
+      return { data: segmentData, mode: chunk && chunk.type };
+    });
+  }
+
+  // Try ECLs to keep the forced version. Prefer M (previous default), fall back to L to guarantee capacity.
+  const candidateEcls = ['M', 'L', 'Q', 'H'];
+  for (const ecl of candidateEcls) {
+    try {
+      return await QRCode.toString(data, {
+        ...baseOpts,
+        errorCorrectionLevel: ecl,
+        version,
+      });
+    } catch {
+      // try next ECL
+    }
+  }
+
+  // Last resort: do not increase size if we can avoid it; fall back with L on plain text.
+  try {
+    return await QRCode.toString(text, {
+      ...baseOpts,
+      errorCorrectionLevel: 'L',
+      version,
+    });
+  } catch {
+    // Unlikely: generate unconstrained (may pick larger version).
+    return QRCode.toString(text, {
+      ...baseOpts,
+      errorCorrectionLevel: 'M',
+    });
+  }
 }
 
 export function svgToBlob(svgString) {

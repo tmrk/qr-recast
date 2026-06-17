@@ -3,6 +3,10 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-06-17: Preserve the original QR version (data size) when recasting photographed codes. jsQR
+  version is now captured on decode and forced during SVG generation so the output matrix matches
+  the input size; ECL falls back gracefully when needed. Share-URL and synthetic payloads continue
+  to auto-size. Bumped to v2.0.3.
 - 2026-06-17: Improved the static first-screen fallback to respect system dark mode via media query
   and match the Material theme colours. Removed unused `@types/react` packages for strict JavaScript-only
   compliance. Cleaned stale v1.0.0 tagging reference in ROADMAP. Bumped to v2.0.2 and pushed to trigger

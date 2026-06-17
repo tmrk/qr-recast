@@ -155,7 +155,8 @@ async function createBatchDocx(items) {
 async function createRenderableItems(items) {
   return Promise.all(
     items.map(async (item) => {
-      const canonicalSvg = await createQrSvg(item.payload);
+      const qrInput = item.version ? { text: item.payload, version: item.version } : item.payload;
+      const canonicalSvg = await createQrSvg(qrInput);
       const svg = createDecoratedQrSvg(canonicalSvg, item.type, {
         enabled: item.branding?.enabled !== false,
       });

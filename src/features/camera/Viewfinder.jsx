@@ -47,7 +47,7 @@ const statusCopy = {
  *     startCamera: () => void,
  *     status: string,
  *   }) => void,
- *   onDetected: (text: string) => void,
+ *   onDetected: (decodeResult: object) => void,
  *   showStatusCard?: boolean,
  * }} props
  */
@@ -94,7 +94,8 @@ export function Viewfinder({
   }, []);
 
   const handleDetected = useCallback(
-    (text, source = 'camera') => {
+    (decodeResult, source = 'camera') => {
+      const text = decodeResult && decodeResult.data ? decodeResult.data : '';
       if (!text || detectedRef.current) {
         return;
       }
@@ -115,7 +116,7 @@ export function Viewfinder({
 
       window.setTimeout(() => {
         if (continueAfterDetected) {
-          onDetected(text);
+          onDetected(decodeResult);
           detectedRef.current = false;
           setDetected(false);
           setDetectedPolygon(null);
@@ -124,7 +125,7 @@ export function Viewfinder({
         }
 
         stopStream();
-        onDetected(text);
+        onDetected(decodeResult);
       }, 250);
     },
     [continueAfterDetected, onDetected, stopStream],
@@ -219,7 +220,7 @@ export function Viewfinder({
         const result = await decodeImageFile(file);
 
         if (result?.data) {
-          handleDetected(result.data, 'upload');
+          handleDetected(result, 'upload');
           return;
         }
 
@@ -264,7 +265,7 @@ export function Viewfinder({
           setDetectedPolygon(
             mapQrLocation(result.location, videoRef.current, canvasRef.current, sectionRef.current),
           );
-          handleDetected(result.data, 'camera');
+          handleDetected(result, 'camera');
         }
       } catch (error) {
         setErrorMessage(error instanceof Error ? error.message : strings.camera.errorBody);

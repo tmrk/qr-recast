@@ -5,7 +5,7 @@ import { createDecoratedQrSvg } from '../branding/decorator.js';
 import { strings } from '../../strings.js';
 
 /**
- * @param {{ item: { id: string, payload: string, type: object, branding: { enabled: boolean } } }} props
+ * @param {{ item: { id: string, payload: string, version?: number, type: object, branding: { enabled: boolean } } }} props
  */
 export function BatchThumbnail({ item }) {
   const [thumbnailState, setThumbnailState] = useState({ id: '', svg: '' });
@@ -16,7 +16,8 @@ export function BatchThumbnail({ item }) {
   useEffect(() => {
     let active = true;
 
-    createQrSvg(item.payload)
+    const qrInput = item.version ? { text: item.payload, version: item.version } : item.payload;
+    createQrSvg(qrInput)
       .then((canonicalSvg) => {
         if (!active) {
           return;
@@ -36,7 +37,7 @@ export function BatchThumbnail({ item }) {
     return () => {
       active = false;
     };
-  }, [brandingEnabled, item.id, item.payload, item.type, typeKey]);
+  }, [brandingEnabled, item.id, item.payload, item.type, item.version, typeKey]);
 
   return (
     <div aria-label={strings.batch.thumbnail} className="batch-panel__thumbnail" role="img">

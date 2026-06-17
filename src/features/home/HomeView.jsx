@@ -31,7 +31,7 @@ const emptyViewfinderControls = Object.freeze({
 });
 
 export function HomeView() {
-  const [decodedText, setDecodedText] = useState('');
+  const [decoded, setDecoded] = useState(null); // string (from share URL) | decode result object (from camera/upload with .data, .version, .chunks) | null
   const [batchMode, setBatchMode] = useState(false);
   const [namingItemId, setNamingItemId] = useState('');
   const [batchMessage, setBatchMessage] = useState('');
@@ -48,14 +48,14 @@ export function HomeView() {
   const namingItem = batchStore.batch.items.find((item) => item.id === namingItemId) ?? null;
   const batchCount = batchStore.batch.items.length;
 
-  function showDecodedText(text) {
+  function showDecoded(value) {
     if (!document.startViewTransition) {
-      setDecodedText(text);
+      setDecoded(value);
       return;
     }
 
     document.startViewTransition(() => {
-      flushSync(() => setDecodedText(text));
+      flushSync(() => setDecoded(value));
     });
   }
 
@@ -75,9 +75,18 @@ export function HomeView() {
     }
   }
 
-  async function handleDetected(text) {
+  async function handleDetected(decodeResult) {
+    const text =
+      decodeResult && typeof decodeResult === 'object'
+        ? decodeResult.data || ''
+        : typeof decodeResult === 'string'
+          ? decodeResult
+          : '';
+    const version =
+      decodeResult && typeof decodeResult === 'object' ? decodeResult.version : undefined;
+
     if (!batchMode) {
-      showDecodedText(text);
+      showDecoded(decodeResult);
       return;
     }
 
@@ -97,6 +106,7 @@ export function HomeView() {
     try {
       addedItem = await batchStore.addPayload(text, {
         brandingEnabled: globalBrandingEnabled,
+        version,
       });
     } catch {
       setBatchWarning(strings.batch.addError);
@@ -179,7 +189,7 @@ export function HomeView() {
   useEffect(() => {
     function resumeBatchFromSettings() {
       const applyResume = () => {
-        setDecodedText('');
+        setDecoded(null);
         setBatchMode((currentMode) => {
           if (!currentMode) {
             trackAnalyticsEvent('batch_started', {
@@ -229,7 +239,7 @@ export function HomeView() {
             return;
           }
 
-          setDecodedText(payload);
+          setDecoded(payload);
           trackAnalyticsEvent('shared_url_loaded', {
             payload_kind: detectPayloadKind(payload),
             result: 'success',
@@ -269,7 +279,11 @@ export function HomeView() {
     );
   }
 
-  if (decodedText) {
+  if (decoded != null) {
+    const text = typeof decoded === 'string' ? decoded : (decoded && decoded.data) || '';
+    const version = typeof decoded === 'string' ? undefined : decoded && decoded.version;
+    const chunks = typeof decoded === 'string' ? undefined : decoded && decoded.chunks;
+
     return (
       <div key="result" className="home-view home-view--result">
         <Suspense
@@ -279,7 +293,12 @@ export function HomeView() {
             </div>
           }
         >
-          <ResultView onScanAgain={() => setDecodedText('')} text={decodedText} />
+          <ResultView
+            onScanAgain={() => setDecoded(null)}
+            text={text}
+            version={version}
+            chunks={chunks}
+          />
         </Suspense>
       </div>
     );

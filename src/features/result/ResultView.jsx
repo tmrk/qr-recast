@@ -113,9 +113,9 @@ const typeIcons = Object.freeze({
 });
 
 /**
- * @param {{ onScanAgain: () => void, text: string }} props
+ * @param {{ onScanAgain: () => void, text: string, version?: number, chunks?: any[] }} props
  */
-export function ResultView({ onScanAgain, text }) {
+export function ResultView({ onScanAgain, text, version, chunks }) {
   const [qrAssetState, setQrAssetState] = useState({ fileStem: '', svg: '', text: '' });
   const [busyAction, setBusyAction] = useState('');
   const [textOpen, setTextOpen] = useState(false);
@@ -137,7 +137,8 @@ export function ResultView({ onScanAgain, text }) {
   useEffect(() => {
     let active = true;
 
-    Promise.all([createQrSvg(text), hashTextPrefix(text)])
+    const qrInput = version != null || Array.isArray(chunks) ? { text, version, chunks } : text;
+    Promise.all([createQrSvg(qrInput), hashTextPrefix(text)])
       .then(([svg, hash]) => {
         if (!active) {
           return;
@@ -154,7 +155,7 @@ export function ResultView({ onScanAgain, text }) {
     return () => {
       active = false;
     };
-  }, [text]);
+  }, [text, version, chunks]);
 
   const payloadPreview = useMemo(() => text.trim() || strings.result.emptyPayload, [text]);
   const qrType = useMemo(() => detectQrType(text), [text]);
