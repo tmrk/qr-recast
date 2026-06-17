@@ -280,3 +280,4 @@ This log is append-only. New entries go at the bottom.
 - Implemented the changes locally: added a style block with media query for system dark mode to the index.html fallback (matching darkTheme), removed @types/\* via uninstall, updated ROADMAP Phase 9 note, appended RECENT_CHANGES, bumped package version.
 - Verified: npm run lint, npm run format:check, and npm run build all clean (bundle 156.91 KB gzip). Confirmed fallback dark colours (#0a1413) and style block present in dist/index.html. Local preview server responded with 200 and contained the updated shell.
 - Completed post-v2 polish and version bump to 2.0.2.
+- Pushed commit 843454f to main; GitHub Actions will deploy to Pages.
