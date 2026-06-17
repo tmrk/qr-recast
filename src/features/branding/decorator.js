@@ -23,7 +23,7 @@ const setupLayouts = Object.freeze({
   matter: {
     card: { height: 426, radius: 18, width: 306, x: 7, y: 7 },
     height: 440,
-    qr: { size: 232, x: 44, y: 122 },
+    qr: { size: 248, x: 36, y: 118 },
     width: 320,
   },
 });
@@ -176,7 +176,7 @@ function renderHomeKitLogo() {
 }
 
 function renderMatterLogo() {
-  return `<svg x="54" y="48" width="212" height="46" viewBox="0 0 338.667 72.644" aria-hidden="true" focusable="false">
+  return `<svg x="36" y="45" width="248" height="54" viewBox="0 0 338.667 72.644" aria-hidden="true" focusable="false">
 <path d="${matterLogoPath}" fill="${colours.setupInk}"/>
 </svg>`;
 }

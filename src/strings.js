@@ -161,11 +161,11 @@ export const strings = Object.freeze({
       'URL sharing is disabled because this payload creates a link over 2000 characters. Export the QR or show the decoded text instead.',
   },
   theme: {
-    menuLabel: 'Choose colour scheme',
+    menuLabel: 'Toggle colour scheme',
     title: 'Colour scheme',
-    system: 'System',
     light: 'Light',
     dark: 'Dark',
+    toggleLabel: 'Toggle between light and dark',
   },
   qrTypes: {
     types: {

@@ -1,15 +1,5 @@
 import SettingsRounded from '@mui/icons-material/SettingsRounded';
-import {
-  AppBar,
-  Box,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { AppBar, Box, Container, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { lazy, Suspense, useState } from 'react';
 import { strings } from '../strings.js';
 import { useAppTheme } from '../theme/index.js';
@@ -23,11 +13,12 @@ const AboutSheet = lazy(() =>
  * @param {{ children: import('react').ReactNode, bottomSlot?: import('react').ReactNode }} props
  */
 export function AppShell({ children, bottomSlot = null }) {
-  const [anchorElement, setAnchorElement] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { mode, setMode } = useAppTheme();
+  const [themeRollKey, setThemeRollKey] = useState(0);
+  const { resolvedMode, toggleMode } = useAppTheme();
 
-  const currentOption = themeOptions.find((option) => option.mode === mode) ?? themeOptions[0];
+  const currentOption =
+    themeOptions.find((option) => option.mode === resolvedMode) ?? themeOptions[0];
   const CurrentIcon = currentOption.icon;
 
   return (
@@ -59,42 +50,19 @@ export function AppShell({ children, bottomSlot = null }) {
             </Tooltip>
             <Tooltip title={strings.theme.menuLabel}>
               <IconButton
-                aria-controls={anchorElement ? 'theme-menu' : undefined}
-                aria-expanded={anchorElement ? 'true' : undefined}
-                aria-haspopup="menu"
-                aria-label={strings.theme.menuLabel}
+                aria-label={strings.theme.toggleLabel}
                 color="inherit"
-                onClick={(event) => setAnchorElement(event.currentTarget)}
+                onClick={() => {
+                  setThemeRollKey((k) => k + 1);
+                  toggleMode();
+                }}
               >
-                <CurrentIcon fontSize="small" />
+                <span key={themeRollKey} className="app-shell__theme-icon">
+                  <CurrentIcon fontSize="small" />
+                </span>
               </IconButton>
             </Tooltip>
           </div>
-          <Menu
-            anchorEl={anchorElement}
-            id="theme-menu"
-            onClose={() => setAnchorElement(null)}
-            open={Boolean(anchorElement)}
-          >
-            {themeOptions.map((option) => {
-              const Icon = option.icon;
-
-              return (
-                <MenuItem
-                  key={option.mode}
-                  onClick={() => {
-                    setMode(option.mode);
-                    setAnchorElement(null);
-                  }}
-                  selected={mode === option.mode}
-                  sx={{ gap: 1.25 }}
-                >
-                  <Icon fontSize="small" />
-                  {option.label}
-                </MenuItem>
-              );
-            })}
-          </Menu>
           <Suspense fallback={null}>
             {settingsOpen ? (
               <AboutSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} />

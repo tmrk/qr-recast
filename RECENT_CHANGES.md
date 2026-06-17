@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-06-17: Theme selector simplified to a sun/moon toggle with rolling rotation animation on switch; removed "system" option entirely; first visit now follows OS dark/light preference via MUI default, subsequent loads and all after a toggle use the persisted explicit choice in localStorage. Matter branded setup cards now have logo, QR code, and pairing number rows aligned to identical width (248 px) and centred nicely within the card. Bumped to v2.0.5.
 - 2026-06-17: Higher-fidelity photographed recasts: sub-pixel luminance sampling, 7×7 voting and richer finder-based adaptive threshold in module extraction; recover exact mask pattern and ECL from format information bits next to finders; smart hybrid keeps direct sampled grid (when validation passes for scannability) else falls back to generator forced to version + recovered mask/ECL. Threaded modulesGrid + recovered params through single and Batch Recast so batch items also yield faithful traces. Consistent 4-module quiet zone. Bumped sampling res for uploads and video decode frames. All gates green, local preview verified.
 - 2026-06-17: Truly recast the _exact_ photographed QR (same modules, not just version). On successful
   camera/upload decode we now sample the module grid directly from the imageData using the detected

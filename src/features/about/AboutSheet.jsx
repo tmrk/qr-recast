@@ -14,8 +14,6 @@ import {
   IconButton,
   Stack,
   Switch,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
@@ -43,7 +41,8 @@ export function AboutSheet({ open, onClose }) {
   const [analyticsOptedOut, setAnalyticsOptedOutState] = useState(() => hasAnalyticsOptedOut());
   const [clearBatchOpen, setClearBatchOpen] = useState(false);
   const [brandingEnabled, setBrandingEnabled] = useBrandingPreference();
-  const { mode, setMode } = useAppTheme();
+  const [themeRollKey, setThemeRollKey] = useState(0);
+  const { resolvedMode, toggleMode } = useAppTheme();
   const batchStore = useBatchStore();
   const doNotTrackEnabled = isDoNotTrackEnabled();
   const analyticsPreferenceEnabled = !analyticsOptedOut && !doNotTrackEnabled;
@@ -54,6 +53,11 @@ export function AboutSheet({ open, onClose }) {
   });
   const batchCount = batchStore.batch.items.length;
   const batchCountLabel = getBatchCountLabel(batchCount);
+
+  const currentOption =
+    themeOptions.find((option) => option.mode === resolvedMode) ?? themeOptions[0];
+  const CurrentIcon = currentOption.icon;
+  const currentLabel = currentOption.label;
 
   function updateAnalyticsPreference(event) {
     const optedOut = !event.target.checked;
@@ -76,10 +80,9 @@ export function AboutSheet({ open, onClose }) {
     });
   }
 
-  function updateThemePreference(_event, nextMode) {
-    if (nextMode) {
-      setMode(nextMode);
-    }
+  function handleThemeToggle() {
+    setThemeRollKey((k) => k + 1);
+    toggleMode();
   }
 
   function resumeBatch() {
@@ -158,24 +161,27 @@ export function AboutSheet({ open, onClose }) {
               >
                 {strings.theme.title}
               </Typography>
-              <ToggleButtonGroup
-                aria-label={strings.theme.menuLabel}
-                className="about-sheet__theme-selector"
-                exclusive
-                onChange={updateThemePreference}
-                value={mode}
-              >
-                {themeOptions.map((option) => {
-                  const Icon = option.icon;
-
-                  return (
-                    <ToggleButton key={option.mode} aria-label={option.label} value={option.mode}>
-                      <Icon fontSize="small" />
-                      <span>{option.label}</span>
-                    </ToggleButton>
-                  );
-                })}
-              </ToggleButtonGroup>
+              <div className="about-sheet__preference-row">
+                <label className="about-sheet__preference-label" htmlFor="theme-toggle-button">
+                  {strings.theme.toggleLabel}
+                </label>
+                <span className="about-sheet__switch-slot">
+                  <IconButton
+                    aria-label={strings.theme.toggleLabel}
+                    id="theme-toggle-button"
+                    onClick={handleThemeToggle}
+                    size="small"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    <span key={themeRollKey} className="about-sheet__theme-icon">
+                      <CurrentIcon fontSize="small" />
+                    </span>
+                  </IconButton>
+                </span>
+              </div>
+              <Typography color="text.secondary" variant="body2">
+                {currentLabel}
+              </Typography>
             </Stack>
           </section>
 

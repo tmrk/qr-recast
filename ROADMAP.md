@@ -151,3 +151,4 @@ Note: v1.0.0 tagging was superseded by the v2.0.0 / v2.0.1 releases; the remaini
 - [x] Centre the idle Batch Recast panel to match the Single capture screen.
 - [x] Align Settings toggle switches in a fixed control column.
 - [x] Support dark mode in the static first-screen fallback, remove unused @types packages, clean Phase 9 references, and bump to 2.0.2.
+- [x] Replace theme selector with a sun/moon icon toggle using rolling animation; drop the "system" option from UI while defaulting first visit to the system preference then persisting the explicit choice in localStorage; align Matter branded QR rows (logo, QR, pairing number) to equal widths filling the card; bump to 2.0.5.

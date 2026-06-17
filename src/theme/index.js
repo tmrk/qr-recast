@@ -130,10 +130,16 @@ export function useAppTheme() {
   const resolvedMode =
     selectedMode === 'system' ? (systemMode ?? (prefersDark ? 'dark' : 'light')) : selectedMode;
 
+  function toggleMode() {
+    const next = resolvedMode === 'dark' ? 'light' : 'dark';
+    setMode(next);
+  }
+
   return {
     mode: selectedMode,
     resolvedMode,
     setMode,
+    toggleMode,
     themeColor: resolvedMode === 'dark' ? darkTheme.themeColor : lightTheme.themeColor,
   };
 }
