@@ -3,6 +3,7 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-06-17: Higher-fidelity photographed recasts: sub-pixel luminance sampling, 7×7 voting and richer finder-based adaptive threshold in module extraction; recover exact mask pattern and ECL from format information bits next to finders; smart hybrid keeps direct sampled grid (when validation passes for scannability) else falls back to generator forced to version + recovered mask/ECL. Threaded modulesGrid + recovered params through single and Batch Recast so batch items also yield faithful traces. Consistent 4-module quiet zone. Bumped sampling res for uploads and video decode frames. All gates green, local preview verified.
 - 2026-06-17: Truly recast the _exact_ photographed QR (same modules, not just version). On successful
   camera/upload decode we now sample the module grid directly from the imageData using the detected
   corner locations, then choose the ECL+mask combination whose generated matrix most closely matches

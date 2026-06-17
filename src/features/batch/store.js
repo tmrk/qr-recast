@@ -32,7 +32,16 @@ export function readBatch() {
 
 export async function createBatchItem(
   payload,
-  { brandingEnabled = true, name, position = 1, version, exactSvg } = {},
+  {
+    brandingEnabled = true,
+    name,
+    position = 1,
+    version,
+    exactSvg,
+    modulesGrid,
+    maskPattern,
+    errorCorrectionLevel,
+  } = {},
 ) {
   const { detectQrType } = await import('../../lib/qr-types/index.js');
   const now = new Date().toISOString();
@@ -42,6 +51,13 @@ export async function createBatchItem(
     Number.isInteger(version) && version >= 1 && version <= 40 ? version : undefined;
   const safeExact =
     typeof exactSvg === 'string' && exactSvg.includes('<svg') ? exactSvg : undefined;
+  const safeGrid = Array.isArray(modulesGrid) && modulesGrid.length > 0 ? modulesGrid : undefined;
+  const safeMask =
+    Number.isInteger(maskPattern) && maskPattern >= 0 && maskPattern <= 7 ? maskPattern : undefined;
+  const safeEcl =
+    errorCorrectionLevel && ['L', 'M', 'Q', 'H'].includes(errorCorrectionLevel)
+      ? errorCorrectionLevel
+      : undefined;
 
   return {
     id: createId(),
@@ -49,6 +65,9 @@ export async function createBatchItem(
     payload,
     version: safeVersion,
     exactSvg: safeExact,
+    modulesGrid: safeGrid,
+    maskPattern: safeMask,
+    errorCorrectionLevel: safeEcl,
     type: serialiseQrType(qrType),
     branding: {
       enabled: Boolean(brandingEnabled),
@@ -76,13 +95,19 @@ export function useBatchStore() {
   }, []);
 
   const addPayload = useCallback(
-    async (payload, { brandingEnabled, version, exactSvg } = {}) => {
+    async (
+      payload,
+      { brandingEnabled, version, exactSvg, modulesGrid, maskPattern, errorCorrectionLevel } = {},
+    ) => {
       const duplicate = batch.items.some((item) => item.payload === payload);
       const item = await createBatchItem(payload, {
         brandingEnabled,
         position: batch.items.length + 1,
         version,
         exactSvg,
+        modulesGrid,
+        maskPattern,
+        errorCorrectionLevel,
       });
       const nextBatch = stampBatch({
         ...batch,
@@ -251,6 +276,16 @@ function normaliseStoredItem(item) {
     Number.isInteger(item.version) && item.version >= 1 && item.version <= 40
       ? item.version
       : undefined;
+  const safeGrid =
+    Array.isArray(item.modulesGrid) && item.modulesGrid.length > 0 ? item.modulesGrid : undefined;
+  const safeMask =
+    Number.isInteger(item.maskPattern) && item.maskPattern >= 0 && item.maskPattern <= 7
+      ? item.maskPattern
+      : undefined;
+  const safeEcl =
+    item.errorCorrectionLevel && ['L', 'M', 'Q', 'H'].includes(item.errorCorrectionLevel)
+      ? item.errorCorrectionLevel
+      : undefined;
 
   return {
     id: String(item.id),
@@ -261,6 +296,9 @@ function normaliseStoredItem(item) {
       typeof item.exactSvg === 'string' && item.exactSvg.includes('<svg')
         ? item.exactSvg
         : undefined,
+    modulesGrid: safeGrid,
+    maskPattern: safeMask,
+    errorCorrectionLevel: safeEcl,
     type: serialiseQrType(qrType),
     branding: {
       enabled: item.branding?.enabled !== false,

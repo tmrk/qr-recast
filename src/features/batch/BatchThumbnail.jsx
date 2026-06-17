@@ -5,7 +5,7 @@ import { createDecoratedQrSvg } from '../branding/decorator.js';
 import { strings } from '../../strings.js';
 
 /**
- * @param {{ item: { id: string, payload: string, version?: number, type: object, branding: { enabled: boolean } } }} props
+ * @param {{ item: { id: string, payload: string, version?: number, modulesGrid?: boolean[][], maskPattern?: number, errorCorrectionLevel?: string, exactSvg?: string, type: object, branding: { enabled: boolean } } }} props
  */
 export function BatchThumbnail({ item }) {
   const [thumbnailState, setThumbnailState] = useState({ id: '', svg: '' });
@@ -16,9 +16,21 @@ export function BatchThumbnail({ item }) {
   useEffect(() => {
     let active = true;
 
-    const qrInput =
-      item.exactSvg ||
-      (item.version ? { text: item.payload, version: item.version } : item.payload);
+    let qrInput = item.exactSvg;
+    if (!qrInput) {
+      if (Array.isArray(item.modulesGrid) && item.modulesGrid.length) {
+        qrInput = { text: item.payload, version: item.version, modulesGrid: item.modulesGrid };
+      } else if (item.version != null || item.maskPattern != null || item.errorCorrectionLevel) {
+        qrInput = {
+          text: item.payload,
+          version: item.version,
+          maskPattern: item.maskPattern,
+          errorCorrectionLevel: item.errorCorrectionLevel,
+        };
+      } else {
+        qrInput = item.payload;
+      }
+    }
     createQrSvg(qrInput)
       .then((canonicalSvg) => {
         if (!active) {
@@ -39,7 +51,18 @@ export function BatchThumbnail({ item }) {
     return () => {
       active = false;
     };
-  }, [brandingEnabled, item.id, item.payload, item.type, item.version, item.exactSvg, typeKey]);
+  }, [
+    brandingEnabled,
+    item.id,
+    item.payload,
+    item.type,
+    item.version,
+    item.exactSvg,
+    item.modulesGrid,
+    item.maskPattern,
+    item.errorCorrectionLevel,
+    typeKey,
+  ]);
 
   return (
     <div aria-label={strings.batch.thumbnail} className="batch-panel__thumbnail" role="img">

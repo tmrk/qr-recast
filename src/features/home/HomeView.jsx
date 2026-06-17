@@ -84,6 +84,14 @@ export function HomeView() {
           : '';
     const version =
       decodeResult && typeof decodeResult === 'object' ? decodeResult.version : undefined;
+    const modulesGrid =
+      decodeResult && typeof decodeResult === 'object' ? decodeResult.modulesGrid : undefined;
+    const maskPattern =
+      decodeResult && typeof decodeResult === 'object' ? decodeResult.maskPattern : undefined;
+    const errorCorrectionLevel =
+      decodeResult && typeof decodeResult === 'object'
+        ? decodeResult.errorCorrectionLevel
+        : undefined;
 
     if (!batchMode) {
       showDecoded(decodeResult);
@@ -107,7 +115,9 @@ export function HomeView() {
       addedItem = await batchStore.addPayload(text, {
         brandingEnabled: globalBrandingEnabled,
         version,
-        exactSvg: decodeResult?.exactSvg,
+        modulesGrid,
+        maskPattern,
+        errorCorrectionLevel,
       });
     } catch {
       setBatchWarning(strings.batch.addError);
@@ -285,6 +295,9 @@ export function HomeView() {
     const version = typeof decoded === 'string' ? undefined : decoded && decoded.version;
     const chunks = typeof decoded === 'string' ? undefined : decoded && decoded.chunks;
     const modulesGrid = typeof decoded === 'string' ? undefined : decoded && decoded.modulesGrid;
+    const maskPattern = typeof decoded === 'string' ? undefined : decoded && decoded.maskPattern;
+    const errorCorrectionLevel =
+      typeof decoded === 'string' ? undefined : decoded && decoded.errorCorrectionLevel;
 
     return (
       <div key="result" className="home-view home-view--result">
@@ -301,6 +314,8 @@ export function HomeView() {
             version={version}
             chunks={chunks}
             modulesGrid={modulesGrid}
+            maskPattern={maskPattern}
+            errorCorrectionLevel={errorCorrectionLevel}
           />
         </Suspense>
       </div>

@@ -155,9 +155,21 @@ async function createBatchDocx(items) {
 async function createRenderableItems(items) {
   return Promise.all(
     items.map(async (item) => {
-      const qrInput =
-        item.exactSvg ||
-        (item.version ? { text: item.payload, version: item.version } : item.payload);
+      let qrInput = item.exactSvg;
+      if (!qrInput) {
+        if (Array.isArray(item.modulesGrid) && item.modulesGrid.length) {
+          qrInput = { text: item.payload, version: item.version, modulesGrid: item.modulesGrid };
+        } else if (item.version != null || item.maskPattern != null || item.errorCorrectionLevel) {
+          qrInput = {
+            text: item.payload,
+            version: item.version,
+            maskPattern: item.maskPattern,
+            errorCorrectionLevel: item.errorCorrectionLevel,
+          };
+        } else {
+          qrInput = item.payload;
+        }
+      }
       const canonicalSvg = await createQrSvg(qrInput);
       const svg = createDecoratedQrSvg(canonicalSvg, item.type, {
         enabled: item.branding?.enabled !== false,

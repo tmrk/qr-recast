@@ -113,9 +113,17 @@ const typeIcons = Object.freeze({
 });
 
 /**
- * @param {{ onScanAgain: () => void, text: string, version?: number, chunks?: any[], modulesGrid?: boolean[][] }} props
+ * @param {{ onScanAgain: () => void, text: string, version?: number, chunks?: any[], modulesGrid?: boolean[][], maskPattern?: number, errorCorrectionLevel?: string }} props
  */
-export function ResultView({ onScanAgain, text, version, chunks, modulesGrid }) {
+export function ResultView({
+  onScanAgain,
+  text,
+  version,
+  chunks,
+  modulesGrid,
+  maskPattern,
+  errorCorrectionLevel,
+}) {
   const [qrAssetState, setQrAssetState] = useState({ fileStem: '', svg: '', text: '' });
   const [busyAction, setBusyAction] = useState('');
   const [textOpen, setTextOpen] = useState(false);
@@ -137,11 +145,15 @@ export function ResultView({ onScanAgain, text, version, chunks, modulesGrid }) 
   useEffect(() => {
     let active = true;
 
-    // When we have modules observed from the photo, createQrSvg will pick the closest valid
-    // ECL+mask combination while forcing the version for a true recast.
+    // Rich input for photographed QRs: prefer direct modulesGrid when validated in decode.
+    // Otherwise the generator path uses recovered mask/ECL + forced version for closer fidelity.
     const svgSource =
-      version != null || Array.isArray(chunks) || modulesGrid
-        ? { text, version, chunks, modulesGrid }
+      version != null ||
+      Array.isArray(chunks) ||
+      modulesGrid ||
+      maskPattern != null ||
+      errorCorrectionLevel
+        ? { text, version, chunks, modulesGrid, maskPattern, errorCorrectionLevel }
         : text;
     Promise.all([createQrSvg(svgSource), hashTextPrefix(text)])
       .then(([svg, hash]) => {
@@ -160,7 +172,7 @@ export function ResultView({ onScanAgain, text, version, chunks, modulesGrid }) 
     return () => {
       active = false;
     };
-  }, [text, version, chunks, modulesGrid]);
+  }, [text, version, chunks, modulesGrid, maskPattern, errorCorrectionLevel]);
 
   const payloadPreview = useMemo(() => text.trim() || strings.result.emptyPayload, [text]);
   const qrType = useMemo(() => detectQrType(text), [text]);

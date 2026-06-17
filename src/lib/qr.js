@@ -17,18 +17,21 @@ export async function createQrSvg(input) {
   const version = isRich ? input.version : undefined;
   const chunks = isRich ? input.chunks : undefined;
   const modulesGrid = isRich ? input.modulesGrid : undefined;
+  const maskPattern = isRich ? input.maskPattern : undefined;
+  const inputEcl = isRich ? input.errorCorrectionLevel : undefined;
 
   const baseOpts = {
     type: 'svg',
-    margin: 2,
+    margin: 4,
   };
 
   const hasForcedVersion = Number.isInteger(version) && version >= 1 && version <= 40;
 
-  if (hasForcedVersion && Array.isArray(modulesGrid) && modulesGrid.length === version * 4 + 17) {
-    // Photographed QR: choose the ECL + mask that produces a matrix visually closest to the photo,
-    // while forcing the exact version. This yields the closest possible crisp, scannable recast.
-    return await createMatchingSvg(text, version, modulesGrid);
+  if (Array.isArray(modulesGrid) && modulesGrid.length > 0) {
+    // Photographed QR: directly output the modules we sampled from the photo.
+    // This is the true "recast" of what the camera saw — same pattern, same size.
+    // (The generator path is only used for synthetic payloads like share URLs.)
+    return createQrSvgFromModules(modulesGrid, 4);
   }
 
   if (!hasForcedVersion) {
@@ -40,6 +43,7 @@ export async function createQrSvg(input) {
 
   // Scanned QR: force the original version to preserve data size (matrix size).
   // Use chunks (when available) to keep the original encoding modes/segments.
+  // If maskPattern or errorCorrectionLevel were recovered from the photo, prefer them.
   let data = text;
   if (Array.isArray(chunks) && chunks.length > 0) {
     data = chunks.map((chunk) => {
@@ -55,15 +59,19 @@ export async function createQrSvg(input) {
     });
   }
 
-  // Try ECLs to keep the forced version. Prefer M (previous default), fall back to L to guarantee capacity.
-  const candidateEcls = ['M', 'L', 'Q', 'H'];
+  const hasMask = Number.isInteger(maskPattern) && maskPattern >= 0 && maskPattern <= 7;
+  const preferredEcl = inputEcl && ['L', 'M', 'Q', 'H'].includes(inputEcl) ? inputEcl : null;
+
+  // Build candidate ECL order preferring any recovered value, then M/L to guarantee capacity at forced version.
+  const candidateEcls = preferredEcl
+    ? [preferredEcl, ...['M', 'L', 'Q', 'H'].filter((e) => e !== preferredEcl)]
+    : ['M', 'L', 'Q', 'H'];
+
   for (const ecl of candidateEcls) {
     try {
-      return await QRCode.toString(data, {
-        ...baseOpts,
-        errorCorrectionLevel: ecl,
-        version,
-      });
+      const opts = { ...baseOpts, errorCorrectionLevel: ecl, version };
+      if (hasMask) opts.maskPattern = maskPattern;
+      return await QRCode.toString(data, opts);
     } catch {
       // try next ECL
     }
@@ -71,11 +79,9 @@ export async function createQrSvg(input) {
 
   // Last resort: do not increase size if we can avoid it; fall back with L on plain text.
   try {
-    return await QRCode.toString(text, {
-      ...baseOpts,
-      errorCorrectionLevel: 'L',
-      version,
-    });
+    const opts = { ...baseOpts, errorCorrectionLevel: 'L', version };
+    if (hasMask) opts.maskPattern = maskPattern;
+    return await QRCode.toString(text, opts);
   } catch {
     // Unlikely: generate unconstrained (may pick larger version).
     return QRCode.toString(text, {
@@ -83,6 +89,74 @@ export async function createQrSvg(input) {
       errorCorrectionLevel: 'M',
     });
   }
+}
+
+// Sub-pixel luminance sampler using bilinear interpolation for more accurate per-module decisions.
+function sampleLuminance(imageData, width, height, fx, fy) {
+  const x = Math.max(0, Math.min(width - 1, fx));
+  const y = Math.max(0, Math.min(height - 1, fy));
+  const x0 = Math.floor(x);
+  const x1 = Math.min(width - 1, x0 + 1);
+  const y0 = Math.floor(y);
+  const y1 = Math.min(height - 1, y0 + 1);
+  const dx = x - x0;
+  const dy = y - y0;
+
+  const getLum = (ix, iy) => {
+    const i = (iy * width + ix) * 4;
+    return (imageData[i] * 299 + imageData[i + 1] * 587 + imageData[i + 2] * 114) / 1000;
+  };
+
+  const l00 = getLum(x0, y0);
+  const l10 = getLum(x1, y0);
+  const l01 = getLum(x0, y1);
+  const l11 = getLum(x1, y1);
+
+  return l00 * (1 - dx) * (1 - dy) + l10 * dx * (1 - dy) + l01 * (1 - dx) * dy + l11 * dx * dy;
+}
+
+// Compute a robust global threshold from finder regions (dark centres and light surrounds).
+// Uses averages rather than extremes and samples additional points inside the finders.
+function computeThreshold(imageData, width, height, tl, tr, bl, br, modules) {
+  const darkSamples = [];
+  const lightSamples = [];
+  // More finder-based refs: dark block centres + light "cross" and separator areas inside finders.
+  const darkRefs = [
+    [3.0 / modules, 3.0 / modules],
+    [4.0 / modules, 3.0 / modules],
+    [3.0 / modules, 4.0 / modules],
+    [(modules - 4.0) / modules, 3.0 / modules],
+    [(modules - 3.0) / modules, 3.0 / modules],
+    [(modules - 3.0) / modules, 4.0 / modules],
+    [3.0 / modules, (modules - 4.0) / modules],
+    [3.0 / modules, (modules - 3.0) / modules],
+    [4.0 / modules, (modules - 3.0) / modules],
+  ];
+  const lightRefs = [
+    [1.5 / modules, 3.0 / modules],
+    [3.0 / modules, 1.5 / modules],
+    [1.5 / modules, (modules - 3.0) / modules],
+    [(modules - 3.0) / modules, 1.5 / modules],
+    [5.5 / modules, 5.5 / modules],
+    [(modules - 5.5) / modules, 5.5 / modules],
+    [5.5 / modules, (modules - 5.5) / modules],
+  ];
+
+  for (const [u, v] of darkRefs) {
+    const x = (1 - u) * (1 - v) * tl.x + u * (1 - v) * tr.x + (1 - u) * v * bl.x + u * v * br.x;
+    const y = (1 - u) * (1 - v) * tl.y + u * (1 - v) * tr.y + (1 - u) * v * bl.y + u * v * br.y;
+    darkSamples.push(sampleLuminance(imageData, width, height, x, y));
+  }
+  for (const [u, v] of lightRefs) {
+    const x = (1 - u) * (1 - v) * tl.x + u * (1 - v) * tr.x + (1 - u) * v * bl.x + u * v * br.x;
+    const y = (1 - u) * (1 - v) * tl.y + u * (1 - v) * tr.y + (1 - u) * v * bl.y + u * v * br.y;
+    lightSamples.push(sampleLuminance(imageData, width, height, x, y));
+  }
+
+  const darkAvg = darkSamples.reduce((a, b) => a + b, 0) / darkSamples.length;
+  const lightAvg = lightSamples.reduce((a, b) => a + b, 0) / lightSamples.length;
+  // Slightly conservative for typical print/camera contrast; still adapts to lighting.
+  return darkAvg * 0.58 + lightAvg * 0.42;
 }
 
 export function getModulesFromImageData(imageData, width, height, location, version) {
@@ -100,28 +174,29 @@ export function getModulesFromImageData(imageData, width, height, location, vers
     bottomRightCorner: br,
   } = location;
 
+  const threshold = computeThreshold(imageData, width, height, tl, tr, bl, br, modules);
+
   for (let r = 0; r < modules; r++) {
     const row = [];
     for (let c = 0; c < modules; c++) {
-      // Sample near the center of the logical module using bilinear map of the detected corners.
-      // Using the exact centre gives the value the decoder primarily relied on.
-      const u = (c + 0.5) / modules;
-      const v = (r + 0.5) / modules;
+      // 7x7 samples inside the nominal module cell for robust voting under noise/glare.
+      let blackVotes = 0;
+      const subs = 7;
+      for (let sy = 0; sy < subs; sy++) {
+        for (let sx = 0; sx < subs; sx++) {
+          const u = (c + (sx + 0.5) / subs) / modules;
+          const v = (r + (sy + 0.5) / subs) / modules;
 
-      const x = (1 - u) * (1 - v) * tl.x + u * (1 - v) * tr.x + (1 - u) * v * bl.x + u * v * br.x;
-      const y = (1 - u) * (1 - v) * tl.y + u * (1 - v) * tr.y + (1 - u) * v * bl.y + u * v * br.y;
+          const x =
+            (1 - u) * (1 - v) * tl.x + u * (1 - v) * tr.x + (1 - u) * v * bl.x + u * v * br.x;
+          const y =
+            (1 - u) * (1 - v) * tl.y + u * (1 - v) * tr.y + (1 - u) * v * bl.y + u * v * br.y;
 
-      const ix = Math.max(0, Math.min(width - 1, Math.round(x)));
-      const iy = Math.max(0, Math.min(height - 1, Math.round(y)));
-
-      const idx = (iy * width + ix) * 4;
-      const rVal = imageData[idx];
-      const gVal = imageData[idx + 1];
-      const bVal = imageData[idx + 2];
-      const lum = (rVal * 299 + gVal * 587 + bVal * 114) / 1000;
-
-      // QR printed modules are distinctly dark vs the substrate. Slightly permissive threshold.
-      row.push(lum < 160);
+          const lum = sampleLuminance(imageData, width, height, x, y);
+          if (lum < threshold) blackVotes++;
+        }
+      }
+      row.push(blackVotes > (subs * subs) / 2);
     }
     grid.push(row);
   }
@@ -129,7 +204,105 @@ export function getModulesFromImageData(imageData, width, height, location, vers
   return grid;
 }
 
-export function createQrSvgFromModules(grid, quietZone = 2) {
+// Format information 15-bit codewords for each (ECL, maskPattern) pair.
+// These are the values stored in the QR matrix (after masking with 0x5412).
+// Used to recover the original mask and ECL from a sampled grid even when noisy.
+const FORMAT_INFO_TABLE = [
+  { code15: 30660, ecl: 'L', mask: 0 },
+  { code15: 29427, ecl: 'L', mask: 1 },
+  { code15: 32170, ecl: 'L', mask: 2 },
+  { code15: 30877, ecl: 'L', mask: 3 },
+  { code15: 26159, ecl: 'L', mask: 4 },
+  { code15: 25368, ecl: 'L', mask: 5 },
+  { code15: 27713, ecl: 'L', mask: 6 },
+  { code15: 26998, ecl: 'L', mask: 7 },
+  { code15: 21522, ecl: 'M', mask: 0 },
+  { code15: 20773, ecl: 'M', mask: 1 },
+  { code15: 24188, ecl: 'M', mask: 2 },
+  { code15: 23371, ecl: 'M', mask: 3 },
+  { code15: 17913, ecl: 'M', mask: 4 },
+  { code15: 16590, ecl: 'M', mask: 5 },
+  { code15: 20375, ecl: 'M', mask: 6 },
+  { code15: 19104, ecl: 'M', mask: 7 },
+  { code15: 13663, ecl: 'Q', mask: 0 },
+  { code15: 12392, ecl: 'Q', mask: 1 },
+  { code15: 16177, ecl: 'Q', mask: 2 },
+  { code15: 14854, ecl: 'Q', mask: 3 },
+  { code15: 9396, ecl: 'Q', mask: 4 },
+  { code15: 8579, ecl: 'Q', mask: 5 },
+  { code15: 11994, ecl: 'Q', mask: 6 },
+  { code15: 11245, ecl: 'Q', mask: 7 },
+  { code15: 5769, ecl: 'H', mask: 0 },
+  { code15: 5054, ecl: 'H', mask: 1 },
+  { code15: 7399, ecl: 'H', mask: 2 },
+  { code15: 6608, ecl: 'H', mask: 3 },
+  { code15: 1890, ecl: 'H', mask: 4 },
+  { code15: 597, ecl: 'H', mask: 5 },
+  { code15: 3340, ecl: 'H', mask: 6 },
+  { code15: 2107, ecl: 'H', mask: 7 },
+];
+
+function hamming(a, b) {
+  let dist = 0;
+  let x = a ^ b;
+  while (x) {
+    dist += x & 1;
+    x >>>= 1;
+  }
+  return dist;
+}
+
+// Attempt to recover the mask pattern and ECL used in the photographed code by reading
+// the format information bits adjacent to the top-left finder and finding the closest
+// matching codeword. Tolerates a few bit errors thanks to the BCH protection in format info.
+// Returns null when the area is too corrupted to decide reliably.
+export function recoverMaskAndEclFromGrid(grid) {
+  if (!Array.isArray(grid) || grid.length === 0) return null;
+  const N = grid.length;
+  // Format info positions around the top-left finder (always present for v >= 1).
+  // Order yields the 15-bit codeword as stored in the matrix.
+  const positions = [
+    [8, 0],
+    [8, 1],
+    [8, 2],
+    [8, 3],
+    [8, 4],
+    [8, 5],
+    [8, 7],
+    [8, 8],
+    [7, 8],
+    [5, 8],
+    [4, 8],
+    [3, 8],
+    [2, 8],
+    [1, 8],
+    [0, 8],
+  ];
+
+  let bits = 0;
+  for (const [r, c] of positions) {
+    if (r < N && c < N) {
+      bits = (bits << 1) | (grid[r][c] ? 1 : 0);
+    } else {
+      bits <<= 1;
+    }
+  }
+
+  let bestDist = 16;
+  let best = null;
+  for (const entry of FORMAT_INFO_TABLE) {
+    const dist = hamming(bits, entry.code15);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = entry;
+    }
+  }
+
+  if (!best || bestDist > 4) return null;
+  return { maskPattern: best.mask, errorCorrectionLevel: best.ecl };
+}
+
+export function createQrSvgFromModules(grid, quietZone = 4) {
   if (!Array.isArray(grid) || grid.length === 0) return '';
   const modules = grid.length;
   const size = modules + quietZone * 2;
@@ -147,64 +320,6 @@ export function createQrSvgFromModules(grid, quietZone = 2) {
 
   const white = `M0 0h${size}v${size}H0Z`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges"><path fill="#ffffff" d="${white}"/><path fill="#000000" d="${black}"/></svg>`;
-}
-
-/**
- * Brute-forces ECL and mask to find the combination that, for the forced version,
- * produces a QR matrix with the lowest Hamming distance to the modules observed in the photo.
- * Returns an SVG generated with those parameters (guaranteed valid + scannable, same size, close appearance).
- */
-async function createMatchingSvg(text, version, observedGrid) {
-  const { default: QRCode } = await import('qrcode');
-  const ecls = ['L', 'M', 'Q', 'H'];
-  const masks = [0, 1, 2, 3, 4, 5, 6, 7];
-
-  let best = null;
-  let bestDiff = Infinity;
-
-  const N = version * 4 + 17;
-
-  for (const ecl of ecls) {
-    for (const mp of masks) {
-      try {
-        const qr = QRCode.create(text, {
-          version,
-          errorCorrectionLevel: ecl,
-          maskPattern: mp,
-        });
-        if (qr.modules.size !== N) continue;
-
-        let diff = 0;
-        for (let y = 0; y < N; y++) {
-          for (let x = 0; x < N; x++) {
-            const gen = qr.modules.get(x, y);
-            const obs = !!observedGrid[y][x];
-            if (gen !== obs) diff++;
-          }
-        }
-        if (diff < bestDiff) {
-          bestDiff = diff;
-          best = { ecl, maskPattern: mp };
-        }
-      } catch {
-        // combination does not fit the data in this version – skip
-      }
-    }
-  }
-
-  const opts = {
-    type: 'svg',
-    margin: 2,
-    version,
-  };
-  if (best) {
-    opts.errorCorrectionLevel = best.ecl;
-    opts.maskPattern = best.maskPattern;
-  } else {
-    opts.errorCorrectionLevel = 'L';
-  }
-
-  return QRCode.toString(text, opts);
 }
 
 export function svgToBlob(svgString) {
