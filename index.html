@@ -8,9 +8,28 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="QR Recast" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <link rel="apple-touch-icon" href="%BASE_URL%icons/apple-touch-icon.png" />
     <title>QR Recast</title>
+    <style id="fallback-shell">
+      #root > div {
+        background: #f5fbf8;
+        color: #173b35;
+      }
+      #root > div p {
+        color: #48645e;
+      }
+      @media (prefers-color-scheme: dark) {
+        #root > div {
+          background: #0a1413;
+          color: #e8f1ee;
+        }
+        #root > div p {
+          color: #a2b4af;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root">
@@ -20,8 +39,6 @@
           display: grid;
           place-items: center;
           padding: 24px;
-          background: #f5fbf8;
-          color: #173b35;
           font-family: system-ui, sans-serif;
         "
       >

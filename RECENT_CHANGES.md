@@ -3,6 +3,9 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-06-17: Improved the static first-screen fallback to respect system dark mode via media query
+  and match the Material theme colours. Removed unused `@types/react` packages for strict JavaScript-only
+  compliance. Cleaned stale v1.0.0 tagging reference in ROADMAP. Bumped to v2.0.2.
 - 2026-06-01: Overhauled the interface with a refined teal palette, a consistent radius scale,
   softer layered elevation, and a single aligned branding card whose logo, QR, and caption share
   one column. Fixed the Batch Recast panel so the export action stays pinned and can no longer be

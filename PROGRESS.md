@@ -273,3 +273,10 @@ This log is append-only. New entries go at the bottom.
 - Implemented and verified the Settings switch alignment locally: both toggles now sit in a 72 px
   control column, the switch root centres exactly in that column, and the thumb centreline matches
   the row centreline in light and dark previews.
+
+## 2026-06-17
+
+- Plan: post-v2 polish — make the static HTML fallback respect dark mode and match theme colours, remove unused @types packages for strict JS-only compliance, clean stale v1.0.0 entry in ROADMAP, bump version to 2.0.2.
+- Implemented the changes locally: added a style block with media query for system dark mode to the index.html fallback (matching darkTheme), removed @types/\* via uninstall, updated ROADMAP Phase 9 note, appended RECENT_CHANGES, bumped package version.
+- Verified: npm run lint, npm run format:check, and npm run build all clean (bundle 156.91 KB gzip). Confirmed fallback dark colours (#0a1413) and style block present in dist/index.html. Local preview server responded with 200 and contained the updated shell.
+- Completed post-v2 polish and version bump to 2.0.2.

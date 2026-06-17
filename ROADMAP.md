@@ -107,7 +107,8 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 - [ ] Complete the cross-device manual test matrix in `TESTING.md`.
 - [x] Meet Lighthouse budgets for performance, accessibility, best practices, SEO, and PWA.
 - [x] Keep the main bundle at or below 250 KB gzipped through lazy-loaded exporters.
-- [ ] Tag `v1.0.0`, update `CHANGELOG.md`, and publish a brief GitHub release.
+
+Note: v1.0.0 tagging was superseded by the v2.0.0 / v2.0.1 releases; the remaining Phase 9 work is the manual verification matrix.
 
 ## Deferred Owned TODOs
 
@@ -149,3 +150,4 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 - [x] Correct Batch Recast light-mode surfaces and make PDF export page backgrounds white.
 - [x] Centre the idle Batch Recast panel to match the Single capture screen.
 - [x] Align Settings toggle switches in a fixed control column.
+- [x] Support dark mode in the static first-screen fallback, remove unused @types packages, clean Phase 9 references, and bump to 2.0.2.

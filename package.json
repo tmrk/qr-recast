@@ -1,7 +1,7 @@
 {
   "name": "qr-recast",
   "private": true,
-  "version": "2.0.1",
+  "version": "2.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -35,8 +35,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
