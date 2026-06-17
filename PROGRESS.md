@@ -285,4 +285,7 @@ This log is append-only. New entries go at the bottom.
 - Implemented the fix: threaded version (and chunks) from jsQR decode result through Viewfinder, HomeView, ResultView, and batch paths; updated createQrSvg to accept rich input and force version while falling back sensibly on ECL; updated batch persistence; plain text payloads (e.g. share URLs) unchanged.
 - Ran `npm run lint` and `npm run build` clean. Verified locally via node simulation that forcing version keeps matrix size (e.g. payload that would auto to v3 now stays at scanned v2).
 - Bumped to v2.0.3, updated PROGRESS and RECENT_CHANGES.
-- Will commit with Conventional Commit and push to trigger Pages deploy.
+- Committed "fix: preserve original QR version and data size on recast", pushed 4087863 to main. GitHub Actions deployment to Pages triggered.
+- Ran fresh `npm run lint && npm run build` post-format and pre-commit; all green.
+- Version bumped to 2.0.3 in package.json; RECENT_CHANGES and PROGRESS updated.
+- Local verification via build artefact and node simulation of createQrSvg with version input confirmed same data size. Live deploy pending Actions run on GitHub (previous site fetch showed pre-fix shell).
