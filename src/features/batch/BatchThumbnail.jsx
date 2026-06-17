@@ -16,7 +16,9 @@ export function BatchThumbnail({ item }) {
   useEffect(() => {
     let active = true;
 
-    const qrInput = item.version ? { text: item.payload, version: item.version } : item.payload;
+    const qrInput =
+      item.exactSvg ||
+      (item.version ? { text: item.payload, version: item.version } : item.payload);
     createQrSvg(qrInput)
       .then((canonicalSvg) => {
         if (!active) {
@@ -37,7 +39,7 @@ export function BatchThumbnail({ item }) {
     return () => {
       active = false;
     };
-  }, [brandingEnabled, item.id, item.payload, item.type, item.version, typeKey]);
+  }, [brandingEnabled, item.id, item.payload, item.type, item.version, item.exactSvg, typeKey]);
 
   return (
     <div aria-label={strings.batch.thumbnail} className="batch-panel__thumbnail" role="img">

@@ -289,3 +289,6 @@ This log is append-only. New entries go at the bottom.
 - Ran fresh `npm run lint && npm run build` post-format and pre-commit; all green.
 - Version bumped to 2.0.3 in package.json; RECENT_CHANGES and PROGRESS updated.
 - Local verification via build artefact and node simulation of createQrSvg with version input confirmed same data size. Live deploy pending Actions run on GitHub (previous site fetch showed pre-fix shell).
+- Plan: truly recast the photographed pattern (not just size) by sampling the module grid from the decode image using the jsQR corner locations, then brute-forcing ECL+mask to pick the generator params that best match the observed modules while keeping the exact version.
+- Implemented: getModulesFromImageData + matching logic inside createQrSvg; attached modulesGrid during decode; threaded to ResultView; same-size + closer appearance + always valid/scannable. Batch continues with version force. Verified with the reporter example (v1 Matter code now uses matching params, side 25).
+- Ran lint + build + format clean. Will commit, push, deploy.

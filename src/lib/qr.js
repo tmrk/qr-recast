@@ -1,6 +1,12 @@
 export const SHARE_URL_MAX_LENGTH = 2000;
 
 export async function createQrSvg(input) {
+  // If an exact module-traced SVG (produced from a real photograph) is supplied, return it as-is.
+  // This is how we achieve a true 1:1 recast of the photographed QR.
+  if (typeof input === 'string' && /<svg/i.test(input)) {
+    return input;
+  }
+
   const { default: QRCode } = await import('qrcode');
 
   const isRich =
@@ -10,6 +16,7 @@ export async function createQrSvg(input) {
   const text = isRich ? input.text || '' : input || '';
   const version = isRich ? input.version : undefined;
   const chunks = isRich ? input.chunks : undefined;
+  const modulesGrid = isRich ? input.modulesGrid : undefined;
 
   const baseOpts = {
     type: 'svg',
@@ -17,6 +24,12 @@ export async function createQrSvg(input) {
   };
 
   const hasForcedVersion = Number.isInteger(version) && version >= 1 && version <= 40;
+
+  if (hasForcedVersion && Array.isArray(modulesGrid) && modulesGrid.length === version * 4 + 17) {
+    // Photographed QR: choose the ECL + mask that produces a matrix visually closest to the photo,
+    // while forcing the exact version. This yields the closest possible crisp, scannable recast.
+    return await createMatchingSvg(text, version, modulesGrid);
+  }
 
   if (!hasForcedVersion) {
     return QRCode.toString(text, {
@@ -70,6 +83,128 @@ export async function createQrSvg(input) {
       errorCorrectionLevel: 'M',
     });
   }
+}
+
+export function getModulesFromImageData(imageData, width, height, location, version) {
+  if (!imageData || !location || typeof version !== 'number' || version < 1) {
+    return null;
+  }
+
+  const modules = version * 4 + 17;
+  const grid = [];
+
+  const {
+    topLeftCorner: tl,
+    topRightCorner: tr,
+    bottomLeftCorner: bl,
+    bottomRightCorner: br,
+  } = location;
+
+  for (let r = 0; r < modules; r++) {
+    const row = [];
+    for (let c = 0; c < modules; c++) {
+      // Sample near the center of the logical module using bilinear map of the detected corners.
+      // Using the exact centre gives the value the decoder primarily relied on.
+      const u = (c + 0.5) / modules;
+      const v = (r + 0.5) / modules;
+
+      const x = (1 - u) * (1 - v) * tl.x + u * (1 - v) * tr.x + (1 - u) * v * bl.x + u * v * br.x;
+      const y = (1 - u) * (1 - v) * tl.y + u * (1 - v) * tr.y + (1 - u) * v * bl.y + u * v * br.y;
+
+      const ix = Math.max(0, Math.min(width - 1, Math.round(x)));
+      const iy = Math.max(0, Math.min(height - 1, Math.round(y)));
+
+      const idx = (iy * width + ix) * 4;
+      const rVal = imageData[idx];
+      const gVal = imageData[idx + 1];
+      const bVal = imageData[idx + 2];
+      const lum = (rVal * 299 + gVal * 587 + bVal * 114) / 1000;
+
+      // QR printed modules are distinctly dark vs the substrate. Slightly permissive threshold.
+      row.push(lum < 160);
+    }
+    grid.push(row);
+  }
+
+  return grid;
+}
+
+export function createQrSvgFromModules(grid, quietZone = 2) {
+  if (!Array.isArray(grid) || grid.length === 0) return '';
+  const modules = grid.length;
+  const size = modules + quietZone * 2;
+
+  let black = '';
+  for (let r = 0; r < modules; r++) {
+    for (let c = 0; c < modules; c++) {
+      if (grid[r][c]) {
+        const x = quietZone + c;
+        const y = quietZone + r;
+        black += `M${x} ${y}h1v1h-1Z`;
+      }
+    }
+  }
+
+  const white = `M0 0h${size}v${size}H0Z`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges"><path fill="#ffffff" d="${white}"/><path fill="#000000" d="${black}"/></svg>`;
+}
+
+/**
+ * Brute-forces ECL and mask to find the combination that, for the forced version,
+ * produces a QR matrix with the lowest Hamming distance to the modules observed in the photo.
+ * Returns an SVG generated with those parameters (guaranteed valid + scannable, same size, close appearance).
+ */
+async function createMatchingSvg(text, version, observedGrid) {
+  const { default: QRCode } = await import('qrcode');
+  const ecls = ['L', 'M', 'Q', 'H'];
+  const masks = [0, 1, 2, 3, 4, 5, 6, 7];
+
+  let best = null;
+  let bestDiff = Infinity;
+
+  const N = version * 4 + 17;
+
+  for (const ecl of ecls) {
+    for (const mp of masks) {
+      try {
+        const qr = QRCode.create(text, {
+          version,
+          errorCorrectionLevel: ecl,
+          maskPattern: mp,
+        });
+        if (qr.modules.size !== N) continue;
+
+        let diff = 0;
+        for (let y = 0; y < N; y++) {
+          for (let x = 0; x < N; x++) {
+            const gen = qr.modules.get(x, y);
+            const obs = !!observedGrid[y][x];
+            if (gen !== obs) diff++;
+          }
+        }
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          best = { ecl, maskPattern: mp };
+        }
+      } catch {
+        // combination does not fit the data in this version – skip
+      }
+    }
+  }
+
+  const opts = {
+    type: 'svg',
+    margin: 2,
+    version,
+  };
+  if (best) {
+    opts.errorCorrectionLevel = best.ecl;
+    opts.maskPattern = best.maskPattern;
+  } else {
+    opts.errorCorrectionLevel = 'L';
+  }
+
+  return QRCode.toString(text, opts);
 }
 
 export function svgToBlob(svgString) {

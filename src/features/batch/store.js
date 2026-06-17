@@ -32,7 +32,7 @@ export function readBatch() {
 
 export async function createBatchItem(
   payload,
-  { brandingEnabled = true, name, position = 1, version } = {},
+  { brandingEnabled = true, name, position = 1, version, exactSvg } = {},
 ) {
   const { detectQrType } = await import('../../lib/qr-types/index.js');
   const now = new Date().toISOString();
@@ -40,12 +40,15 @@ export async function createBatchItem(
   const itemName = normaliseBatchName(name, `${stringsSafeDefaultName()} ${position}`);
   const safeVersion =
     Number.isInteger(version) && version >= 1 && version <= 40 ? version : undefined;
+  const safeExact =
+    typeof exactSvg === 'string' && exactSvg.includes('<svg') ? exactSvg : undefined;
 
   return {
     id: createId(),
     name: itemName,
     payload,
     version: safeVersion,
+    exactSvg: safeExact,
     type: serialiseQrType(qrType),
     branding: {
       enabled: Boolean(brandingEnabled),
@@ -73,12 +76,13 @@ export function useBatchStore() {
   }, []);
 
   const addPayload = useCallback(
-    async (payload, { brandingEnabled, version } = {}) => {
+    async (payload, { brandingEnabled, version, exactSvg } = {}) => {
       const duplicate = batch.items.some((item) => item.payload === payload);
       const item = await createBatchItem(payload, {
         brandingEnabled,
         position: batch.items.length + 1,
         version,
+        exactSvg,
       });
       const nextBatch = stampBatch({
         ...batch,
@@ -253,6 +257,10 @@ function normaliseStoredItem(item) {
     name: normaliseBatchName(item.name, fallbackName),
     payload: item.payload,
     version: safeVersion,
+    exactSvg:
+      typeof item.exactSvg === 'string' && item.exactSvg.includes('<svg')
+        ? item.exactSvg
+        : undefined,
     type: serialiseQrType(qrType),
     branding: {
       enabled: item.branding?.enabled !== false,

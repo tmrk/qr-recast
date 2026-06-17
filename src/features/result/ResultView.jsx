@@ -113,9 +113,9 @@ const typeIcons = Object.freeze({
 });
 
 /**
- * @param {{ onScanAgain: () => void, text: string, version?: number, chunks?: any[] }} props
+ * @param {{ onScanAgain: () => void, text: string, version?: number, chunks?: any[], modulesGrid?: boolean[][] }} props
  */
-export function ResultView({ onScanAgain, text, version, chunks }) {
+export function ResultView({ onScanAgain, text, version, chunks, modulesGrid }) {
   const [qrAssetState, setQrAssetState] = useState({ fileStem: '', svg: '', text: '' });
   const [busyAction, setBusyAction] = useState('');
   const [textOpen, setTextOpen] = useState(false);
@@ -137,8 +137,13 @@ export function ResultView({ onScanAgain, text, version, chunks }) {
   useEffect(() => {
     let active = true;
 
-    const qrInput = version != null || Array.isArray(chunks) ? { text, version, chunks } : text;
-    Promise.all([createQrSvg(qrInput), hashTextPrefix(text)])
+    // When we have modules observed from the photo, createQrSvg will pick the closest valid
+    // ECL+mask combination while forcing the version for a true recast.
+    const svgSource =
+      version != null || Array.isArray(chunks) || modulesGrid
+        ? { text, version, chunks, modulesGrid }
+        : text;
+    Promise.all([createQrSvg(svgSource), hashTextPrefix(text)])
       .then(([svg, hash]) => {
         if (!active) {
           return;
@@ -155,7 +160,7 @@ export function ResultView({ onScanAgain, text, version, chunks }) {
     return () => {
       active = false;
     };
-  }, [text, version, chunks]);
+  }, [text, version, chunks, modulesGrid]);
 
   const payloadPreview = useMemo(() => text.trim() || strings.result.emptyPayload, [text]);
   const qrType = useMemo(() => detectQrType(text), [text]);

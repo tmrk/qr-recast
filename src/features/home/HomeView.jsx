@@ -107,6 +107,7 @@ export function HomeView() {
       addedItem = await batchStore.addPayload(text, {
         brandingEnabled: globalBrandingEnabled,
         version,
+        exactSvg: decodeResult?.exactSvg,
       });
     } catch {
       setBatchWarning(strings.batch.addError);
@@ -283,6 +284,7 @@ export function HomeView() {
     const text = typeof decoded === 'string' ? decoded : (decoded && decoded.data) || '';
     const version = typeof decoded === 'string' ? undefined : decoded && decoded.version;
     const chunks = typeof decoded === 'string' ? undefined : decoded && decoded.chunks;
+    const modulesGrid = typeof decoded === 'string' ? undefined : decoded && decoded.modulesGrid;
 
     return (
       <div key="result" className="home-view home-view--result">
@@ -298,6 +300,7 @@ export function HomeView() {
             text={text}
             version={version}
             chunks={chunks}
+            modulesGrid={modulesGrid}
           />
         </Suspense>
       </div>

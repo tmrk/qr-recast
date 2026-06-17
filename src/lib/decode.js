@@ -1,3 +1,5 @@
+import { getModulesFromImageData } from './qr.js';
+
 const DECODE_WIDTH = 640;
 const IMAGE_DECODE_WIDTH = 1200;
 
@@ -47,7 +49,26 @@ async function decodeDrawable(source, canvas, width, height) {
 
   const imageData = context.getImageData(0, 0, width, height);
   const jsQR = await loadJsQr();
-  return jsQR(imageData.data, width, height, { inversionAttempts: 'attemptBoth' });
+  const result = jsQR(imageData.data, width, height, { inversionAttempts: 'attemptBoth' });
+
+  if (result && result.location && result.version) {
+    try {
+      const grid = getModulesFromImageData(
+        imageData.data,
+        width,
+        height,
+        result.location,
+        result.version,
+      );
+      if (grid && grid.length) {
+        result.modulesGrid = grid;
+      }
+    } catch {
+      // Swallow – fall back to generated QR using version + best-effort parameters.
+    }
+  }
+
+  return result;
 }
 
 async function loadJsQr() {
