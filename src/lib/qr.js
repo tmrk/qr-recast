@@ -1,12 +1,17 @@
 export const SHARE_URL_MAX_LENGTH = 2000;
+export const SHARE_FRAGMENT_KEY = 'q';
+
+function createGeneratedQrSvg(QRCode, data, options) {
+  const qr = QRCode.create(data, options);
+  const { size, data: modules } = qr.modules;
+  const grid = Array.from({ length: size }, (_value, row) =>
+    Array.from({ length: size }, (_cell, column) => Boolean(modules[row * size + column])),
+  );
+
+  return createQrSvgFromModules(grid, 4);
+}
 
 export async function createQrSvg(input) {
-  // If an exact module-traced SVG (produced from a real photograph) is supplied, return it as-is.
-  // This is how we achieve a true 1:1 recast of the photographed QR.
-  if (typeof input === 'string' && /<svg/i.test(input)) {
-    return input;
-  }
-
   const { default: QRCode } = await import('qrcode');
 
   const isRich =
@@ -20,11 +25,6 @@ export async function createQrSvg(input) {
   const maskPattern = isRich ? input.maskPattern : undefined;
   const inputEcl = isRich ? input.errorCorrectionLevel : undefined;
 
-  const baseOpts = {
-    type: 'svg',
-    margin: 4,
-  };
-
   const hasForcedVersion = Number.isInteger(version) && version >= 1 && version <= 40;
 
   if (Array.isArray(modulesGrid) && modulesGrid.length > 0) {
@@ -35,8 +35,7 @@ export async function createQrSvg(input) {
   }
 
   if (!hasForcedVersion) {
-    return QRCode.toString(text, {
-      ...baseOpts,
+    return createGeneratedQrSvg(QRCode, text, {
       errorCorrectionLevel: 'M',
     });
   }
@@ -69,9 +68,9 @@ export async function createQrSvg(input) {
 
   for (const ecl of candidateEcls) {
     try {
-      const opts = { ...baseOpts, errorCorrectionLevel: ecl, version };
+      const opts = { errorCorrectionLevel: ecl, version };
       if (hasMask) opts.maskPattern = maskPattern;
-      return await QRCode.toString(data, opts);
+      return createGeneratedQrSvg(QRCode, data, opts);
     } catch {
       // try next ECL
     }
@@ -79,13 +78,12 @@ export async function createQrSvg(input) {
 
   // Last resort: do not increase size if we can avoid it; fall back with L on plain text.
   try {
-    const opts = { ...baseOpts, errorCorrectionLevel: 'L', version };
+    const opts = { errorCorrectionLevel: 'L', version };
     if (hasMask) opts.maskPattern = maskPattern;
-    return await QRCode.toString(text, opts);
+    return createGeneratedQrSvg(QRCode, text, opts);
   } catch {
     // Unlikely: generate unconstrained (may pick larger version).
-    return QRCode.toString(text, {
-      ...baseOpts,
+    return createGeneratedQrSvg(QRCode, text, {
       errorCorrectionLevel: 'M',
     });
   }
@@ -419,7 +417,10 @@ export async function decodePayloadFromShareUrl(encodedText) {
 
 export async function buildShareUrl(text) {
   const baseUrl = new URL(import.meta.env.BASE_URL, window.location.origin);
-  baseUrl.searchParams.set('q', await encodePayloadForShareUrl(text));
+  const fragment = new URLSearchParams();
+
+  fragment.set(SHARE_FRAGMENT_KEY, await encodePayloadForShareUrl(text));
+  baseUrl.hash = fragment.toString();
 
   return baseUrl.toString();
 }

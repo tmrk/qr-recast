@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { trackAnalyticsEvent } from '../analytics/events.js';
 import { useBrandingPreference } from '../branding/preferences.js';
 import { batchResumeEvent, useBatchStore } from '../batch/store.js';
-import { decodePayloadFromShareUrl } from '../../lib/qr.js';
+import { SHARE_FRAGMENT_KEY, decodePayloadFromShareUrl } from '../../lib/qr.js';
 import { strings } from '../../strings.js';
 import { Viewfinder } from '../camera/Viewfinder.jsx';
 
@@ -44,7 +44,9 @@ export function HomeView() {
   const batchScanLockRef = useRef({ payload: '', until: 0 });
   const location = useLocation();
   const navigate = useNavigate();
-  const encodedSharedPayload = new URLSearchParams(location.search).get('q');
+  const encodedSharedPayload =
+    new URLSearchParams(location.hash.slice(1)).get(SHARE_FRAGMENT_KEY) ??
+    new URLSearchParams(location.search).get(SHARE_FRAGMENT_KEY);
   const namingItem = batchStore.batch.items.find((item) => item.id === namingItemId) ?? null;
   const batchCount = batchStore.batch.items.length;
 
@@ -337,6 +339,7 @@ export function HomeView() {
                 onExport={exportBatch}
                 onMove={batchStore.moveItem}
                 onRename={batchStore.renameItem}
+                onBrandingChange={batchStore.setItemBranding}
                 onStartScan={viewfinderControls.startCamera}
                 onUploadImage={viewfinderControls.openUpload}
                 persistenceError={batchStore.persistenceError}

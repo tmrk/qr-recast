@@ -316,20 +316,25 @@ export function Viewfinder({
       <video ref={videoRef} autoPlay className="viewfinder__video" muted playsInline />
       <canvas ref={canvasRef} aria-hidden="true" className="viewfinder__canvas" />
 
-      {status === 'ready' || detected ? (
-        <Box
-          className={
-            detected ? 'viewfinder__frame viewfinder__frame--detected' : 'viewfinder__frame'
-          }
-        >
-          <span className="viewfinder__corner viewfinder__corner--top-left" />
-          <span className="viewfinder__corner viewfinder__corner--top-right" />
-          <span className="viewfinder__corner viewfinder__corner--bottom-left" />
-          <span className="viewfinder__corner viewfinder__corner--bottom-right" />
-          <span className="viewfinder__sweep" />
-          <QrCodeScannerRounded className="viewfinder__detected-icon" />
-        </Box>
-      ) : null}
+      <Box
+        aria-hidden="true"
+        className={[
+          'viewfinder__frame',
+          detected ? 'viewfinder__frame--detected' : '',
+          status === 'ready' ? 'viewfinder__frame--active' : '',
+          status !== 'ready' && !detected ? 'viewfinder__frame--idle' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        <span className="viewfinder__corner viewfinder__corner--top-left" />
+        <span className="viewfinder__corner viewfinder__corner--top-right" />
+        <span className="viewfinder__corner viewfinder__corner--bottom-left" />
+        <span className="viewfinder__corner viewfinder__corner--bottom-right" />
+        <span className="viewfinder__reticle" />
+        <span className="viewfinder__sweep" />
+        <QrCodeScannerRounded className="viewfinder__detected-icon" />
+      </Box>
 
       {detected && detectedPolygon ? (
         <svg
@@ -350,7 +355,16 @@ export function Viewfinder({
       ) : null}
 
       {showStatusPanel ? (
-        <Paper aria-live="polite" className="viewfinder__status" elevation={0}>
+        <Paper
+          aria-live="polite"
+          className={`viewfinder__status viewfinder__status--${status}`}
+          elevation={0}
+        >
+          {status === 'idle' ? (
+            <Typography color="primary" variant="overline">
+              {strings.camera.idleEyebrow}
+            </Typography>
+          ) : null}
           <QrCodeScannerRounded color="primary" fontSize="large" />
           <Stack spacing={1}>
             <Typography component="h1" variant="h2">
@@ -416,6 +430,7 @@ export function Viewfinder({
         aria-label={strings.camera.upload}
         className="viewfinder__file"
         onChange={handleUpload}
+        tabIndex={-1}
         type="file"
       />
     </section>

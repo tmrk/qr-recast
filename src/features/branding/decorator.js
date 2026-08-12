@@ -9,6 +9,7 @@ const utilityLayout = Object.freeze({
   captionGap: 28,
   captionBottom: 30,
 });
+const canonicalQuietZoneModules = 4;
 const homeKitLogoPath =
   'M118 406a11 11 0 01-5 0 13 13 0 010-5V218c0-6-5-11-11-11H82L256 69l104 82c8 5 18 0 18-9v-25h15v55a11 11 0 004 8l34 27h-21c-6 0-11 5-11 11v183a13 13 0 010 4 11 11 0 01-5 1zM241 83l-114 90c-7 5-14 14-14 29v177c0 15 9 25 24 25h238c15 0 24-10 24-25V202c0-15-7-24-14-29L271 83c-10-6-22-6-30 0zm-67 261V217c0-4 1-5 2-6l80-63 80 63c1 1 2 1 2 6v127zm82-189c-6 0-9 1-14 5l-58 45c-9 7-9 15-9 20v97c0 12 8 20 19 20h124c11 0 19-8 19-20v-97c0-5 0-13-9-20l-58-46c-5-3-9-4-14-4zm-28 134v-49l28-21 28 21v48zm28-66c-4 0-6 2-10 5l-11 9a15 15 0 00-6 11v26c0 8 6 13 13 13h28c7 0 13-6 13-13v-26a15 15 0 00-6-11l-10-9-11-5';
 const matterLogoPath =
@@ -104,19 +105,22 @@ function renderSetupQrSvg(parsedSvg, badge, ariaLabel) {
 
 function renderHomeKitSetupQrSvg(parsedSvg, badge, ariaLabel) {
   const layout = setupLayouts.homekit;
+  const registration = getQrRegistrationColumn(parsedSvg, layout.qr);
   const codeLines = formatHomeKitDisplayCode(badge.setupCode);
+  const logoSize = 76;
+  const headerGap = 16;
+  const codeX = registration.x + logoSize + headerGap;
+  const codeWidth = registration.size - logoSize - headerGap;
   const codeText = codeLines.length
-    ? `<text fill="${colours.setupInk}" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="42" font-weight="500">
-<tspan x="117" y="58">${escapeXml(codeLines[0])}</tspan>
-<tspan x="117" y="108">${escapeXml(codeLines[1])}</tspan>
-</text>`
+    ? `${renderRegisteredText(codeLines[0], { size: codeWidth, x: codeX }, 57, 40)}
+${renderRegisteredText(codeLines[1], { size: codeWidth, x: codeX }, 104, 40)}`
     : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${layout.width} ${layout.height}" role="img" aria-label="${ariaLabel}">
 <title>${ariaLabel}</title>
 <rect width="${layout.width}" height="${layout.height}" fill="${colours.background}"/>
 ${renderSetupCard(layout)}
-${renderHomeKitLogo()}
+${renderHomeKitLogo(registration.x, logoSize)}
 ${codeText}
 ${renderNestedQr(parsedSvg, layout.qr.x, layout.qr.y, layout.qr.size)}
 </svg>`;
@@ -124,16 +128,18 @@ ${renderNestedQr(parsedSvg, layout.qr.x, layout.qr.y, layout.qr.size)}
 
 function renderMatterSetupQrSvg(parsedSvg, badge, ariaLabel) {
   const layout = setupLayouts.matter;
-  const setupCode = badge.setupCode ? escapeXml(formatSetupCode(badge.type, badge.setupCode)) : '';
+  const registration = getQrRegistrationColumn(parsedSvg, layout.qr);
+  const setupCode = badge.setupCode ? formatSetupCode(badge.type, badge.setupCode) : '';
+  const codeFontSize = setupCode.length > 15 ? 13 : 24;
   const codeText = setupCode
-    ? `<text x="160" y="403" text-anchor="middle" fill="${colours.setupInk}" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="29" font-weight="400">${setupCode}</text>`
+    ? renderRegisteredText(setupCode, registration, 403, codeFontSize)
     : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${layout.width} ${layout.height}" role="img" aria-label="${ariaLabel}">
 <title>${ariaLabel}</title>
 <rect width="${layout.width}" height="${layout.height}" fill="${colours.background}"/>
 ${renderSetupCard(layout)}
-${renderMatterLogo()}
+${renderMatterLogo(registration)}
 ${renderNestedQr(parsedSvg, layout.qr.x, layout.qr.y, layout.qr.size)}
 ${codeText}
 </svg>`;
@@ -145,6 +151,7 @@ function renderUtilityQrSvg(parsedSvg, badge, ariaLabel) {
   const contentWidth = width - margin * 2;
   const qrY = headerTop + iconTile + headerGap;
   const qrSize = contentWidth;
+  const registration = getQrRegistrationColumn(parsedSvg, { size: qrSize, x: margin });
   const captionText =
     badge.caption && badge.caption.trim() !== badge.label.trim() ? badge.caption : '';
   const caption = captionText ? escapeXml(captionText) : '';
@@ -153,13 +160,13 @@ function renderUtilityQrSvg(parsedSvg, badge, ariaLabel) {
     ? Math.round(captionBaseline + captionBottom)
     : Math.round(qrY + qrSize + margin);
   const footer = caption
-    ? `<text x="${margin}" y="${captionBaseline}" fill="${colours.muted}" font-family="Roboto Flex, Roboto, Arial, sans-serif" font-size="15" font-weight="520" letter-spacing="0.15">${caption}</text>`
+    ? `<text x="${formatSvgNumber(registration.x)}" y="${captionBaseline}" fill="${colours.muted}" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="400" letter-spacing="0.15">${caption}</text>`
     : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${ariaLabel}">
 <title>${ariaLabel}</title>
 <rect width="${width}" height="${height}" fill="${colours.background}"/>
-${renderUtilityHeader(badge)}
+${renderUtilityHeader(badge, registration)}
 ${renderNestedQr(parsedSvg, margin, qrY, qrSize)}
 ${footer}
 </svg>`;
@@ -169,39 +176,86 @@ function renderSetupCard(layout) {
   return `<rect x="${layout.card.x}" y="${layout.card.y}" width="${layout.card.width}" height="${layout.card.height}" rx="${layout.card.radius}" fill="${colours.card}" stroke="${colours.setupBorder}" stroke-width="3"/>`;
 }
 
-function renderHomeKitLogo() {
-  return `<svg x="17" y="21" width="84" height="84" viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+function renderHomeKitLogo(x, size) {
+  return `<svg x="${formatSvgNumber(x)}" y="21" width="${size}" height="${size}" viewBox="71 58 371 359" aria-hidden="true" focusable="false">
 <path d="${homeKitLogoPath}" fill="none" stroke="${colours.setupBorder}" stroke-width="22" stroke-linejoin="round"/>
 </svg>`;
 }
 
-function renderMatterLogo() {
-  return `<svg x="36" y="45" width="248" height="54" viewBox="0 0 338.667 72.644" aria-hidden="true" focusable="false">
+function renderMatterLogo(registration) {
+  return `<svg x="${formatSvgNumber(registration.x)}" y="45" width="${formatSvgNumber(registration.size)}" height="54" viewBox="0 0 337.063 72.644" aria-hidden="true" focusable="false">
 <path d="${matterLogoPath}" fill="${colours.setupInk}"/>
 </svg>`;
 }
 
+function renderRegisteredText(value, registration, baseline, fontSize) {
+  const characters = Array.from(String(value));
+
+  if (!characters.length) {
+    return '';
+  }
+
+  const characterMarkup = characters
+    .map((character, index) => {
+      const progress = characters.length === 1 ? 0.5 : index / (characters.length - 1);
+      const x = registration.x + registration.size * progress;
+      const anchor = index === 0 ? 'start' : index === characters.length - 1 ? 'end' : 'middle';
+
+      return `<tspan x="${formatSvgNumber(x)}" text-anchor="${anchor}">${escapeXml(character)}</tspan>`;
+    })
+    .join('');
+
+  return `<text y="${baseline}" fill="${colours.setupInk}" font-family="Arial, Helvetica, sans-serif" font-size="${fontSize}" font-weight="700" font-variant-numeric="tabular-nums" data-registration-x="${formatSvgNumber(registration.x)}" data-registration-width="${formatSvgNumber(registration.size)}">${characterMarkup}</text>`;
+}
+
 function renderNestedQr(parsedSvg, x, y, size) {
-  return `<svg x="${x}" y="${y}" width="${size}" height="${size}" viewBox="${escapeXml(parsedSvg.viewBox)}" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  return `<svg x="${x}" y="${y}" width="${size}" height="${size}" viewBox="${escapeXml(parsedSvg.viewBox)}" shape-rendering="crispEdges" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true" focusable="false">
 ${parsedSvg.innerMarkup}
 </svg>`;
 }
 
-function renderUtilityHeader(badge) {
-  const { margin, headerTop, iconTile } = utilityLayout;
+function renderUtilityHeader(badge, registration) {
+  const { headerTop, iconTile } = utilityLayout;
   const label = escapeXml(badge.label);
-  const centreX = margin + iconTile / 2;
+  const centreX = registration.x + iconTile / 2;
   const centreY = headerTop + iconTile / 2;
-  const labelX = margin + iconTile + 14;
+  const labelX = registration.x + iconTile + 14;
   const iconOffset = `translate(${centreX - 16} ${centreY - 16})`;
 
   return `<g aria-hidden="true">
-<rect x="${margin}" y="${headerTop}" width="${iconTile}" height="${iconTile}" rx="12" fill="${colours.iconFill}"/>
+<rect x="${formatSvgNumber(registration.x)}" y="${headerTop}" width="${iconTile}" height="${iconTile}" rx="12" fill="${colours.iconFill}"/>
 <g transform="${iconOffset}" color="${colours.primary}" fill="none" stroke="${colours.primary}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
 ${badge.icon()}
 </g>
-<text x="${labelX}" y="${centreY + 6}" fill="${colours.text}" font-family="Roboto Flex, Roboto, Arial, sans-serif" font-size="17.5" font-weight="640">${label}</text>
+<text x="${formatSvgNumber(labelX)}" y="${centreY + 6}" fill="${colours.text}" font-family="Arial, Helvetica, sans-serif" font-size="17.5" font-weight="700">${label}</text>
 </g>`;
+}
+
+function getQrRegistrationColumn(parsedSvg, qr) {
+  const viewBoxValues = parsedSvg.viewBox
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number);
+  const viewBoxWidth = viewBoxValues[2];
+
+  if (
+    viewBoxValues.length !== 4 ||
+    !viewBoxValues.every(Number.isFinite) ||
+    viewBoxWidth <= canonicalQuietZoneModules * 2
+  ) {
+    return { size: qr.size, x: qr.x };
+  }
+
+  const quietZoneSize = (canonicalQuietZoneModules / viewBoxWidth) * qr.size;
+
+  return {
+    size: qr.size - quietZoneSize * 2,
+    x: qr.x + quietZoneSize,
+  };
+}
+
+function formatSvgNumber(value) {
+  return Number(value.toFixed(3)).toString();
 }
 
 function parseCanonicalSvg(svgString) {

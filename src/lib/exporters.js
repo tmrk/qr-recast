@@ -19,12 +19,17 @@ export async function createPdfExport(svgString) {
 
   pdf.setFillColor(255, 255, 255);
   pdf.rect(0, 0, 210, 297, 'F');
-  await svg2pdf(svgElement, pdf, {
-    height: artworkSize.height,
-    width: artworkSize.width,
-    x: (210 - artworkSize.width) / 2,
-    y: 48,
-  });
+  pdf.saveGraphicsState();
+  try {
+    await svg2pdf(svgElement, pdf, {
+      height: artworkSize.height,
+      width: artworkSize.width,
+      x: (210 - artworkSize.width) / 2,
+      y: 48,
+    });
+  } finally {
+    pdf.restoreGraphicsState();
+  }
 
   pdf.setFontSize(10);
   pdf.setTextColor(89, 99, 95);

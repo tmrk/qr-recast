@@ -14,6 +14,8 @@ describe('canonical QR generation', () => {
       const svg = await createQrSvg({ text: 'HELLO', version });
 
       expect(readViewBoxSize(svg)).toBe(expectedSize);
+      expect(svg).toContain('shape-rendering="crispEdges"');
+      expect(svg).not.toContain('stroke=');
       await expect(decodeSvg(svg)).resolves.toBe('HELLO');
     },
   );

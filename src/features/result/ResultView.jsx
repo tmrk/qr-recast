@@ -35,7 +35,6 @@ import {
   DialogContent,
   DialogTitle,
   Drawer,
-  FormControlLabel,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -44,7 +43,6 @@ import {
   Paper,
   Snackbar,
   Stack,
-  Switch,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -276,7 +274,12 @@ export function ResultView({
     </Stack>
   );
   const decodedPanelHeading = (
-    <Stack alignItems="center" className="result-view__decoded-heading" direction="row" spacing={1}>
+    <Stack
+      className="result-view__decoded-heading"
+      direction="row"
+      spacing={1}
+      sx={{ alignItems: 'center' }}
+    >
       <Typography component="h2" id={decodedTextTitleId} variant="h2">
         {strings.result.decodedText}
       </Typography>
@@ -461,9 +464,7 @@ export function ResultView({
     }));
   }
 
-  function updateResultBranding(event) {
-    const enabled = event.target.checked;
-
+  function updateResultBranding(enabled) {
     setBrandingOverrideState({ enabled, text });
     trackAnalyticsEvent('branding_toggled', {
       state: enabled ? 'enabled' : 'disabled',
@@ -589,6 +590,26 @@ export function ResultView({
       role="button"
       tabIndex={svgString ? 0 : -1}
     >
+      <div aria-hidden="true" className="result-view__proof-heading">
+        <span>{strings.result.proofLabel}</span>
+        <span>01 / SVG</span>
+      </div>
+      <span
+        aria-hidden="true"
+        className="result-view__registration result-view__registration--tl"
+      />
+      <span
+        aria-hidden="true"
+        className="result-view__registration result-view__registration--tr"
+      />
+      <span
+        aria-hidden="true"
+        className="result-view__registration result-view__registration--bl"
+      />
+      <span
+        aria-hidden="true"
+        className="result-view__registration result-view__registration--br"
+      />
       {svgString ? (
         <div
           aria-label={strings.result.qrAlt}
@@ -599,20 +620,24 @@ export function ResultView({
       ) : (
         <CircularProgress aria-label={strings.result.generating} />
       )}
+      <div aria-hidden="true" className="result-view__proof-footer">
+        <span>{payloadKindLabel}</span>
+        <span>{strings.result.proofStatus}</span>
+      </div>
     </Paper>
   );
   const typeDetails = (
     <Paper className="result-view__type-card" elevation={0}>
       <Stack
-        alignItems="center"
         className="result-view__type-card-heading"
         direction="row"
         spacing={1.25}
+        sx={{ alignItems: 'center' }}
       >
         <span className="result-view__type-icon" aria-hidden="true">
           <TypeIcon />
         </span>
-        <Stack minWidth={0} spacing={0.25}>
+        <Stack spacing={0.25} sx={{ minWidth: 0 }}>
           <Typography color="text.secondary" variant="overline">
             {strings.result.detailsTitle}
           </Typography>
@@ -673,15 +698,9 @@ export function ResultView({
 
   return (
     <section className="result-view" aria-labelledby="result-title">
-      <Stack className="result-view__stack" spacing={2.5}>
-        <Stack
-          alignItems="flex-start"
-          className="result-view__header"
-          direction="row"
-          justifyContent="space-between"
-          spacing={2}
-        >
-          <Stack spacing={0.5}>
+      <div className="result-view__workbench">
+        <header className="result-view__header">
+          <div className="result-view__heading-copy">
             <Chip
               className="result-view__kind-chip"
               icon={<TypeIcon />}
@@ -692,73 +711,158 @@ export function ResultView({
               {strings.result.title}
             </Typography>
             <Typography color="text.secondary">{strings.result.supporting}</Typography>
-          </Stack>
-          <IconButton aria-label={strings.result.scanAgain} onClick={scanAgain}>
+          </div>
+          <IconButton
+            className="result-view__new-scan"
+            aria-label={strings.result.scanAgain}
+            onClick={scanAgain}
+          >
             <QrCodeScannerRounded />
           </IconButton>
-        </Stack>
+        </header>
 
-        <Tooltip
-          disableFocusListener={hasCoarsePointer}
-          disableHoverListener={hasCoarsePointer}
-          disableTouchListener
-          title={strings.result.copyQrTooltip}
-        >
-          {qrCard}
-        </Tooltip>
+        <div className="result-view__proof-column">
+          <Tooltip
+            disableFocusListener={hasCoarsePointer}
+            disableHoverListener={hasCoarsePointer}
+            disableTouchListener
+            title={strings.result.copyQrTooltip}
+          >
+            {qrCard}
+          </Tooltip>
 
-        <Paper className="result-view__branding-control" elevation={0}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={brandingEnabled}
-                inputProps={{ 'aria-label': strings.result.brandingToggle }}
-                onChange={updateResultBranding}
-              />
-            }
-            label={strings.result.brandingToggle}
-            labelPlacement="start"
-          />
-        </Paper>
+          <Paper className="result-view__branding-control" elevation={0}>
+            <div>
+              <Typography component="h2" variant="overline">
+                {strings.result.outputStyle}
+              </Typography>
+              <Typography color="text.secondary" variant="body2">
+                {strings.result.outputStyleHelp}
+              </Typography>
+            </div>
+            <div
+              aria-label={strings.result.outputStyle}
+              className="result-view__style-options"
+              role="group"
+            >
+              <Button
+                aria-pressed={!brandingEnabled}
+                onClick={() => updateResultBranding(false)}
+                variant={brandingEnabled ? 'text' : 'contained'}
+              >
+                {strings.result.cleanStyle}
+              </Button>
+              <Button
+                aria-pressed={brandingEnabled}
+                onClick={() => updateResultBranding(true)}
+                variant={brandingEnabled ? 'contained' : 'text'}
+              >
+                {strings.result.labelledStyle}
+              </Button>
+            </div>
+          </Paper>
+        </div>
 
-        {typeDetails}
+        <div className="result-view__control-column">
+          {typeDetails}
 
-        <div className="result-view__primary-actions">
-          <Button
-            aria-describedby={shareUrlTooLarge ? 'share-url-guidance' : undefined}
-            className={urlActionClassName}
-            color={urlActionCopied ? 'success' : 'primary'}
-            disabled={shareUrlDisabled}
-            onClick={runShareUrl}
-            startIcon={
-              busyAction === 'url' ? (
-                <CircularProgress size={18} />
+          <Paper className="result-view__action-deck" elevation={0}>
+            <Typography component="h2" variant="overline">
+              {strings.result.actionsTitle}
+            </Typography>
+            <div className="result-view__primary-actions">
+              <Button
+                aria-describedby={shareUrlTooLarge ? 'share-url-guidance' : undefined}
+                className={urlActionClassName}
+                color={urlActionCopied ? 'success' : 'primary'}
+                disabled={shareUrlDisabled}
+                onClick={runShareUrl}
+                startIcon={
+                  busyAction === 'url' ? (
+                    <CircularProgress size={18} />
+                  ) : (
+                    <span
+                      key={urlActionCopied ? 'copied' : 'ready'}
+                      className="result-view__url-action-icon"
+                    >
+                      <UrlActionIcon />
+                    </span>
+                  )
+                }
+                style={urlActionStyle}
+                variant="contained"
+              >
+                {canShareUrlNatively ? strings.result.shareUrl : strings.result.copyUrl}
+              </Button>
+              <Button
+                aria-controls={downloadMenuOpen ? 'result-download-menu' : undefined}
+                aria-expanded={downloadMenuOpen ? 'true' : undefined}
+                aria-haspopup="menu"
+                disabled={!svgString || Boolean(busyAction)}
+                endIcon={<KeyboardArrowDownRounded />}
+                onClick={(event) => setDownloadAnchorElement(event.currentTarget)}
+                startIcon={
+                  exportInProgress ? <CircularProgress size={18} /> : <FileDownloadRounded />
+                }
+                variant="contained"
+              >
+                {strings.result.download}
+              </Button>
+            </div>
+
+            <div className="result-view__secondary-actions">
+              <Button
+                disabled={Boolean(busyAction)}
+                onClick={openDecodedText}
+                startIcon={<TextSnippetRounded />}
+                variant="text"
+              >
+                {strings.result.showText}
+              </Button>
+              <Button onClick={scanAgain} startIcon={<QrCodeScannerRounded />} variant="text">
+                {strings.result.scanAgain}
+              </Button>
+            </div>
+          </Paper>
+
+          {shareUrlTooLarge ? (
+            <Alert id="share-url-guidance" severity="warning" variant="outlined">
+              {strings.result.urlTooLargeGuidance}
+            </Alert>
+          ) : null}
+
+          {showDesktopSharePreview ? (
+            <Paper
+              aria-label={strings.result.copiedUrlPreview}
+              className="result-view__desktop-share"
+              elevation={0}
+              role="status"
+            >
+              <Stack className="result-view__copied-url" spacing={1}>
+                <Typography color="text.secondary" variant="overline">
+                  {strings.result.copiedUrl}
+                </Typography>
+                <Chip
+                  className="result-view__url-pill"
+                  icon={<ContentCopyRounded />}
+                  label={copiedShareUrl}
+                  variant="outlined"
+                />
+              </Stack>
+              {shareUrlSvg ? (
+                <div
+                  aria-label={strings.result.shareUrlQrAlt}
+                  className="result-view__share-qr"
+                  dangerouslySetInnerHTML={{ __html: shareUrlSvg }}
+                  role="img"
+                />
               ) : (
-                <span
-                  key={urlActionCopied ? 'copied' : 'ready'}
-                  className="result-view__url-action-icon"
-                >
-                  <UrlActionIcon />
-                </span>
-              )
-            }
-            style={urlActionStyle}
-            variant="contained"
-          >
-            {canShareUrlNatively ? strings.result.shareUrl : strings.result.copyUrl}
-          </Button>
-          <Button
-            aria-controls={downloadMenuOpen ? 'result-download-menu' : undefined}
-            aria-expanded={downloadMenuOpen ? 'true' : undefined}
-            aria-haspopup="menu"
-            disabled={!svgString || Boolean(busyAction)}
-            endIcon={<KeyboardArrowDownRounded />}
-            onClick={(event) => setDownloadAnchorElement(event.currentTarget)}
-            startIcon={exportInProgress ? <CircularProgress size={18} /> : <FileDownloadRounded />}
-            variant="contained"
-          >
-            {strings.result.download}
-          </Button>
+                <div className="result-view__share-qr result-view__share-qr--loading">
+                  <CircularProgress aria-label={strings.result.generatingShareUrlQr} size={24} />
+                </div>
+              )}
+            </Paper>
+          ) : null}
         </div>
 
         <Menu
@@ -785,60 +889,7 @@ export function ResultView({
             );
           })}
         </Menu>
-
-        <div className="result-view__secondary-actions">
-          <Button
-            disabled={Boolean(busyAction)}
-            onClick={openDecodedText}
-            startIcon={<TextSnippetRounded />}
-            variant="outlined"
-          >
-            {strings.result.showText}
-          </Button>
-          <Button onClick={scanAgain} startIcon={<QrCodeScannerRounded />} variant="outlined">
-            {strings.result.scanAgain}
-          </Button>
-        </div>
-
-        {shareUrlTooLarge ? (
-          <Alert id="share-url-guidance" severity="warning" variant="outlined">
-            {strings.result.urlTooLargeGuidance}
-          </Alert>
-        ) : null}
-
-        {showDesktopSharePreview ? (
-          <Paper
-            aria-label={strings.result.copiedUrlPreview}
-            className="result-view__desktop-share"
-            elevation={0}
-            role="status"
-          >
-            <Stack className="result-view__copied-url" spacing={1}>
-              <Typography color="text.secondary" variant="overline">
-                {strings.result.copiedUrl}
-              </Typography>
-              <Chip
-                className="result-view__url-pill"
-                icon={<ContentCopyRounded />}
-                label={copiedShareUrl}
-                variant="outlined"
-              />
-            </Stack>
-            {shareUrlSvg ? (
-              <div
-                aria-label={strings.result.shareUrlQrAlt}
-                className="result-view__share-qr"
-                dangerouslySetInnerHTML={{ __html: shareUrlSvg }}
-                role="img"
-              />
-            ) : (
-              <div className="result-view__share-qr result-view__share-qr--loading">
-                <CircularProgress aria-label={strings.result.generatingShareUrlQr} size={24} />
-              </div>
-            )}
-          </Paper>
-        ) : null}
-      </Stack>
+      </div>
 
       <Drawer
         anchor="bottom"
@@ -854,11 +905,10 @@ export function ResultView({
       >
         <div aria-hidden="true" className="result-view__sheet-handle" />
         <Stack
-          alignItems="center"
           className="result-view__sheet-header"
           direction="row"
-          justifyContent="space-between"
           spacing={2}
+          sx={{ alignItems: 'center', justifyContent: 'space-between' }}
         >
           {decodedPanelHeading}
           <IconButton aria-label={strings.result.closeText} onClick={() => setTextOpen(false)}>

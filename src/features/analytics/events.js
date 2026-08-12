@@ -67,7 +67,8 @@ export function initialiseAnalytics() {
   window.gtag('js', new Date());
   window.gtag('config', gaMeasurementId, {
     anonymize_ip: true,
-    send_page_view: true,
+    page_location: getSafePageLocation(),
+    send_page_view: false,
   });
 
   analyticsInitialised = true;
@@ -82,7 +83,10 @@ export function trackAnalyticsEvent(eventName, params = {}) {
     return;
   }
 
-  window.gtag('event', eventName, sanitiseParams(params));
+  window.gtag('event', eventName, {
+    ...sanitiseParams(params),
+    page_location: getSafePageLocation(),
+  });
 }
 
 export function isAnalyticsAllowed() {
@@ -165,6 +169,10 @@ function sanitiseParams(params) {
         (safeNumberParamKeys.has(key) && Number.isInteger(value) && value >= 0 && value <= 999),
     ),
   );
+}
+
+function getSafePageLocation() {
+  return new URL(import.meta.env.BASE_URL, window.location.origin).toString();
 }
 
 function syncAnalyticsDisabledFlag() {

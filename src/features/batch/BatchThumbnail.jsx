@@ -5,7 +5,7 @@ import { createDecoratedQrSvg } from '../branding/decorator.js';
 import { strings } from '../../strings.js';
 
 /**
- * @param {{ item: { id: string, payload: string, version?: number, modulesGrid?: boolean[][], maskPattern?: number, errorCorrectionLevel?: string, exactSvg?: string, type: object, branding: { enabled: boolean } } }} props
+ * @param {{ item: { id: string, payload: string, version?: number, modulesGrid?: boolean[][], maskPattern?: number, errorCorrectionLevel?: string, type: object, branding: { enabled: boolean } } }} props
  */
 export function BatchThumbnail({ item }) {
   const [thumbnailState, setThumbnailState] = useState({ id: '', svg: '' });
@@ -16,20 +16,16 @@ export function BatchThumbnail({ item }) {
   useEffect(() => {
     let active = true;
 
-    let qrInput = item.exactSvg;
-    if (!qrInput) {
-      if (Array.isArray(item.modulesGrid) && item.modulesGrid.length) {
-        qrInput = { text: item.payload, version: item.version, modulesGrid: item.modulesGrid };
-      } else if (item.version != null || item.maskPattern != null || item.errorCorrectionLevel) {
-        qrInput = {
-          text: item.payload,
-          version: item.version,
-          maskPattern: item.maskPattern,
-          errorCorrectionLevel: item.errorCorrectionLevel,
-        };
-      } else {
-        qrInput = item.payload;
-      }
+    let qrInput = item.payload;
+    if (Array.isArray(item.modulesGrid) && item.modulesGrid.length) {
+      qrInput = { text: item.payload, version: item.version, modulesGrid: item.modulesGrid };
+    } else if (item.version != null || item.maskPattern != null || item.errorCorrectionLevel) {
+      qrInput = {
+        text: item.payload,
+        version: item.version,
+        maskPattern: item.maskPattern,
+        errorCorrectionLevel: item.errorCorrectionLevel,
+      };
     }
     createQrSvg(qrInput)
       .then((canonicalSvg) => {
@@ -57,7 +53,6 @@ export function BatchThumbnail({ item }) {
     item.payload,
     item.type,
     item.version,
-    item.exactSvg,
     item.modulesGrid,
     item.maskPattern,
     item.errorCorrectionLevel,

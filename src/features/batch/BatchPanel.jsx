@@ -33,6 +33,7 @@ import { useState } from 'react';
 import { batchNameMaxLength, normaliseBatchName } from './store.js';
 import { BatchThumbnail } from './BatchThumbnail.jsx';
 import { strings } from '../../strings.js';
+import './BatchPanel.css';
 
 const batchExportActions = [
   { format: 'svg', icon: DescriptionRounded, label: strings.result.svg },
@@ -51,6 +52,7 @@ const batchExportActions = [
  *   onExport: (format: string) => void,
  *   onMove: (itemId: string, targetIndex: number) => void,
  *   onRename: (itemId: string, name: string) => void,
+ *   onBrandingChange: (itemId: string, enabled: boolean) => void,
  *   onStartScan: () => void,
  *   onUploadImage: () => void,
  *   persistenceError: boolean,
@@ -65,6 +67,7 @@ export function BatchPanel({
   onExport,
   onMove,
   onRename,
+  onBrandingChange,
   onStartScan,
   onUploadImage,
   persistenceError,
@@ -86,6 +89,11 @@ export function BatchPanel({
     : cameraStarting
       ? strings.camera.pendingTitle
       : strings.batch.startScanning;
+  const panelClassName = [
+    'batch-panel',
+    items.length ? 'batch-panel--populated' : 'batch-panel--empty',
+    `batch-panel--camera-${cameraStatus}`,
+  ].join(' ');
 
   function confirmClear() {
     onClear();
@@ -93,13 +101,17 @@ export function BatchPanel({
   }
 
   return (
-    <Paper className="batch-panel" elevation={0}>
+    <Paper className={panelClassName} elevation={0}>
       <div className="batch-panel__header">
+        <div aria-hidden="true" className="batch-panel__folio">
+          <span>{String(items.length).padStart(2, '0')}</span>
+          <i />
+        </div>
         <div className="batch-panel__heading">
           <Typography component="h2" variant="h2">
             {strings.batch.title}
           </Typography>
-          <Typography color="text.secondary" variant="body2">
+          <Typography aria-live="polite" color="text.secondary" variant="body2">
             {countLabel}
           </Typography>
         </div>
@@ -122,9 +134,10 @@ export function BatchPanel({
       ) : null}
 
       {items.length ? (
-        <div className="batch-panel__list">
+        <div aria-label={strings.batch.title} className="batch-panel__list" role="list">
           {items.map((item, index) => (
             <BatchItem
+              dragging={draggedItemId === item.id}
               key={item.id}
               index={index}
               item={item}
@@ -139,15 +152,21 @@ export function BatchPanel({
               }}
               onMove={onMove}
               onRename={onRename}
+              onBrandingChange={onBrandingChange}
             />
           ))}
         </div>
       ) : (
         <div className="batch-panel__empty">
-          <Typography component="h3" variant="h2">
-            {strings.batch.emptyTitle}
-          </Typography>
-          <Typography color="text.secondary">{strings.batch.emptyBody}</Typography>
+          <div aria-hidden="true" className="batch-panel__empty-mark">
+            <QrCodeScannerRounded />
+          </div>
+          <div className="batch-panel__empty-copy">
+            <Typography component="h3" variant="h2">
+              {strings.batch.emptyTitle}
+            </Typography>
+            <Typography color="text.secondary">{strings.batch.emptyBody}</Typography>
+          </div>
           <div className="batch-panel__empty-actions">
             <Button
               disabled={startScanDisabled}
@@ -231,9 +250,21 @@ export function BatchPanel({
   );
 }
 
-function BatchItem({ index, item, itemCount, onDelete, onDragStart, onDrop, onMove, onRename }) {
+function BatchItem({
+  dragging,
+  index,
+  item,
+  itemCount,
+  onDelete,
+  onDragStart,
+  onDrop,
+  onMove,
+  onRename,
+  onBrandingChange,
+}) {
   const [draftState, setDraftState] = useState({ itemId: '', name: '' });
   const name = draftState.itemId === item.id ? draftState.name : item.name;
+  const itemClassName = `batch-panel__item${dragging ? ' batch-panel__item--dragging' : ''}`;
 
   function commitName() {
     const nextName = normaliseBatchName(name, item.name);
@@ -244,21 +275,32 @@ function BatchItem({ index, item, itemCount, onDelete, onDragStart, onDrop, onMo
 
   return (
     <article
-      className="batch-panel__item"
+      className={itemClassName}
       draggable
       onDragEnd={() => onDragStart('')}
       onDragOver={(event) => event.preventDefault()}
       onDragStart={() => onDragStart(item.id)}
-      onDrop={() => onDrop(index)}
+      onDrop={(event) => {
+        event.preventDefault();
+        onDrop(index);
+      }}
+      role="listitem"
     >
-      <span className="batch-panel__drag" aria-label={strings.batch.drag} role="img">
-        <DragIndicatorRounded />
-      </span>
-      <BatchThumbnail item={item} />
+      <div className="batch-panel__proof-rail">
+        <span aria-hidden="true" className="batch-panel__proof-number">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <span className="batch-panel__drag" aria-label={strings.batch.drag} role="img">
+          <DragIndicatorRounded />
+        </span>
+      </div>
+      <div className="batch-panel__proof-visual">
+        <BatchThumbnail item={item} />
+        <Chip className="batch-panel__type-chip" label={item.type.label} size="small" />
+      </div>
       <div className="batch-panel__item-main">
         <TextField
           fullWidth
-          inputProps={{ maxLength: batchNameMaxLength }}
           label={strings.batch.nameLabel}
           onBlur={commitName}
           onChange={(event) => setDraftState({ itemId: item.id, name: event.target.value })}
@@ -268,10 +310,22 @@ function BatchItem({ index, item, itemCount, onDelete, onDragStart, onDrop, onMo
             }
           }}
           size="small"
+          slotProps={{ htmlInput: { maxLength: batchNameMaxLength } }}
           value={name}
         />
         <div className="batch-panel__item-meta">
-          <Chip className="batch-panel__type-chip" label={item.type.label} size="small" />
+          <Button
+            aria-label={`${strings.result.outputStyle}: ${item.branding?.enabled === false ? strings.result.cleanStyle : strings.result.labelledStyle}`}
+            aria-pressed={item.branding?.enabled !== false}
+            className="batch-panel__style-toggle"
+            onClick={() => onBrandingChange(item.id, item.branding?.enabled === false)}
+            size="small"
+            variant="text"
+          >
+            {item.branding?.enabled === false
+              ? strings.result.cleanStyle
+              : strings.result.labelledStyle}
+          </Button>
           <div className="batch-panel__item-actions">
             <Tooltip title={strings.batch.moveUp}>
               <span>
@@ -300,6 +354,7 @@ function BatchItem({ index, item, itemCount, onDelete, onDragStart, onDrop, onMo
             <Tooltip title={strings.batch.delete}>
               <IconButton
                 aria-label={strings.batch.delete}
+                className="batch-panel__delete-action"
                 onClick={() => onDelete(item.id)}
                 size="small"
               >

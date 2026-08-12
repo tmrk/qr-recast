@@ -155,20 +155,16 @@ async function createBatchDocx(items) {
 async function createRenderableItems(items) {
   return Promise.all(
     items.map(async (item) => {
-      let qrInput = item.exactSvg;
-      if (!qrInput) {
-        if (Array.isArray(item.modulesGrid) && item.modulesGrid.length) {
-          qrInput = { text: item.payload, version: item.version, modulesGrid: item.modulesGrid };
-        } else if (item.version != null || item.maskPattern != null || item.errorCorrectionLevel) {
-          qrInput = {
-            text: item.payload,
-            version: item.version,
-            maskPattern: item.maskPattern,
-            errorCorrectionLevel: item.errorCorrectionLevel,
-          };
-        } else {
-          qrInput = item.payload;
-        }
+      let qrInput = item.payload;
+      if (Array.isArray(item.modulesGrid) && item.modulesGrid.length) {
+        qrInput = { text: item.payload, version: item.version, modulesGrid: item.modulesGrid };
+      } else if (item.version != null || item.maskPattern != null || item.errorCorrectionLevel) {
+        qrInput = {
+          text: item.payload,
+          version: item.version,
+          maskPattern: item.maskPattern,
+          errorCorrectionLevel: item.errorCorrectionLevel,
+        };
       }
       const canonicalSvg = await createQrSvg(qrInput);
       const svg = createDecoratedQrSvg(canonicalSvg, item.type, {
@@ -230,12 +226,17 @@ async function renderPdfPage(pdf, { cellWidth, items, pageCount, pageIndex, svg2
     pdf.setDrawColor(216, 228, 222);
     pdf.setFillColor(255, 255, 255);
     pdf.roundedRect(x, y - 4, cellWidth, pdfPage.cellHeight - 8, 4, 4, 'FD');
-    await svg2pdf(svgElement, pdf, {
-      height: pdfPage.qrSize,
-      width: pdfPage.qrSize,
-      x: qrX,
-      y,
-    });
+    pdf.saveGraphicsState();
+    try {
+      await svg2pdf(svgElement, pdf, {
+        height: pdfPage.qrSize,
+        width: pdfPage.qrSize,
+        x: qrX,
+        y,
+      });
+    } finally {
+      pdf.restoreGraphicsState();
+    }
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(10);
     pdf.setTextColor(31, 41, 51);
@@ -278,10 +279,15 @@ async function createDocxCell(item, { AlignmentType, ImageRun, Paragraph, TableC
     });
   }
 
-  const pngBlob = await batchSvgToPngBlob(item.svg, { contain: true, height: 720, width: 720 });
+  const sourceSize = getSvgDimensions(item.svg);
+  const rasterSize = fitDimensions(sourceSize, { maxHeight: 720, maxWidth: 720 });
+  const pngBlob = await batchSvgToPngBlob(item.svg, {
+    height: Math.max(1, Math.round(rasterSize.height)),
+    width: Math.max(1, Math.round(rasterSize.width)),
+  });
   const svgBytes = new TextEncoder().encode(item.svg);
   const pngBuffer = await pngBlob.arrayBuffer();
-  const artworkSize = fitDimensions(getSvgDimensions(item.svg), {
+  const artworkSize = fitDimensions(sourceSize, {
     maxHeight: 210,
     maxWidth: 170,
   });

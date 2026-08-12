@@ -630,7 +630,7 @@ function createResult(result) {
 
 function decodeValue(value) {
   try {
-    return decodeURIComponent(value.replaceAll('+', ' '));
+    return decodeURIComponent(value);
   } catch {
     return value;
   }

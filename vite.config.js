@@ -14,10 +14,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'script-defer',
-      includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
+      includeManifestIcons: false,
       manifest,
       workbox: {
-        globPatterns: ['**/*.{css,html,js,png,svg,webmanifest}'],
+        globPatterns: ['**/*.{css,html,js,png,svg,woff2}'],
       },
     }),
   ],

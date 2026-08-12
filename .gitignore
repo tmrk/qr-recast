@@ -15,6 +15,9 @@ dist-ssr
 .env.*
 !.env.example
 coverage
+playwright-report
+test-results
+.playwright-dist
 
 # Local agent tooling
 .claude/settings.local.json

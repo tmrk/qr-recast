@@ -45,7 +45,6 @@ export function BatchNameDialog({ item, onClose, onSave }) {
       <DialogContent>
         <TextField
           fullWidth
-          inputProps={{ maxLength: batchNameMaxLength }}
           label={strings.batch.nameLabel}
           onChange={(event) => setDraftState({ itemId: item?.id ?? '', name: event.target.value })}
           onKeyDown={(event) => {
@@ -54,6 +53,7 @@ export function BatchNameDialog({ item, onClose, onSave }) {
               saveName();
             }
           }}
+          slotProps={{ htmlInput: { maxLength: batchNameMaxLength } }}
           value={name}
         />
       </DialogContent>

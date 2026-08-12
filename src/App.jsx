@@ -1,6 +1,6 @@
 import { CssBaseline, GlobalStyles, InitColorSchemeScript } from '@mui/material';
 import { CssVarsProvider } from '@mui/material/styles';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AppShell } from './components/AppShell.jsx';
 import { AdSlot, adsEnabled } from './features/ads/AdSlot.jsx';
 import { Analytics } from './features/analytics/Analytics.jsx';
@@ -46,9 +46,25 @@ function AppContent() {
       <AppShell bottomSlot={adsEnabled ? <AdSlot /> : null}>
         <Routes>
           <Route element={<HomeView />} path="/" />
+          <Route element={<RootRedirect />} path="*" />
         </Routes>
       </AppShell>
     </BrowserRouter>
+  );
+}
+
+function RootRedirect() {
+  const location = useLocation();
+
+  return (
+    <Navigate
+      replace
+      to={{
+        hash: location.hash,
+        pathname: '/',
+        search: location.search,
+      }}
+    />
   );
 }
 

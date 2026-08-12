@@ -8,7 +8,7 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 
 export default defineConfig([
-  globalIgnores(['dist', 'node_modules']),
+  globalIgnores(['dist', '.playwright-dist', 'node_modules', 'playwright-report', 'test-results']),
   {
     settings: {
       react: {
@@ -23,17 +23,26 @@ export default defineConfig([
   reactHooks.configs.flat.recommended,
   reactRefresh.configs.vite,
   {
-    files: ['**/*.{js,jsx,mjs}'],
+    files: ['src/**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
+      globals: globals.browser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
       },
+    },
+    rules: {
+      'no-console': ['error', { allow: ['warn', 'error'] }],
+      'react/prop-types': 'off',
+    },
+  },
+  {
+    files: ['*.config.js', 'scripts/**/*.mjs', 'tests/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: globals.node,
     },
     rules: {
       'no-console': ['error', { allow: ['warn', 'error'] }],

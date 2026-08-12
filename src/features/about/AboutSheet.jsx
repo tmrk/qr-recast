@@ -15,6 +15,7 @@ import {
   Stack,
   Switch,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { useState } from 'react';
 import packageJson from '../../../package.json';
@@ -42,6 +43,7 @@ export function AboutSheet({ open, onClose }) {
   const [clearBatchOpen, setClearBatchOpen] = useState(false);
   const [brandingEnabled, setBrandingEnabled] = useBrandingPreference();
   const [themeRollKey, setThemeRollKey] = useState(0);
+  const useSideSheet = useMediaQuery('(min-width:900px)');
   const { resolvedMode, toggleMode } = useAppTheme();
   const batchStore = useBatchStore();
   const doNotTrackEnabled = isDoNotTrackEnabled();
@@ -98,13 +100,13 @@ export function AboutSheet({ open, onClose }) {
   return (
     <>
       <Drawer
-        anchor="bottom"
+        anchor={useSideSheet ? 'right' : 'bottom'}
         onClose={onClose}
         open={open}
         slotProps={{
           paper: {
             'aria-labelledby': 'about-title',
-            className: 'about-sheet',
+            className: `about-sheet${useSideSheet ? ' about-sheet--side' : ''}`,
             role: 'dialog',
           },
         }}

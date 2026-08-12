@@ -33,9 +33,12 @@ export function AppShell({ children, bottomSlot = null }) {
               className="app-shell__logo"
               src={`${import.meta.env.BASE_URL}favicon.svg`}
             />
-            <Typography className="app-shell__title" component="p">
-              {strings.appName}
-            </Typography>
+            <div className="app-shell__wordmark">
+              <Typography className="app-shell__title" component="p">
+                {strings.appName}
+              </Typography>
+              <span className="app-shell__tagline">{strings.appTagline}</span>
+            </div>
           </div>
 
           <div className="app-shell__actions">

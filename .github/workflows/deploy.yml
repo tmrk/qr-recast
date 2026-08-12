@@ -12,35 +12,39 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
-    name: Build
+    name: Verify and build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Check out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
+      - name: Verify and build
+        run: npm run check
         env:
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
           VITE_ADS_ENABLED: ${{ vars.VITE_ADS_ENABLED || 'false' }}
           VITE_ADSENSE_CLIENT: ${{ secrets.VITE_ADSENSE_CLIENT }}
           VITE_BUILD_SHA: ${{ github.sha }}
+
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Test browser journeys
+        run: npm run test:e2e
 
       - name: Configure Pages
         uses: actions/configure-pages@v6
@@ -54,6 +58,7 @@ jobs:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

@@ -1,32 +1,36 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0F766E" />
+    <meta name="theme-color" content="#EFEEE7" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="QR Recast" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Restore photographed QR codes as crisp, private, scan-ready files on your device."
+    />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <link rel="apple-touch-icon" href="%BASE_URL%icons/apple-touch-icon.png" />
     <title>QR Recast</title>
     <style id="fallback-shell">
-      #root > div {
-        background: #f5fbf8;
-        color: #173b35;
+      .preboot-shell {
+        background: #efeee7;
+        color: #18201e;
       }
-      #root > div p {
-        color: #48645e;
+      .preboot-shell p {
+        color: #52605c;
       }
       @media (prefers-color-scheme: dark) {
-        #root > div {
-          background: #0a1413;
-          color: #e8f1ee;
+        .preboot-shell {
+          background: #0d1210;
+          color: #edf2ef;
         }
-        #root > div p {
-          color: #a2b4af;
+        .preboot-shell p {
+          color: #aab6b1;
         }
       }
     </style>
@@ -34,6 +38,7 @@
   <body>
     <div id="root">
       <div
+        class="preboot-shell"
         style="
           min-height: 100svh;
           display: grid;
@@ -51,8 +56,8 @@
           />
           <section style="display: grid; gap: 8px">
             <h1 style="margin: 0; font-size: 2rem; line-height: 1.1">Point at a QR code</h1>
-            <p style="margin: 0; color: #48645e">
-              Start the camera, then line up a QR code in the frame.
+            <p style="margin: 0">
+              Restore it as crisp SVG, PNG, PDF, or Word artwork — entirely on this device.
             </p>
           </section>
         </main>

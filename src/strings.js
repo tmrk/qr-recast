@@ -1,6 +1,7 @@
 export const strings = Object.freeze({
   appName: 'QR Recast',
-  privacyNote: 'Your photos and QR contents never leave your device.',
+  appTagline: 'On-device QR restoration',
+  privacyNote: 'Scanning and export processing stay on this device.',
   ads: {
     label: 'Advertisement slot',
     placeholder: 'Advertisement',
@@ -16,11 +17,11 @@ export const strings = Object.freeze({
     versionLabel: 'Version',
     buildLabel: 'Build',
     privacyBody:
-      'Photos, decoded QR text, generated URLs, filenames, hashes, image data, exported files, and Batch Recast storage stay on this device and out of analytics.',
+      'QR Recast does not upload photos, decoded text, generated files, or Batch Recast storage. Analytics never receives payloads, share URLs, fragments, filenames, hashes, image data, or exports.',
     brandingTitle: 'Branding',
     brandingToggle: 'Brand QR exports',
     brandingStatus:
-      'Branding is on by default and stays on this device; each Result can still override it.',
+      'This is the default for new results and batch captures. Each result and saved batch item can be changed separately.',
     batchTitle: 'Batch Recast',
     batchEmpty: 'No batch codes are saved on this device.',
     batchOne: '{count} batch code is saved on this device.',
@@ -42,7 +43,8 @@ export const strings = Object.freeze({
   camera: {
     viewfinderLabel: 'QR camera scanner',
     idleTitle: 'Point at a QR code',
-    idleBody: 'Start the camera, then line up a QR code in the frame.',
+    idleEyebrow: 'Optical recast bench',
+    idleBody: 'Use the camera or choose a photo. We will restore the code as clean vector artwork.',
     pendingTitle: 'Opening camera',
     pendingBody: 'Waiting for camera access.',
     deniedTitle: 'Camera blocked',
@@ -100,7 +102,14 @@ export const strings = Object.freeze({
   result: {
     loading: 'Preparing result',
     title: 'Your recast QR',
-    supporting: 'Clean, private, and ready to share or save.',
+    supporting: 'Restored as precise, scan-ready artwork on this device.',
+    proofLabel: 'Recast proof',
+    proofStatus: '4-module quiet zone',
+    outputStyle: 'Output style',
+    outputStyleHelp: 'Choose the artwork that appears in every file.',
+    cleanStyle: 'Clean',
+    labelledStyle: 'Labelled',
+    actionsTitle: 'Share or save',
     qrAlt: 'Recast QR code',
     generating: 'Generating QR code',
     copyQrAction: 'Copy QR image as PNG',

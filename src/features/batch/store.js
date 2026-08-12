@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
+import { detectQrType } from '../../lib/qr-types/index.js';
 
-export const batchStorageKey = 'qr-recast:batch:v1';
-export const batchSchemaVersion = 1;
+export const batchStorageKey = 'qr-recast:batch:v2';
+export const legacyBatchStorageKey = 'qr-recast:batch:v1';
+export const batchSchemaVersion = 2;
 export const batchNameMaxLength = 64;
 export const batchResumeEvent = 'qr-recast:batch-resume-requested';
 
@@ -18,7 +20,9 @@ export function readBatch() {
   }
 
   try {
-    const storedValue = window.localStorage.getItem(batchStorageKey);
+    const storedValue =
+      window.localStorage.getItem(batchStorageKey) ??
+      window.localStorage.getItem(legacyBatchStorageKey);
 
     if (!storedValue) {
       return emptyBatch;
@@ -37,20 +41,16 @@ export async function createBatchItem(
     name,
     position = 1,
     version,
-    exactSvg,
     modulesGrid,
     maskPattern,
     errorCorrectionLevel,
   } = {},
 ) {
-  const { detectQrType } = await import('../../lib/qr-types/index.js');
   const now = new Date().toISOString();
   const qrType = detectQrType(payload);
   const itemName = normaliseBatchName(name, `${stringsSafeDefaultName()} ${position}`);
   const safeVersion =
     Number.isInteger(version) && version >= 1 && version <= 40 ? version : undefined;
-  const safeExact =
-    typeof exactSvg === 'string' && exactSvg.includes('<svg') ? exactSvg : undefined;
   const safeGrid = Array.isArray(modulesGrid) && modulesGrid.length > 0 ? modulesGrid : undefined;
   const safeMask =
     Number.isInteger(maskPattern) && maskPattern >= 0 && maskPattern <= 7 ? maskPattern : undefined;
@@ -64,7 +64,6 @@ export async function createBatchItem(
     name: itemName,
     payload,
     version: safeVersion,
-    exactSvg: safeExact,
     modulesGrid: safeGrid,
     maskPattern: safeMask,
     errorCorrectionLevel: safeEcl,
@@ -97,14 +96,13 @@ export function useBatchStore() {
   const addPayload = useCallback(
     async (
       payload,
-      { brandingEnabled, version, exactSvg, modulesGrid, maskPattern, errorCorrectionLevel } = {},
+      { brandingEnabled, version, modulesGrid, maskPattern, errorCorrectionLevel } = {},
     ) => {
       const duplicate = batch.items.some((item) => item.payload === payload);
       const item = await createBatchItem(payload, {
         brandingEnabled,
         position: batch.items.length + 1,
         version,
-        exactSvg,
         modulesGrid,
         maskPattern,
         errorCorrectionLevel,
@@ -168,6 +166,35 @@ export function useBatchStore() {
     [batch, saveBatch],
   );
 
+  const setItemBranding = useCallback(
+    (itemId, enabled) => {
+      const currentItem = batch.items.find((item) => item.id === itemId);
+
+      if (!currentItem) {
+        return;
+      }
+
+      saveBatch(
+        stampBatch({
+          ...batch,
+          items: batch.items.map((item) =>
+            item.id === itemId
+              ? {
+                  ...item,
+                  branding: {
+                    ...item.branding,
+                    enabled: Boolean(enabled),
+                  },
+                  updatedAt: new Date().toISOString(),
+                }
+              : item,
+          ),
+        }),
+      );
+    },
+    [batch, saveBatch],
+  );
+
   const restoreItem = useCallback(
     (item, itemIndex) => {
       const nextItems = [...batch.items];
@@ -219,7 +246,7 @@ export function useBatchStore() {
     }
 
     function syncStorage(event) {
-      if (event.key === batchStorageKey) {
+      if ([batchStorageKey, legacyBatchStorageKey].includes(event.key)) {
         setBatch(readBatch());
       }
     }
@@ -242,6 +269,7 @@ export function useBatchStore() {
     removeItem,
     renameItem,
     restoreItem,
+    setItemBranding,
   };
 }
 
@@ -254,7 +282,7 @@ export function requestBatchResume() {
 }
 
 function migrateBatch(value) {
-  if (value?.version !== batchSchemaVersion || !Array.isArray(value.items)) {
+  if (![1, batchSchemaVersion].includes(value?.version) || !Array.isArray(value.items)) {
     return emptyBatch;
   }
 
@@ -270,7 +298,7 @@ function normaliseStoredItem(item) {
     return null;
   }
 
-  const qrType = item.type?.type ? item.type : createFallbackQrType();
+  const qrType = detectQrType(item.payload);
   const fallbackName = `${stringsSafeDefaultName()} 1`;
   const safeVersion =
     Number.isInteger(item.version) && item.version >= 1 && item.version <= 40
@@ -292,10 +320,6 @@ function normaliseStoredItem(item) {
     name: normaliseBatchName(item.name, fallbackName),
     payload: item.payload,
     version: safeVersion,
-    exactSvg:
-      typeof item.exactSvg === 'string' && item.exactSvg.includes('<svg')
-        ? item.exactSvg
-        : undefined,
     modulesGrid: safeGrid,
     maskPattern: safeMask,
     errorCorrectionLevel: safeEcl,
@@ -320,17 +344,6 @@ function serialiseQrType(qrType) {
   };
 }
 
-function createFallbackQrType() {
-  return {
-    branding: { kind: 'plain-text' },
-    confidence: 0,
-    fields: [],
-    icon: 'plain-text',
-    label: 'Plain text',
-    type: 'plain-text',
-  };
-}
-
 function stampBatch(batch) {
   return {
     ...batch,
@@ -346,6 +359,7 @@ function writeBatch(batch) {
 
   try {
     window.localStorage.setItem(batchStorageKey, JSON.stringify(batch));
+    window.localStorage.removeItem(legacyBatchStorageKey);
     window.dispatchEvent(new CustomEvent(batchChangeEvent, { detail: batch }));
     return true;
   } catch {
