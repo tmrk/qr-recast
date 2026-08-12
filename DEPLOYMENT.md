@@ -13,8 +13,12 @@ https://tmrk.github.io/qr-recast/
 - GitHub Pages uses GitHub Actions as its source.
 - The PWA manifest source lives at `public/manifest.webmanifest` and is loaded by
   `vite-plugin-pwa` during the build.
-- The deployment workflow builds `dist/`, keeps the static `public/404.html` redirect, uploads the
-  Pages artefact, and deploys it.
+- Workbox discovers static image and font assets from the build output; the plugin adds the generated
+  manifest separately. Keep those paths disjoint so the precache contains one entry per URL.
+- Pull requests and manual verification runs use `.github/workflows/verify.yml` on Node 24 and run
+  both `npm run check` and the Playwright browser journeys.
+- A push to `main` runs the same gates on Node 24, keeps the static `public/404.html` redirect,
+  uploads the production `dist/`, and deploys it.
 
 Pages was enabled on 2026-05-28 with:
 
@@ -34,7 +38,8 @@ VITE_BUILD_SHA=
 ```
 
 Local values live in `.env.local`, which is gitignored. Production values are configured as GitHub
-Actions repository secrets and passed into the build step.
+Actions repository secrets or variables and passed into the build step. Every `VITE_` value is
+bundled into public client code, so it must never contain a confidential credential.
 
 ## Analytics Events
 
@@ -42,16 +47,23 @@ GA4 loads only when `VITE_GA_MEASUREMENT_ID` is set. Event tracking is routed th
 `src/features/analytics/events.js`, which accepts only fixed event names and whitelisted metadata
 values.
 
-Current events cover QR detection, shared URL loading, QR export, URL sharing, decoded-text viewing,
-decoded-text copying, external payload-link opening, and scan-again actions. The metadata is limited
-to values such as payload kind, source, export format, method, result, and surface.
+Current events cover QR detection, shared URL loading, QR and batch export, URL sharing,
+decoded-text viewing and copying, external payload-link opening, scan-again actions, Batch Recast,
+and branding choices. The metadata is limited to allowlisted values such as payload kind, source,
+export format, method, result, state, surface, and bounded batch count.
 
 QR payload text, generated share URLs, hashes, filenames, image data, and exported document content
 must not be passed to analytics.
 
+Automatic GA page-view collection is disabled. Shared payloads use the `#q=` URL fragment, and every
+GA command overrides `page_location` with the payload-free application root. Application code must
+never send the current payload-bearing location or fragment. The former `?q=` query form remains
+input-only compatibility for existing shared links.
+
 Browser Do Not Track prevents GA4 from loading. Users can also turn analytics off from the About
-sheet; the preference is stored locally under `qr-recast-analytics-opt-out` and blocks future GA4
-script injection and event tracking on that device.
+sheet; the current preference is stored under `qr-recast:analytics:v1`. Existing
+`qr-recast-analytics-opt-out` values are migrated for compatibility. The preference blocks future
+GA4 script injection and event tracking on that device.
 
 ## Planned AdSense Wiring
 

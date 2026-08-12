@@ -1,297 +1,196 @@
 # QR Recast Architecture
 
-QR Recast is a client-only PWA. QR images and decoded payloads stay on the user's device; no photo
-or QR content is sent to a server by the app.
+QR Recast is a client-only React PWA for recovering QR payloads from camera frames or image files,
+then producing clean, reusable artwork. The decoded text is the canonical product value: every
+preview, share link, and export must represent that text without silent alteration.
 
-## Stack
+## System boundary
 
-- React and Vite for the application shell.
-- JavaScript and JSX only for app source.
-- Material UI with Material 3-inspired tokens for interface components.
-- `jsqr` for on-device QR decoding.
-- `qrcode` for canonical QR SVG generation.
-- `jspdf` plus `svg2pdf.js` for vector PDF export.
-- `docx` for Word document export.
-- `lz-string` for compact share URLs.
-- GitHub Actions and GitHub Pages for deployment.
-
-## Folder Layout
+The application is a static GitHub Pages site. There is no QR decoding, document generation,
+database, or application API on a server.
 
 ```text
-qr-recast/
-├─ .github/workflows/deploy.yml
-├─ public/
-│  ├─ manifest.webmanifest
-│  ├─ icons/
-│  └─ robots.txt
-├─ scripts/
-│  ├─ generate-icons.mjs
-│  └─ check-spelling.mjs
-├─ src/
-│  ├─ main.jsx
-│  ├─ App.jsx
-│  ├─ theme/
-│  ├─ components/
-│  ├─ features/
-│  ├─ lib/
-│  └─ styles/
-├─ AGENTS.md
-├─ ROADMAP.md
-├─ PROGRESS.md
-├─ RECENT_CHANGES.md
-├─ ARCHITECTURE.md
-├─ DEPLOYMENT.md
-├─ TESTING.md
-├─ CONTRIBUTING.md
-├─ CHANGELOG.md
-├─ README.md
-├─ LICENCE
-├─ vite.config.js
-├─ eslint.config.js
-├─ .prettierrc
-├─ .env.example
-├─ package.json
-└─ .gitignore
+camera frame or image file
+  -> jsQR decode and corner detection
+  -> canonical payload text
+  -> type detector registry
+  -> QR reconstruction
+       sampled module trace when validation succeeds
+       generated canonical QR as the safe fallback
+  -> optional branding decorator
+  -> preview, share link, or SVG / PNG / PDF / DOCX export
 ```
 
-## Decisions
+Remote scripts are optional and separate from this data path. Google Analytics is loaded only when
+configured and permitted. Advertising is an environment-controlled placeholder. Neither receives
+payload text or generated artefacts from application code.
 
-### 2026-05-28 — Client-only Privacy Boundary
+## Capture and reconstruction
 
-QR Recast will decode and export QR payloads entirely in the browser. A server-side decode pipeline
-would simplify some browser permission issues, but it would break the privacy promise and introduce
-hosting, retention, and security concerns. The app will only send privacy-safe analytics events
-when analytics is explicitly configured and allowed.
+`src/features/camera/Viewfinder.jsx` owns camera permission states, stream lifecycle, file upload,
+scan feedback, and the hand-off to `HomeView`. `src/lib/decode.js` downsamples input for `jsQR`,
+which returns both the decoded text and detected corners.
 
-### 2026-05-28 — Material UI Version
+For a suitable photograph, the decoder samples the QR modules from those corners. `src/lib/qr.js`
+validates the grid, recovers format information where possible, and can reproduce the sampled
+version, error-correction level, and mask. If that evidence is incomplete or the traced symbol does
+not validate, `qrcode` generates a clean symbol from the canonical payload. Both paths keep a
+four-module quiet zone.
 
-`npm view @mui/material version` returned `9.0.1` before installation, so QR Recast starts on the
-current stable Material UI line while satisfying the v6+ constraint. The theme will still use
-Material 3-inspired roles and a deep teal seed rather than default MUI styling.
+`createQrSvg()` accepts payload data or controlled reconstruction metadata; arbitrary input strings
+are always encoded as QR content, never treated as trusted SVG markup.
 
-### 2026-05-28 — Vector PDF Export Library
+Sampled-grid SVGs represent every dark module as an individually closed, filled square. They do not
+depend on stroke joins or line caps, so the geometry stays consistent across browsers, rasterisers,
+and the SVG-to-PDF renderer.
 
-QR Recast will use `jspdf` with `svg2pdf.js` for PDF export. The alternative was `pdf-lib`, but
-that would require more custom SVG path handling to keep the QR as true vector artwork. `svg2pdf.js`
-matches the canonical SVG generation path and keeps the conversion focused.
+## Type recognition
 
-### 2026-05-28 — ESLint Compatibility
+`src/lib/qr-types/` contains a registry of pure detector functions. Each detector receives only the
+raw string, returns a normalised result or `null`, and must fail softly for arbitrary input. The
+resolver selects the strongest result and otherwise returns plain text.
 
-The Vite scaffold initially installed ESLint 10, while `eslint-plugin-react` currently declares peer
-support through ESLint 9. QR Recast pins ESLint and `@eslint/js` to the latest 9.x line to keep
-React, hooks, and accessibility linting clean without peer-dependency overrides.
+The result includes a type, label, icon key, structured fields, confidence, raw payload, and
+branding hints. Current fixtures cover URL, Wi-Fi, Apple Home, Matter, email, SMS/MMS, telephone,
+geo, calendar, contact, crypto, app-link, and plain-text inputs. Matter decoding has a separate pure
+parser for deriving a manual setup code only when the onboarding payload supplies enough data.
 
-### 2026-05-28 — Phase 1 PWA Icons
+## Branding
 
-The Phase 1 manifest uses a small SVG QR Recast mark so the deployable skeleton has valid branding
-immediately. Phase 2 will replace this with the full generated 192, 384, 512, maskable, and Apple
-touch icon set from the same mark.
+`src/features/branding/decorator.js` wraps the canonical QR SVG; it does not edit its modules,
+finder patterns, colours, or quiet zone. Branding is enabled by default and saved independently. A
+result can override it for the current payload, while every saved batch item has its own persisted
+Clean or Labelled choice.
 
-### 2026-05-28 — Pages Action Versions
+Matter and Apple Home have portrait setup-card compositions with embedded vector marks and setup
+codes. The Matter mark and manual code register exactly to the visible QR module field, excluding
+its required quiet zone. Apple Home and utility headers also derive their alignment from that visible
+field. Utility types use an icon-and-label header above a full-width QR, with a short caption only
+when useful. All assets are embedded locally: exports do not hotlink remote images. These labels
+identify decoded payload types and do not claim certification or endorsement.
 
-The initial Pages workflow used the requested Pages action shape and deployed successfully, but
-GitHub annotated the run with Node 20 action-runtime deprecations. The workflow now uses the current
-major versions of the checkout, Node setup, Pages configuration, Pages artefact upload, and Pages
-deployment actions while still building the project with Node 20 as specified.
+If decoration cannot safely parse the generated SVG, the function returns the undecorated canonical
+SVG so export can fail soft.
 
-### 2026-05-28 — Material 3 Theme Seed
+## Result and export paths
 
-The Phase 2 shell uses deep teal `#0F766E` as the brand seed. It gives the scanner a calm utility
-feel, keeps the privacy note visually tied to trust and safety, and avoids the common purple-blue
-PWA palette. Light and dark schemes are defined as Material 3-inspired roles in `src/theme/` and
-served through MUI CSS variables.
+`src/features/result/ResultView.jsx` derives one canonical SVG and one decorated SVG for the active
+payload. It also presents structured fields, raw decoded text, sharing controls, and the per-result
+branding choice.
 
-### 2026-05-28 — PWA Icon Pipeline
+Single exports in `src/lib/exporters.js` use the same decorated SVG:
 
-The source mark lives at `public/qr-recast-mark.svg`, with a matching `favicon.svg` for the browser
-tab. `scripts/generate-icons.mjs` uses Sharp to generate the 192, 384, 512, maskable 512, and Apple
-touch PNG assets consumed by `public/manifest.webmanifest`.
+- SVG saves the vector source directly.
+- PNG rasterises onto a white canvas with a 1,024-pixel long edge while preserving aspect ratio.
+- PDF uses `jsPDF` and `svg2pdf.js` to place vector artwork on a white A4 page.
+- DOCX embeds the SVG as the primary image and packages a PNG compatibility fallback, preserving
+  non-square setup-card proportions.
 
-### 2026-05-28 — Lighthouse PWA Audit Version
+Filenames include the first eight hexadecimal characters of a SHA-1 digest of the canonical
+payload. The digest is only a stable filename suffix; it is not a security boundary and is never
+sent to analytics.
 
-Lighthouse 13 no longer exposes a `pwa` category, so the Phase 2 PWA gate uses Lighthouse 11.7.1,
-the newest tested release in this environment that still reports that category. The local preview
-scored 100 before deployment.
+## Batch Recast
 
-### 2026-05-28 — Camera Permission Model
-
-The camera viewfinder starts from an explicit button tap rather than requesting camera access on
-mount. This keeps iOS PWA permission prompts tied to a user gesture and gives desktop users an
-upload-only path when no camera is available. Successful scans are handed to an in-memory completion
-view that now renders the Phase 4 export result.
-
-### 2026-05-28 — Result Export Pipeline
-
-The Result view treats the `qrcode` SVG string as the canonical QR representation and reuses it for
-all exports. SVG is saved directly, PNG is rasterised through a 1024 x 1024 canvas, PDF stays vector
-through `jspdf` and `svg2pdf.js`, and DOCX embeds UTF-8 SVG bytes with a PNG fallback because Word
-expects both when an SVG image is present. The heavier generation libraries are loaded only from
-export handlers so the initial scanner bundle stays small.
-
-### 2026-05-31 — v2 Type-detection Registry
-
-QR Recast v2 adds `src/lib/qr-types/` as a registry of pure detector functions rather than keeping
-the old lightweight `payload.js` pattern. The resolver runs every detector, discards `null` results,
-and chooses the highest-confidence result, with a plain-text fallback. This keeps the decode
-pipeline stable, makes detectors fixture-testable, and avoids mixing camera or export logic with the
-parsing rules.
-
-The normalised detector result shape is:
+`src/features/batch/store.js` owns batch creation, migration, persistence, naming, duplicate
+feedback, ordering, deletion, restoration, and clearing. A stored v2 item may contain:
 
 ```js
 {
-  type: 'wifi',
-  label: 'Wi-Fi network',
-  icon: 'wifi',
-  fields: [{ key: 'ssid', label: 'Network name', value: 'Example' }],
-  raw: 'WIFI:T:WPA;S:Example;P:secret;;',
-  confidence: 0.92,
-  branding: { kind: 'wifi', caption: 'Example' },
+  id,
+  name,
+  payload,
+  version,
+  modulesGrid,
+  maskPattern,
+  errorCorrectionLevel,
+  type,
+  branding: { enabled, kind },
+  createdAt,
+  updatedAt,
 }
 ```
 
-Existing analytics `payload_kind` values will be mapped from this richer type object so analytics
-still never receives QR payload content.
+The source photograph and camera frame are never stored. The v1 store migrates to v2 on read;
+detector metadata is recalculated from the canonical payload rather than trusted indefinitely.
 
-Apple's public `HMAccessorySetupPayload` documentation confirms HomeKit setup payloads are URLs and
-states that payload content details require the MFi Programme:
-https://developer.apple.com/documentation/homekit/hmaccessorysetuppayload. Community tooling and
-examples consistently use `X-HM://...`, with the first nine characters carrying encoded parameters
-and the remaining characters commonly acting as the setup ID:
-https://github.com/SimonGolms/homekit-code. QR Recast therefore classifies `X-HM://` payloads as
-Apple Home accessories and exposes the encoded payload/setup ID where present, but does not decode
-the private MFi-only setup code.
+`src/features/batch/exporters.js` regenerates each item through the same canonical and decoration
+layers. SVG and PNG are tall printable sheets; PDF uses real A4 pages; DOCX uses table-based
+two-column pages. Each page holds up to six named items and includes a page footer.
 
-For Matter, the CSA Matter 1.4 Core Specification is the authoritative source
-(`24-27349-006_Matter-1.4-Core-Specification.pdf`), while Silicon Labs' Matter commissioning guide
-documents scanned QR payloads in the `MT:Y.K9042C00KA0648G00` form and lists the onboarding data
-they carry: https://docs.silabs.com/matter/2.4.0/matter-overview-guides/matter-commissioning. QR
-Recast validates the `MT:` prefix and Base-38 shape (`0-9`, `A-Z`, `-`, `.` and chunk separators).
-The hardening pass added `src/lib/qr-types/matter.js`, a small pure parser based on the Project CHIP
-setup payload reference implementation, to derive the manual code when the QR payload contains
-enough trustworthy data. Under-specified or malformed Matter payloads still classify softly and omit
-the manual code instead of inventing one.
+## Sharing and routing
 
-### 2026-05-31 — v2 Branding Assets and Trademark Handling
+`src/lib/qr.js` compresses the payload with `lz-string` and builds a root URL whose fragment contains
+`#q=<encoded payload>`. URL fragments are handled by the browser and are not included in the HTTP
+request to GitHub Pages. A recipient of the complete URL can still decode the payload, so share URLs
+must be treated as containing the original information.
 
-Branding is implemented in `src/features/branding/` as an SVG decorator around the canonical QR
-generated by `qrcode`. `createDecoratedQrSvg()` returns the original canonical SVG when branding is
-disabled or if SVG parsing fails, so exports fail soft instead of blocking the user. When enabled,
-the decorator creates a 360 x 360 vector canvas and nests the untouched QR SVG inside a restrained
-setup-card or utility-card frame. Matter and Apple Home payloads use a simple setup-card layout with
-a text-led mark above the QR and a monospace setup identifier below it; other payloads keep a quieter
-icon/title treatment. The generated QR's quiet zone and modules are not modified.
+`HomeView` reads fragments first. It also accepts the former `?q=` query parameter so existing
+links keep working, then removes the share value from the visible address after loading. The static
+404 page and React catch-all route preserve search and fragment data while recovering the Pages app
+root.
 
-QR Recast deliberately does not embed Matter, Apple, Apple Home, HomeKit, Works with Apple Home, or
-Wi-Fi Alliance logo files. Apple's Works with Apple Home guidance requires certification/request
-flows and forbids creating substitute Apple Home graphics in some contexts:
-https://developer.apple.com/apple-home/works-with-apple-home/. Apple's general trademark guidance
-also reserves broader logo use to licensed contexts:
-https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html. The Connectivity
-Standards Alliance trademark guidelines prohibit uses that imply certification, endorsement, or
-confusing affiliation:
-https://csa-iot.org/wp-content/uploads/2022/10/Alliance-Brand-Trademark-Logo-Usage-Guidelines_09.30.2022.pdf.
-Because QR Recast is a general backup/export tool rather than a certified accessory vendor, v2 uses
-neutral original vector marks labelled by payload type, including "matter" and "Apple Home", instead
-of copying protected brand artwork. No remote logo assets are hotlinked, and no third-party branding
-assets are stored under `src/assets/branding/` in this phase.
+## Local storage and privacy
 
-The branding preference is stored independently from analytics and future batch state under
-`qr-recast:preferences:v1`:
+Storage concerns use separate keys so they can migrate independently:
 
-```js
-{
-  version: 1,
-  brandingEnabled: true,
-  updatedAt: '2026-05-31T14:18:04.615Z'
-}
+| Concern       | Current key                | Stored data                                                               |
+| ------------- | -------------------------- | ------------------------------------------------------------------------- |
+| Batch         | `qr-recast:batch:v2`       | Payloads, names, order, reconstruction/type/branding metadata, timestamps |
+| Branding      | `qr-recast:preferences:v1` | Default branding choice and update time                                   |
+| Analytics     | `qr-recast:analytics:v1`   | Opt-out choice and update time                                            |
+| Colour scheme | `qr-recast-colour-scheme`  | Explicit light/dark choice                                                |
+
+The batch store reads `qr-recast:batch:v1` for migration. Analytics reads the former
+`qr-recast-analytics-opt-out` flag so an existing opt-out remains effective.
+
+Analytics events and parameters are both allowlisted in `src/features/analytics/events.js`.
+Automatic GA page views are disabled, and every configuration and event command overrides
+`page_location` with the fragment-free application root. Do Not Track and the local opt-out disable
+analytics completely.
+
+## Interface structure
+
+```text
+src/
+├─ App.jsx                         routing and app-level lazy surfaces
+├─ components/                    shell and dynamic theme-colour metadata
+├─ features/
+│  ├─ about/                      settings, privacy, and build information
+│  ├─ ads/                        optional advertisement placeholder
+│  ├─ analytics/                  allowlisted, opt-out-aware analytics
+│  ├─ batch/                      batch UI, v2 store, thumbnails, and exporters
+│  ├─ branding/                   SVG decorator and preference storage
+│  ├─ camera/                     viewfinder, upload, and camera lifecycle
+│  ├─ home/                       single/batch orchestration and shared-link load
+│  └─ result/                     proof, details, sharing, and export actions
+├─ lib/
+│  ├─ qr-types/                   detector registry, fixtures, and Matter parser
+│  ├─ decode.js                   image/video decoding and module sampling
+│  ├─ exporters.js                single-result document exporters
+│  ├─ files.js                    native share, download, and clipboard handling
+│  └─ qr.js                       generation, trace recovery, rasterisation, hash, share codec
+├─ theme/                         Material 3-inspired light/dark tokens
+├─ index.css                      responsive product styling
+├─ main.jsx                       React entry point
+└─ strings.js                     British English interface copy
 ```
 
-Missing or unreadable preference data defaults to `brandingEnabled: true`. The Result view also
-keeps a per-payload override in React state so a user can change branding for the current QR without
-changing the saved default.
+`tests/` contains Vitest domain tests and three Playwright browser journeys. `scripts/` contains
+spelling, detector-fixture, and icon checks. Vite builds the PWA and Workbox service worker with the
+`/qr-recast/` Pages base path.
 
-### 2026-05-31 — v2 Batch State Model
+## Toolchain and dependency policy
 
-Batch Recast persists only canonical payload data and derived metadata in localStorage. The storage
-key is `qr-recast:batch:v1`; user preferences use the separate `qr-recast:preferences:v1` key. The
-batch envelope includes a schema version and a migration shim so future releases can change shape
-safely. `src/features/batch/store.js` owns reads, writes, migrations, name normalisation, item
-creation, rename, reorder, delete, restore, and clear operations.
+Development and CI use Node 24 and npm 11. `npm run check` is the core code gate: Prettier,
+ESLint, spelling, detector fixtures, Vitest, and the production build. Pull requests and pushes to
+`main` run it before the Pages artefact can deploy.
 
-Persisted batch shape:
+`npm run test:e2e` builds to an isolated test directory, serves that production output, and runs the
+Playwright journeys with a non-production analytics identifier. It is separate from `npm run check`,
+but both CI workflows require it before delivery.
 
-```js
-{
-  version: 1,
-  updatedAt: '2026-05-31T12:00:00.000Z',
-  items: [
-    {
-      id: 'crypto-random-id',
-      name: 'Living room thermostat',
-      payload: 'MT:...',
-      type: { type: 'matter', label: 'Matter device', confidence: 0.9 },
-      branding: { enabled: true, kind: 'matter' },
-      createdAt: '2026-05-31T12:00:00.000Z',
-      updatedAt: '2026-05-31T12:00:00.000Z'
-    }
-  ]
-}
-```
-
-Raw photos and decoded camera frames are deliberately excluded.
-
-Type detection is lazy-loaded when a payload is added to the batch so the initial scanner chunk
-stays under the launch budget. Stored items keep a serialised type object and per-item branding
-state, so restored batches do not need to re-parse every payload on startup.
-
-### 2026-05-31 — v2 Batch Export Layout
-
-Single and batch exports share one decorated QR rendering path. `src/features/batch/exporters.js`
-first creates renderable items by generating the canonical QR SVG and applying the stored branding
-state through `createDecoratedQrSvg()`.
-
-Batch SVG exports use one tall, print-friendly SVG containing stacked A4-proportioned pages. Each
-page has two columns, three rows, fixed margins/gutters, a caption per item, and a QR Recast footer
-with page numbers. PNG export rasterises that same sheet SVG at 2x resolution, preserving the visual
-pagination in one image blob. This avoids a ZIP dependency for Phase 6 while keeping every QR at a
-scan-safe size.
-
-PDF stays true vector with `jspdf` and `svg2pdf.js`, using real A4 pages, two columns, fixed
-margins/gutters, captions, footers, and page numbers. DOCX uses one table-based two-column section
-per page because table layout is the most predictable Word rendering path; each QR is embedded as
-SVG media with a generated PNG fallback. Heavy PDF and DOCX libraries remain lazy-loaded from export
-handlers.
-
-### 2026-05-31 — v2 Settings and Preference Storage
-
-The Settings sheet is lazy-loaded from the app bar so Batch Recast management, Switch, Dialog, and
-related controls do not inflate the scanner's initial bundle. The sheet remains the single
-preferences surface for branding, batch management, analytics, and About/Privacy.
-
-Batch management in Settings reads the same `qr-recast:batch:v1` store as the scanner tray. Clear
-batch writes through the shared batch store, while Resume batch dispatches the local
-`qr-recast:batch-resume-requested` browser event that `HomeView` handles by returning to Batch
-Recast mode. This avoids introducing a global route state layer for one shell-to-route action.
-
-Preference storage keys are now all explicit and versioned:
-
-```js
-{
-  branding: 'qr-recast:preferences:v1',
-  analytics: 'qr-recast:analytics:v1',
-  batch: 'qr-recast:batch:v1'
-}
-```
-
-The analytics preference shape is `{ version: 1, optedOut: true, updatedAt }`. The old
-`qr-recast-analytics-opt-out` key is still read so existing opt-outs are preserved, then removed
-when the user next changes the analytics setting.
-
-### 2026-05-31 — v2 Launch Performance
-
-The PWA service-worker registration is injected with `script-defer` rather than the default blocking
-script so installability and offline support stay intact without delaying first paint. `index.html`
-also includes a small static first-screen fallback that matches the scanner's first-run prompt. React
-replaces it on boot, but if JavaScript is still loading or unavailable the page paints useful,
-privacy-safe guidance instead of an empty root.
+Runtime and build dependencies are kept on current compatible releases. ESLint and `@eslint/js`
+intentionally remain on the latest 9.x line because the installed React lint plug-ins do not all
+declare ESLint 10 compatibility. Moving to ESLint 10 should wait for compatible peer ranges rather
+than relying on forced installation.

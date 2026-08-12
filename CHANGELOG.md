@@ -6,6 +6,81 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-08-12
+
+### Added
+
+- Added 47 Vitest domain tests for detector fixtures, Matter onboarding codes, lossless share
+  compression, QR generation, quiet zones, forced versions, SVG-input sanitisation, and visible QR
+  registration alignment.
+- Added three Playwright journeys for the mobile single/share/export flow, desktop overflow, and a
+  persisted seven-item batch with all export formats.
+- Added pull-request and deployment gates that run the complete project check and Playwright
+  journeys on Node 24.
+
+### Changed
+
+- Reworked the scanner and Result surfaces as a purpose-built optical recasting workbench, with a
+  persistent capture frame, clearer proof hierarchy, explicit Clean/Labelled output choices, and
+  deliberate mobile and desktop layouts.
+- Recast Batch Recast as a numbered contact sheet with aspect-preserving previews and clearer
+  ordering and export controls. Each saved item can now switch independently between Clean and
+  Labelled output, and the choice persists into every batch export.
+- Updated the project to version 2.1.0, Node 24, npm 11, and current compatible dependency releases;
+  ESLint remains intentionally on the latest 9.x line until the React lint plug-ins declare ESLint
+  10 peer compatibility.
+- Moved compressed payload sharing from the request query to the `#q=` URL fragment. Existing
+  `?q=` links continue to load for compatibility.
+- Migrated batch persistence to `qr-recast:batch:v2` and recalculate detector metadata from the
+  canonical payload when restoring stored items.
+- Updated the PWA and GitHub Pages workflows to use the same complete check and Node 24 toolchain.
+
+### Fixed
+
+- Always QR-encode string input instead of treating SVG-looking payload text as trusted artwork.
+- Preserve literal plus signs in decoded payload fields instead of converting them to spaces.
+- Disable automatic analytics page views so payload-bearing URL fragments cannot be collected as
+  page views, and override every GA command with the fragment-free application root while retaining
+  the fixed event/parameter allowlist.
+- Preserve portrait setup-card proportions in batch DOCX PNG fallbacks and other export placement.
+- Register Matter, Apple Home, and utility label rows to the exact visible QR module field rather
+  than the outside of the quiet zone.
+- Render sampled QR modules as individually closed, filled geometry so SVG-to-PDF conversion cannot
+  introduce line-cap leakage or visible module gaps.
+- Preserve shared-link search and fragment data through the React catch-all and GitHub Pages 404
+  recovery path.
+
+## [2.0.5] - 2026-06-17
+
+### Changed
+
+- Replaced the three-way colour-scheme selector with a sun/moon control that follows the operating
+  system on first use and remembers the user's first explicit choice.
+- Aligned the Matter mark, QR, and pairing number to a shared 248-pixel column.
+
+## [2.0.4] - 2026-06-17
+
+### Changed
+
+- Recast dependable photographed symbols from their sampled module grid instead of reproducing only
+  the decoded payload and version.
+- Improved luminance sampling and finder-based adaptive thresholds, and recovered mask and
+  error-correction format information for closer, still scannable traces.
+
+## [2.0.3] - 2026-06-17
+
+### Fixed
+
+- Preserved the original QR version and data size when enough decode metadata is available, while
+  retaining a safe larger-symbol fallback when the payload cannot fit.
+
+## [2.0.2] - 2026-06-17
+
+### Changed
+
+- Matched the static first-screen fallback to the operating system's dark preference.
+- Removed unused React type packages from the JavaScript-only project.
+
 ## [2.0.1] - 2026-06-01
 
 ### Changed

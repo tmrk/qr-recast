@@ -1,378 +1,192 @@
-# Testing
+# Testing QR Recast
 
-## Automated Checks
+QR Recast's central correctness rule is simple: the payload decoded from the source must be the
+payload represented by every preview, shared link, and exported QR. Visual polish is not evidence
+of correctness, so release checks combine domain tests, browser journeys, rendered-file inspection,
+and QR decoding.
 
-- `npm run lint`
-- `npm run build`
-- `npm run format:check`
-- `npm run check:spelling`
-- `npm run check:qr-types`
+## Automated evidence gate
 
-## Local Preview Checks
+Use Node 24 and npm 11. From a clean checkout:
 
-- 2026-05-28: Verified `http://127.0.0.1:4173/qr-recast/` returns HTTP 200.
-- 2026-05-28: Verified built asset URLs and manifest links include the `/qr-recast/` base path.
-- 2026-05-28: Captured mobile `390 x 844` and desktop `1280 x 900` Playwright screenshots from
-  the preview server.
-- 2026-05-28: Verified deployed `https://tmrk.github.io/qr-recast/` returned HTTP 200 after
-  workflow run `26573447472`.
-- 2026-05-28: Captured Phase 2 mobile light, desktop light, and mobile dark Playwright screenshots
-  from `http://127.0.0.1:4174/qr-recast/`.
-- 2026-05-28: Lighthouse 11.7.1 PWA score on local preview was 100.
-- 2026-05-28: Lighthouse 11.7.1 PWA score on deployed
-  `https://tmrk.github.io/qr-recast/` was 100 after workflow run `26573960339`.
-- 2026-05-28: Phase 3 local preview fake-camera smoke test reached "Point at a QR code" after
-  tapping "Start camera".
-- 2026-05-28: Phase 3 local preview upload fallback decoded a generated QR payload:
-  `https://tmrk.github.io/qr-recast/test-payload`.
-- 2026-05-28: Phase 3 deployed upload fallback decoded the same generated QR payload at
-  `https://tmrk.github.io/qr-recast/`.
-- 2026-05-28: Phase 3 deployed fake-camera smoke test reached "Point at a QR code" after tapping
-  "Start camera".
-- 2026-05-28: User confirmed on a real mobile device that the deployed Phase 3 camera opens, scans,
-  and detects a QR payload.
-- 2026-05-28: Phase 4 local preview upload fallback handed the generated QR payload to the Result
-  view instead of the temporary scan completion screen.
-- 2026-05-28: Phase 4 local preview generated downloads for SVG, PNG, PDF, and DOCX from the same
-  payload. Sizes were 1,927 bytes, 27,150 bytes, 9,340 bytes, and 25,152 bytes respectively.
-- 2026-05-28: Phase 4 local preview copied a compressed share URL containing `?q=` and opened the
-  decoded-text dialog for the generated QR payload.
-- 2026-05-28: Phase 3 polygon overlay build passed lint and build; local upload-to-result
-  regression still reached the rendered QR.
-- 2026-05-28: Phase 4 deployed smoke test at `https://tmrk.github.io/qr-recast/` generated SVG,
-  PNG, PDF, and DOCX downloads and copied a production share URL after workflow run `26596003511`.
-- 2026-05-29: Phase 5 local preview verified a short QR payload kept Share URL enabled and a
-  1,400-character QR-safe payload generated a 2,103-character share URL that disabled Share URL with
-  inline guidance.
-- 2026-05-29: Phase 5 local preview verified desktop `Copy URL` copied the generated `?q=` link and
-  a mobile-style browser with Web Share available used the native `Share URL` path.
-- 2026-05-29: Phase 5 local preview verified the desktop copied URL pill and secondary share-link
-  QR appear only after copying and stay hidden on the mobile native-share path.
-- 2026-05-29: Phase 5 local preview verified URL copy feedback morphs to a check icon, settles on
-  the success colour, runs the scale animation, and stays separate from mobile native sharing.
-- 2026-05-29: Phase 5 local preview verified a valid compressed `?q=` payload opens the Result view,
-  clears the query string, and exposes the decoded payload; invalid `?q=` clears to the scanner.
-- 2026-05-29: Phase 6 local preview verified decoded text opens in a desktop dialog and in a
-  mobile bottom sheet with the same payload content.
-- 2026-05-29: Phase 6 local preview verified long decoded text scrolls inside a monospace
-  `pre`/`code` block with preserved wrapping.
-- 2026-05-29: Phase 6 local preview verified decoded payload kind chips for URL, plain text, and
-  Wi-Fi payloads.
-- 2026-05-29: Phase 6 local preview verified URL payloads show an `Open link` affordance with
-  `_blank` and `noopener`, plain text hides it, and mobile shows it inside the bottom sheet.
-- 2026-05-29: Phase 6 local preview verified decoded text copying writes the payload to the
-  clipboard, uses matching success feedback, and is present in the mobile bottom sheet.
-- 2026-05-29: Phase 7 local preview verified the advertisement slot is absent by default and appears
-  in the shell bottom slot when built with `VITE_ADS_ENABLED=true`.
-- 2026-05-29: Phase 7 local preview verified GA is absent by default and runtime GA4 injection
-  appears when built with `VITE_GA_MEASUREMENT_ID=G-TEST123`.
-- 2026-05-29: Phase 7 repository audit verified `.env.example` is tracked, while `.env`,
-  `.env.local`, and `.env.production` are ignored.
-- 2026-05-29: Phase 7 GA preview verified shared-link, decoded-text, share URL, and SVG export
-  events use only whitelisted metadata and do not contain the source QR payload.
-- 2026-05-29: Phase 7 GA preview verified upload decoding emits `qr_detected` with source and
-  payload kind only, without the decoded QR text.
-- 2026-05-29: Phase 7 default preview verified GA stays disabled without
-  `VITE_GA_MEASUREMENT_ID` and upload decoding still reaches the Result view.
-- 2026-05-29: Phase 7 default preview captured settled About sheet screenshots at `390 x 844` and
-  `1280 x 900`; the analytics switch is visible without scrolling and GA stays disabled.
-- 2026-05-29: Phase 7 GA preview verified default GA initialisation, browser Do Not Track blocking,
-  stored analytics opt-out blocking, one-click opt-out persistence, and suppression of later
-  analytics events after opt-out.
-- 2026-05-29: Deployed Phase 7 smoke test verified the About sheet opens on mobile, default GA stays
-  disabled, and the analytics opt-out stores locally.
-- 2026-05-29: Phase 8 local preview verified the scanner/result page transition class and animation
-  after upload decoding, then verified Scan again returns through the scanner frame.
-- 2026-05-29: Phase 8 local preview verified the QR capture flash appears on upload detection,
-  `document.startViewTransition` is called when available, and the CSS transition fallback reaches
-  Result when the API is unavailable.
-- 2026-05-29: Phase 8 local preview verified touch long-press copies the QR as a PNG and desktop
-  hover shows the `Hold QR to copy PNG` tooltip.
-- 2026-05-29: Deployed Phase 8 smoke test verified touch long-press QR PNG copying and desktop
-  tooltip behaviour.
-- 2026-05-29: Phase 8 local preview captured dark mode screenshots for scanner, About sheet,
-  Result, and decoded text bottom sheet at `390 x 844`.
-- 2026-05-29: Phase 8 local preview axe checks passed with no violations on scanner, About,
-  Result, and decoded text surfaces in both light and dark modes.
-- 2026-05-29: Phase 8 local preview keyboard checks verified QR PNG copy from the focused QR card
-  and Escape dismissal of the decoded text dialog.
-- 2026-05-29: Phase 8 local preview with `VITE_BUILD_SHA=abcdef1234567890` verified the About
-  sheet shows version `0.1.0`, build `abcdef1`, the privacy note, and the MIT licence link.
-- 2026-05-29: Phase 8 local preview verified the generated `/qr-recast/404.html` redirects to
-  `/qr-recast/`; unknown-path redirect behaviour is verified after Pages deployment.
-- 2026-05-29: Phase 9 local preview verified upload decode and decoded text display in actual
-  Google Chrome desktop.
-- 2026-05-29: Phase 9 local preview verified upload decode and decoded text display in Playwright
-  Chromium, Firefox, and WebKit engines.
-- 2026-05-29: Phase 9 local preview verified the QR variant matrix through image upload: short
-  plain text, long plain text, URL, Wi-Fi, vCard, low contrast, and slightly rotated QR images
-  decoded correctly; the partially occluded QR failed gracefully with inline guidance.
-- 2026-05-29: Phase 9 local preview verified automated mobile-shaped upload, Result, decoded
-  bottom sheet, and About sheet flows for iOS Safari latest emulation, iOS Safari previous
-  emulation, Android Chrome emulation, and Android Firefox emulation.
-- 2026-05-29: Phase 9 local preview verified offline reload after first load through the generated
-  service worker.
-- 2026-05-29: Phase 9 repository audit verified standalone manifest metadata, theme colour,
-  iOS status bar metadata, splash-capable icon sizes, Apple touch icon size, and safe-area inset
-  usage across shell, sheets, scanner controls, and Result surfaces.
-- 2026-05-29: Phase 9 local preview Lighthouse 11.7.1 launch budget scores were Performance 96,
-  Accessibility 100, Best Practices 100, SEO 91, and PWA 100.
-- 2026-05-29: Phase 9 production build reported the main `index-Bjt741lX.js` bundle at 157.12 KB
-  gzip, below the 250 KB launch budget.
-- 2026-05-29: Phase 9 local preview generated fresh PDF and DOCX exports through the production
-  UI for `https://tmrk.github.io/qr-recast/export-verification`.
-- 2026-05-29: Phase 9 export integrity checks verified the PDF is valid, A4, vector-only by PDF
-  structure, and renderable by macOS Quick Look; the DOCX contains SVG media plus a 1024 x 1024 PNG
-  fallback wired through document relationships.
-- 2026-05-31: v2 Phase 1 local preview verified 360 x 780 first-run and 390 x 844 Result screens in
-  emulated light and dark modes; `document.body.scrollWidth` and
-  `document.documentElement.scrollWidth` matched the viewport width in all four checks.
-- 2026-05-31: v2 Phase 1 local preview verified the Result Download menu opens on a 390 x 844 dark
-  mobile viewport and exposes SVG, PNG, PDF, and DOCX choices.
-- 2026-05-31: v2 Phase 1 local preview captured a 1280 x 900 desktop Result screenshot with the
-  payload identity chip, primary share/download controls, and secondary Show text/Scan again
-  controls.
-- 2026-05-31: v2 Phase 3 local preview verified a Wi-Fi shared-link Result at 390 x 844 dark mobile
-  width with no horizontal overflow, the type details card, network name/security/hidden fields, a
-  masked password, and password reveal behaviour.
-- 2026-05-31: v2 Phase 3 local preview verified the decoded-text sheet for a Wi-Fi payload shows
-  the detected type header and a labelled raw payload block.
-- 2026-05-31: v2 Phase 3 GitHub Pages deployment run `26714804670` passed, and
-  `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
-- 2026-05-31: v2 Phase 4 local preview verified a branded Wi-Fi shared-link Result at 390 x 844 in
-  headless Chrome; the branded SVG rasterised to 720 x 720 and decoded with `jsQR` back to the exact
-  Wi-Fi payload, with no horizontal overflow.
-- 2026-05-31: v2 Phase 4 local preview verified Settings persists
-  `qr-recast:preferences:v1` with `brandingEnabled: false`, and the per-Result override can turn
-  branding back on without mutating that saved default.
-- 2026-05-31: v2 Phase 4 Vite browser-module smoke verified both branding states across the SVG,
-  PNG, PDF, and DOCX exporter functions; branding-on artefacts include the Wi-Fi branding text,
-  branding-off artefacts omit it, PNG blobs generated successfully, DOCX blobs are valid ZIP-based
-  Word documents, and branding-off returns the canonical SVG.
-- 2026-05-31: v2 Phase 4 GitHub Pages deployment run `26715366977` passed, and
-  `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
-- 2026-05-31: v2 Phase 5 local preview verified Batch Recast with generated Matter and Apple Home
-  QR uploads: batch mode captured without navigating to Result, prompted for names, persisted
-  `qr-recast:batch:v1`, restored names and order after reload, moved the second item up, deleted
-  and restored an item with Undo, and showed a duplicate warning when the Matter QR was added again.
-- 2026-05-31: v2 Phase 5 local preview verified Clear batch requires confirmation and empties the
-  stored item list; a `?q=` shared-link load still opens the Result view, clears the query string,
-  and leaves existing batch state intact.
-- 2026-05-31: v2 Phase 5 GitHub Pages deployment run `26716545553` passed, and
-  `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
-- 2026-05-31: v2 Phase 6 browser-module smoke generated a seven-item batch across SVG, PNG, PDF,
-  and DOCX: SVG contained two A4-style pages and seven captions, PNG returned `image/png`, PDF
-  included the second-page footer, DOCX returned a valid ZIP-based Word document, and filenames used
-  the shared `qr-recast-batch-7-{hash}` stem.
-- 2026-05-31: v2 Phase 6 GitHub Pages deployment run `26716807897` passed, and
-  `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
-- 2026-05-31: v2 Phase 7 production preview verified Settings at 390 px mobile width with a stored
-  batch item: the sheet showed the batch count, Resume batch returned to the tray, Clear batch
-  emptied `qr-recast:batch:v1` after confirmation, branding persisted in
-  `qr-recast:preferences:v1`, legacy analytics opt-out migrated to `qr-recast:analytics:v1`, and no
-  horizontal overflow appeared.
-- 2026-05-31: v2 Phase 7 GitHub Pages deployment run `26717220227` passed, and
-  `https://tmrk.github.io/qr-recast/` returned HTTP 200 with the updated Pages artefact timestamp.
-- 2026-05-31: v2 Phase 8 final local gates for version `2.0.0` passed: `npm run lint`,
-  `npm run build`, `npm run format:check`, spelling, and QR type fixtures. The production build
-  reported main `index-C5-1uxRz.js` at 156.25 KB gzip.
-- 2026-05-31: v2 Phase 8 Lighthouse 11.7.1 on local production preview scored Performance 91,
-  Accessibility 100, Best Practices 100, SEO 91, and PWA 100 after deferring service-worker
-  registration and adding a static first-screen fallback.
-- 2026-05-31: v2.0.0 release-prep deployment run `26717422541` passed, the live site returned HTTP
-  200 with the `2.0.0` artefact timestamp, tag `v2.0.0` was pushed, and the GitHub release was
-  published.
-- 2026-05-31: post-v2 hardening compared the deployed Batch Recast empty state against a fresh local
-  production preview and confirmed the deployed site lacked a batch-local scan action.
-- 2026-05-31: post-v2 hardening local preview at 390 x 844 verified Batch Recast now shows enabled
-  `Start scanning` and `Upload image` actions in the empty batch panel, with no horizontal overflow.
-- 2026-05-31: post-v2 hardening local preview verified Matter and Apple Home shared-link Results
-  render the revised setup-card branding. Headless Chrome rasterised both branded SVGs to 720 x 720,
-  and `jsQR` decoded them back to `MT:Y.K9042C00KA0648G00` and `X-HM://0081YCYEP3QYT`.
-- [x] Phase 3 real mobile camera verification at `https://tmrk.github.io/qr-recast/`.
+```sh
+npm ci
+npm run check
+```
 
-## Manual Browser Matrix
+`npm run check` runs, in order:
 
-- [ ] iOS Safari latest
-- [ ] iOS Safari previous major version
-- [ ] iOS installed PWA
-- [ ] Android Chrome
-- [ ] Android Firefox
-- [x] Desktop Chrome
-- [ ] Desktop Safari
-- [ ] Desktop Firefox
+1. `npm run format:check` — Prettier verification.
+2. `npm run lint` — ESLint, British English spelling, and detector-fixture checks.
+3. `npm run test:unit` — Vitest domain tests.
+4. `npm run build` — the production Vite and PWA build.
 
-## Manual Browser Protocol
+Focused commands remain available:
 
-Use the deployed `https://tmrk.github.io/qr-recast/` site for each manual row. Record the device,
-operating-system version, browser version, date, tester, and any caveats in this file before ticking
-the row.
+```sh
+npm run test:unit
+npm run test:e2e
+npm run check:qr-types
+npm run check:spelling
+npm run preview
+```
 
-For every browser row:
+`npm run test:e2e` runs three committed Playwright journeys against a local Vite server. It remains
+separate from `npm run check`, so both results must be reported when browser coverage is required.
 
-- Load the deployed site from a cold tab and confirm the scanner shell renders.
-- Upload a QR image containing `https://tmrk.github.io/qr-recast/manual-browser-check`.
-- Confirm the Result view appears, the decoded text sheet or dialog shows the exact payload, and
-  `Scan again` returns to the scanner.
-- Generate SVG, PNG, PDF, and DOCX exports, or record the browser-specific limitation.
-- Copy or share the generated URL and confirm a fresh tab opens the same payload from `?q=`.
-- Confirm light and dark mode both keep controls legible and usable.
+## Current automated coverage
 
-For camera-capable mobile rows:
+The Vitest suite contains 47 tests across five files:
 
-- Start the rear camera from a user gesture.
-- Scan a printed or second-screen QR containing
-  `https://tmrk.github.io/qr-recast/manual-camera-check`.
-- Confirm the detection animation appears before the Result view.
-- Deny camera permission once and confirm the blocked state offers image upload recovery.
+- QR type-registry fixture classification, arbitrary-input safety, and plain-text fallback.
+- Matter onboarding parsing and manual-code formatting.
+- Lossless share-payload compression, including Unicode, separators, and malformed input.
+- Canonical QR generation, forced version and quiet-zone behaviour, overflow fallback, SVG-input
+  sanitisation, and image-level decode of generated output.
+- Matter, Apple Home, and utility branding registration against the visible module field, including
+  rendered image-level decode of the decorated symbols.
 
-For installed PWA rows:
+The three Playwright journeys cover:
 
-- Install the app from the browser UI.
-- Launch it from the home screen or launcher and confirm it opens standalone, not as a browser tab.
-- Confirm the splash/status-bar colours match the app theme.
-- Load once online, enable airplane mode or disconnect networking, relaunch, and confirm the shell
-  loads offline.
-- Repeat upload decoding and one export from the installed app.
+- A 360 px mobile Matter upload, Clean/Labelled switching, visible-module alignment, `#q=` sharing
+  and round-trip payload recovery, sanitised analytics location metadata, plus SVG, PNG, PDF, and
+  DOCX downloads and structural checks.
+- A 1,440 px desktop scanner/result journey with a system-dark start, explicit light override, and
+  horizontal-overflow assertions.
+- A 390 px seven-item batch with rename, reorder, per-item Clean/Labelled style, v2 persistence, a
+  two-page contact sheet, all four export formats, and exact decode of every QR in the batch PNG.
 
-## Manual Test Availability Notes
+### Recorded evidence
 
-- 2026-05-29: Desktop Safari remains pending because Safari 26.3 is installed, but WebDriver
-  automation is blocked until `Allow remote automation` is enabled in Safari settings; enabling it
-  through `safaridriver --enable` requires local administrator authentication.
-- 2026-05-29: iOS and Android manual rows remain pending because this machine has only the Xcode
-  command-line tools, no available `simctl`, and no Android SDK, emulator, ADB, or attached Android
-  device.
-- 2026-05-31: v2 Phase 1 real mobile verification remains pending for the same reason: `simctl` is
-  unavailable, `adb` is not installed, and no iOS or Android device appears in USB system
-  information.
-- 2026-05-29: Desktop Firefox remains pending because Firefox is not installed locally.
-- 2026-05-29: PDF and DOCX native-app export checks remain pending because Acrobat and Microsoft
-  Word are not installed locally; Preview launched for the generated PDF, but AppleScript querying
-  did not return a verifiable document state.
-- 2026-05-31: Final v2 release verification still cannot tick real-device scan/share rows or real
-  Microsoft Word/Acrobat rows in this environment because no iOS simulator/device, Android
-  SDK/device, Microsoft Word, or Acrobat installation is available.
+| Date       | Revision state       | Evidence                                                                  |
+| ---------- | -------------------- | ------------------------------------------------------------------------- |
+| 2026-08-12 | Local 2.1.0 worktree | `npm ci` and `npm run check`: clean install and complete gate passed      |
+| 2026-08-12 | Local 2.1.0 worktree | `npm run test:unit`: 5 files passed, 47 tests passed                      |
+| 2026-08-12 | Local 2.1.0 worktree | `npm run test:e2e`: 3 Playwright journeys passed                          |
+| 2026-08-12 | Local 2.1.0 worktree | Rendered Matter PDF and DOCX each decoded to `MT:OA3126F-034OCH6VQ00`     |
+| 2026-08-12 | Local 2.1.0 worktree | Rendered two-page batch PDF: all seven QRs decoded to their exact values  |
+| 2026-08-12 | Local 2.1.0 worktree | Rendered two-page batch DOCX: all seven QRs decoded to their exact values |
 
-## Automated Browser Engine Coverage
+This table records checks that actually ran. These results do not imply that camera, native sharing,
+PWA installation, or the wider real-device browser matrix passed.
 
-- [x] Playwright Chromium
-- [x] Playwright Firefox
-- [x] Playwright WebKit
+## Browser journey protocol
 
-## Automated Mobile-Shaped Coverage
+Exercise styling changes at 360 px and at a deliberate desktop width such as 1,280 px. Test light
+and dark schemes, keyboard navigation, reduced motion, and horizontal overflow.
 
-- [x] iOS Safari latest emulation
-- [x] iOS Safari previous emulation
-- [x] Android Chrome emulation
-- [x] Android Firefox emulation
+### Scanner and single result
 
-## QR Variant Matrix
+1. Load a production preview from a cold tab and confirm the scanner shell is usable before any
+   camera permission request.
+2. Upload QR images containing plain text, Unicode, a URL with `+`, Wi-Fi credentials, Matter, and
+   Apple Home payloads. Confirm each decoded-text view contains the exact source payload.
+3. Verify a low-contrast or slightly rotated QR succeeds where practical, and that an unreadable
+   image fails with recovery guidance rather than a stuck state.
+4. Confirm the proof artwork has an intact quiet zone and crisp finder/module geometry.
+5. Toggle Clean and Labelled output. Confirm the preference and one-result override behave as
+   described and do not change the decoded payload.
+6. Exercise Show text, copy, safe external-link opening, Scan again, Settings, colour scheme, and
+   the analytics opt-out with keyboard and pointer input.
+7. Confirm the 360 px page has no horizontal scrolling, clipped action, obscured focus indicator,
+   or control smaller than a practical touch target.
 
-- [x] Short plain text
-- [x] Long plain text
-- [x] URL
-- [x] Wi-Fi payload
-- [x] vCard
-- [x] Low contrast QR
-- [x] Slightly rotated QR
-- [x] Partially occluded QR, failing gracefully
+### Sharing and routing
 
-## PWA Checks
+1. Share or copy a short payload and confirm the generated URL uses `#q=`, not a query parameter.
+2. Open that URL in a fresh tab. Confirm it loads the exact payload and clears the fragment from the
+   visible address once consumed.
+3. Open a known legacy `?q=` URL and confirm it still loads, then clears the query string.
+4. Confirm literal plus signs survive sharing; they must not become spaces.
+5. Confirm malformed compressed data returns safely to the scanner.
+6. Confirm an oversized share URL is disabled with clear guidance.
+7. With analytics configured, inspect the data layer and network requests. No payload, fragment,
+   filename, hash, image, or exported content may be present, and GA automatic page views must stay
+   disabled.
 
-- [ ] Installable on iOS.
-- [ ] Installable on Android.
-- [x] Offline-capable after first load.
-- [x] Correct splash screen and status bar colour.
-- [x] Safe-area insets respected.
+### Batch Recast
 
-## Export Checks
+1. Enter Batch Recast, capture at least seven different QR types, and give them distinct names.
+2. Confirm duplicate feedback, rename, drag/button reorder, delete, Undo, and clear confirmation.
+3. Reload and confirm order, names, payloads, reconstruction metadata, and branding state restore
+   from `qr-recast:batch:v2`; no source image data should be present.
+4. Seed a valid v1 batch and confirm it migrates to v2 while recalculating type metadata.
+5. At 360 px, confirm every item remains identifiable, thumbnails preserve setup-card aspect ratio,
+   and the export action remains reachable. At desktop width, confirm the contact-sheet layout and
+   reading order remain clear.
 
-- [x] SVG downloads from local preview.
-- [x] PNG downloads from local preview at 1024 x 1024.
-- [x] PDF downloads from local preview through the vector exporter.
-- [x] DOCX downloads from local preview with SVG data and PNG fallback.
-- [x] PDF passes `qpdf --check`, has zero image objects, and uses vector path operators.
-- [x] PDF renders through macOS Quick Look.
-- [x] DOCX package contains SVG media and 1024 x 1024 PNG fallback media.
-- [x] DOCX relationships reference both SVG and PNG image media.
-- [ ] PDF opens in Preview and Acrobat as vector artwork.
-- [ ] DOCX opens in Microsoft Word with SVG and PNG fallback intact.
+## Camera and installed-PWA protocol
 
-## Manual Export Protocol
+Camera, native sharing, and installation require a suitable real device for release-level evidence.
 
-Use freshly generated exports from the deployed app before ticking native-app rows.
+1. Start the rear camera from a user gesture and scan a printed or second-screen QR.
+2. Confirm detection feedback precedes the Result view and the decoded payload is exact.
+3. Deny camera permission and confirm upload remains available as recovery.
+4. Background the app while scanning and confirm capture pauses; foreground it and confirm recovery.
+5. Stop or leave the result and confirm the media stream is released.
+6. Use native URL sharing and file sharing on a supported device, including cancellation.
+7. Install the PWA, launch it in standalone mode, and confirm shell colours and safe areas.
+8. After one online load, disconnect networking and confirm the application shell reloads offline.
+9. Repeat upload decoding and at least one export from the installed app.
 
-- Open the PDF in macOS Preview and Adobe Acrobat, zoom to at least 800%, and confirm the QR edges
-  remain vector-sharp without embedded raster artefacts.
-- Open the DOCX in Microsoft Word, confirm the SVG renders as the primary QR image, then inspect
-  compatibility behaviour or document XML to confirm the PNG fallback remains packaged.
-- Record the app names, versions, date, tester, and any rendering caveats in this file.
+Record device model, operating-system version, browser version, date, and tester. Emulation is useful
+regression evidence but does not replace these checks.
 
-## Launch Budgets
+## Export verification protocol
 
-- [x] Lighthouse Performance at least 90.
-- [x] Lighthouse Accessibility at least 95.
-- [x] Lighthouse Best Practices at least 95.
-- [x] Lighthouse SEO at least 90.
-- [x] Lighthouse PWA installability confirmed.
-- [x] Main bundle at or below 250 KB gzipped.
+Use payloads that expose character corruption (`+`, `%`, Unicode), a standard square label, a
+Matter setup card, and an Apple Home setup card. For each download, record the exact filename and
+confirm its eight-character hash suffix is stable for the payload.
 
-## v2 Type Fixture Matrix
+### Single exports
 
-- [x] URL with `https://` is classified as a web address with scheme, host, and path fields.
-- [x] Bare domain is classified as a web address only when the heuristic is confident.
-- [x] Plain text falls back cleanly with no invented fields.
-- [x] Wi-Fi `WIFI:` payload parses auth type, SSID, password, hidden state, and EAP fields where
-      present; password stays masked until reveal.
-- [x] Apple Home `X-HM://` payload is classified as an Apple Home accessory after format
-      verification; parsed fields are shown only where reliable.
-- [x] Matter `MT:` payload is classified as a Matter device after CSA format verification; manual
-      code is shown only if derivable without fragile decoding.
-- [x] Email `mailto:`, `MATMSG:`, and `SMTP:` examples classify with address, subject, and body
-      where available.
-- [x] SMS and MMS examples classify with number and body.
-- [x] Telephone `tel:` examples classify with number.
-- [x] Geo `geo:` examples classify with latitude, longitude, and optional query.
-- [x] Calendar `BEGIN:VEVENT` examples classify with summary, start, end, and location where
-      available.
-- [x] vCard and MeCard examples classify with name, phone, email, and organisation where available.
-- [x] Common app and crypto schemes classify as deep link or crypto without over-parsing.
+- SVG: parse as XML, inspect the viewBox and quiet zone, rasterise it, and decode the rendered QR
+  back to the exact payload.
+- PNG: confirm the MIME type, pixel dimensions, white background, preserved aspect ratio, and exact
+  decode result.
+- PDF: run `qpdf --check` or an equivalent structural check, render every page to an image, inspect
+  placement and clipping, zoom for vector-sharp edges, and decode the rendered QR.
+- DOCX: inspect the ZIP relationships for both SVG and PNG media, render the complete document with
+  LibreOffice or Word, inspect every page, and decode the rendered QR. Confirm portrait setup cards
+  are not squeezed into a square fallback.
 
-## v2 Branding Checks
+For Matter labelling, verify the vector mark and formatted manual-code row register to the visible
+module field, not the outside of its quiet zone. For Apple Home and utility labels, verify headers,
+QR artwork, and captions form a consistent column without crowding the quiet zone.
 
-- [x] Branding defaults on for new sessions.
-- [x] Global branding toggle persists under the versioned preferences key.
-- [x] Per-result branding override affects only the current result.
-- [x] Branding off exports plain canonical QR codes in SVG, PNG, PDF, and DOCX.
-- [x] Branding on exports decorated QR codes in SVG, PNG, PDF, and DOCX.
-- [ ] Matter, Apple Home, Wi-Fi, and generic branded codes scan on screen with a real phone.
-- [ ] Matter, Apple Home, Wi-Fi, and generic branded codes scan from an exported or printed PDF.
-- [x] Branding remains outside the QR quiet zone unless centre decoration has been scan-tested.
+### Batch exports
 
-## v2 Batch Recast Checks
+Generate at least seven items so pagination is exercised.
 
-- [x] Entering Batch Recast from the scanner is discoverable and reversible.
-- [x] Each successful batch scan prompts for or allows immediate editing of a name.
-- [x] Default names increment from "QR 1" and trim whitespace without losing Unicode names.
-- [x] Batch list shows thumbnail, editable name, detected type chip, duplicate warning, reorder, and
-      delete.
-- [x] Delete offers undo through snackbar.
-- [x] Batch survives reload and closed-tab restore with names, order, type metadata, branding state,
-      and timestamps intact.
-- [x] Clear batch requires confirmation and empties the versioned localStorage batch.
-- [ ] Quota failure shows a graceful warning without losing the in-memory batch.
-- [x] Existing single-capture `?q=` shared-link loading remains independent of batch state.
+- SVG and PNG should form one tall sheet with two A4-proportioned page regions.
+- PDF and DOCX should contain two real pages, with no missing or repeated item.
+- Each page should use two columns, no more than six items, correct names, and the right page footer.
+- Every QR should decode to its corresponding stored payload after rendering.
+- Branded and clean items must retain their own saved setting and aspect ratio.
 
-## v2 Batch Export Checks
+Browser download success alone is insufficient: inspect and decode the artefact.
 
-- [x] Batch SVG lays out every item as a two-column print-friendly sheet with captions.
-- [x] Batch PNG exports print-safe raster sheets and paginates when needed.
-- [x] Batch PDF is true vector A4, paginated, two-column, with margins, gutters, footer, and page
-      numbers; no QR is split across pages.
-- [ ] Batch DOCX opens in Microsoft Word with a reliable two-column layout, SVG media, PNG fallback,
-      and captions.
-- [x] Filenames follow `qr-recast-batch-{count}-{shortHash}.{ext}`.
-- [ ] Mobile file sharing uses `navigator.share({ files })` where supported and desktop downloads
-      otherwise.
-- [x] Export pending, success, cancellation, and error states are visible and non-jarring.
+## Accessibility and presentation checks
+
+- Run an automated accessibility scan on scanner, result, decoded text, Settings, and non-empty
+  Batch Recast surfaces in both colour schemes.
+- Navigate all controls using Tab, Shift+Tab, Enter, Space, and Escape.
+- Confirm focus returns to the initiating control after a dialog, drawer, or menu closes.
+- Check status and error announcements with a screen reader or accessibility tree.
+- Confirm semantic labels do not depend on icon shape or colour alone.
+- With reduced motion enabled, confirm scanning and transition effects stop or simplify without
+  hiding state changes.
+- At 200% zoom and 360 CSS pixels, confirm content reflows without loss of function.
+
+## Historical baseline and current gaps
+
+Earlier releases recorded successful local and deployed upload decoding, real-mobile camera
+scanning, cross-engine emulation, offline reload, accessibility scans, and single/batch export
+generation. The v2.0 export baseline also structurally checked vector PDF output and DOCX SVG/PNG
+relationships. These results are useful regression context, but they do not certify the 2.1.0
+worktree.
+
+Release verification remains incomplete until the current candidate is checked on real iOS and
+Android hardware, in an installed PWA, and in native Microsoft Word and Adobe Acrobat where those
+targets matter. Any unavailable platform must be reported as an evidence gap rather than marked as
+passed.

@@ -1,51 +1,74 @@
 # QR Recast
 
-QR Recast is a client-only Progressive Web App for photographing a QR code and re-emitting it as
-crisp SVG, PNG, PDF, and DOCX files.
-
-Photos and QR contents never leave your device. Decoding, QR generation, and export work happen in
-the browser.
+QR Recast turns a photographed QR code back into dependable, clean artwork. It scans with the
+camera or reads an uploaded image, decodes locally, reconstructs the QR symbol, and exports the same
+payload as SVG, PNG, PDF, or DOCX.
 
 Live app: <https://tmrk.github.io/qr-recast/>
 
-## v2 Roadmap
+## What it does
 
-QR Recast v2 adds three connected capabilities:
+- Scans one QR code or builds a named, reorderable batch.
+- Recognises common payloads such as web addresses, Wi-Fi credentials, Matter and Apple Home setup
+  codes, contacts, calendar events, email, SMS, telephone, geo, app, and crypto links.
+- Preserves a trustworthy sampled module grid from suitable photographs, including the recovered QR
+  version, mask, and error-correction level; falls back to a fresh canonical symbol when the sampled
+  trace is not dependable.
+- Adds optional type-aware labelling without altering the QR modules or quiet zone. Matter and Apple
+  Home use purpose-built setup-card layouts; other types use a restrained utility label.
+- Exports an individual QR or a two-column batch sheet as SVG, PNG, vector PDF, or DOCX with an SVG
+  image and PNG compatibility fallback.
+- Creates compressed share links with the payload in the URL fragment (`#q=`), which browsers do not
+  send in the HTTP request. Existing `?q=` links remain readable for compatibility.
+- Installs as a light/dark Progressive Web App and keeps its shell available offline after the first
+  successful load.
 
-- Type recognition for common QR payloads including web addresses, Wi-Fi networks, Apple Home
-  accessories, Matter setup codes, email, SMS, telephone, geo, contacts, calendar events, app links,
-  crypto links, and plain text.
-- Optional neutral vector branding around the re-cast QR, on by default and user-toggleable, so
-  exported codes are easier to identify while staying scannable and offline-safe.
-- Batch Recast for capturing, naming, reordering, persisting, and exporting multiple QR codes as
-  tidy two-column SVG, PNG, PDF, and DOCX documents.
+## Privacy boundary
 
-Batch progress is stored only in your browser localStorage on your device; source photos, QR
-contents, names, and batch metadata are not sent to a server.
+Decoding, QR reconstruction, branding, and export happen in the browser. Source photographs and
+camera frames are never stored in batch state or uploaded by QR Recast. Batch names, payloads,
+reconstruction metadata, and preferences stay in local storage on the device.
 
-Settings keeps branding, Batch Recast management, analytics opt-out, version/build details, and the
-on-device privacy note in one place.
+A share link necessarily contains a compressed copy of the payload, so anyone given that link can
+recover it. QR Recast only sends analytics when a measurement ID is configured, Do Not Track is
+off, and the user has not opted out. Analytics uses a fixed allowlist of coarse values and disables
+automatic page-view collection; payload text, URL fragments, filenames, hashes, images, and exports
+are excluded.
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the data flow and storage model.
 
 ## Development
 
+The project uses JavaScript and JSX, Node.js 24 or newer, and npm 11 or newer.
+
 ```sh
-npm install
+npm ci
 npm run dev
 ```
 
-## Checks
+Run the local code and build gate before committing:
 
 ```sh
-npm run lint
-npm run build
-npm run format:check
+npm run check
 ```
 
-## Deployment
+This checks formatting, ESLint, British English spelling, QR type fixtures, 47 unit tests, and the
+production build. Individual commands and manual browser/export protocols are documented in
+[TESTING.md](TESTING.md).
 
-Every push to `main` runs linting and a production build, then deploys `dist/` to GitHub Pages via
-GitHub Actions.
+Three committed Playwright journeys exercise the mobile single-result/share/export flow, desktop
+overflow, and a persisted seven-item batch with per-item output styles and every export format:
+
+```sh
+npm run test:e2e
+```
+
+## Delivery
+
+Pull requests run the code gate and Playwright journeys on Node 24. A push to `main` runs both
+again, uploads the production `dist/`, and deploys it through GitHub Pages Actions. See
+[DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Licence
 
-MIT. See `LICENCE`.
+MIT. See [LICENCE](LICENCE).

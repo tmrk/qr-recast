@@ -300,3 +300,15 @@ This log is append-only. New entries go at the bottom.
 - Plan: replace theme selector with a sun/moon toggle (rolling animation), drop system option while defaulting first visit to system pref and persisting explicit choice thereafter; align Matter branding rows (logo, QR, pairing number) to equal width; bump version, full loop, push.
 - Implemented: replaced three-state theme UI with direct sun/moon toggle buttons (app bar + settings) using key-remount + CSS roll animation; removed system option and strings; useAppTheme now exposes toggleMode that forces explicit light/dark to storage; first load still uses defaultMode=system (and resolved); Matter layout now uses 248 px wide logo and QR at x=36, text centre-aligned; prettier/format, full lint, build clean. Local preview 200 OK and assets inspected for toggle strings + numbers.
 - Bumped to v2.0.5, added and ticked ROADMAP item, updated RECENT_CHANGES. Ready to commit and push.
+
+## 2026-08-12
+
+- Plan: audit the complete product and agent environment, create a purpose-built mobile-first visual
+  system, harden QR and document exports, update dependencies, verify the production build across
+  mobile and desktop, then commit, push, and confirm the GitHub Pages deployment.
+- Verified a clean `npm ci`, the complete `npm run check` gate, 47 unit tests, three Playwright
+  journeys, and exact rendered decoding of every QR in the single and seven-item PDF/DOCX evidence.
+- Released application commit `6e57458` through GitHub Pages workflow run `31624692760`. The clean
+  Node 24 gate, all three browser journeys, and Pages publication passed. A fresh public-site smoke
+  test at 360 px confirmed upload-to-result, service-worker readiness, zero horizontal overflow,
+  zero browser errors, and exact Matter mark/visible-module/manual-code registration.

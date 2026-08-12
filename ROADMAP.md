@@ -68,12 +68,13 @@ Tick items only after the Definition of Done in `AGENTS.md` is met.
 
 ## Phase 5 — Share-as-URL
 
-- [x] Encode payloads with `lz-string.compressToEncodedURIComponent` into `?q=`.
+- [x] Encode payloads with `lz-string.compressToEncodedURIComponent` into a `#q=` fragment.
 - [x] Disable URL sharing for payload URLs over 2000 characters with inline guidance.
 - [x] Share the URL on mobile and copy it on desktop.
 - [x] Show the copied URL pill and secondary QR preview on desktop.
 - [x] Add copy feedback with icon morph, success colour, and subtle scale animation.
-- [x] Load valid `?q=` payloads directly into the Result view and clear the query string.
+- [x] Load valid `#q=` payloads directly into the Result view, retain legacy `?q=` compatibility,
+      and clear the share value after loading.
 
 ## Phase 6 — Decoded Text Panel
 
@@ -152,3 +153,6 @@ Note: v1.0.0 tagging was superseded by the v2.0.0 / v2.0.1 releases; the remaini
 - [x] Align Settings toggle switches in a fixed control column.
 - [x] Support dark mode in the static first-screen fallback, remove unused @types packages, clean Phase 9 references, and bump to 2.0.2.
 - [x] Replace theme selector with a sun/moon icon toggle using rolling animation; drop the "system" option from UI while defaulting first visit to the system preference then persisting the explicit choice in localStorage; align Matter branded QR rows (logo, QR, pairing number) to equal widths filling the card; bump to 2.0.5.
+- [x] Release v2.1.0 with a purpose-built optical proofing workbench, fragment-private sharing,
+      migrated per-item Batch Recast styles, visible-module branding registration, current compatible
+      dependencies, and repeatable unit, browser, and rendered-export evidence.
