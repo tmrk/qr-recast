@@ -58,23 +58,32 @@ describe('QR branding registration columns', () => {
       'svg',
       (attributes) => attributes.viewBox === '0 0 337.063 72.644',
     );
-    const code = findElement(svg, 'text', (attributes) => attributes.y === '378');
+    const code = findElement(svg, 'g', (attributes) => attributes['data-registration-x']);
+    const codeCharacters = findElements(svg, 'text');
     const registration = getVisibleQrRegistration(qr);
 
     expect(Number(logo.x)).toBeCloseTo(registration.x, 3);
     expect(Number(logo.width)).toBeCloseTo(registration.size, 3);
     expect(Number(logo.y) + Number(logo.height)).toBeCloseTo(Number(qr.y), 3);
-    expect(Number(code.y) - (Number(qr.y) + Number(qr.height))).toBe(22);
+    expect(Number(codeCharacters[0].y) - (Number(qr.y) + Number(qr.height))).toBe(22);
     expect(Number(code['data-registration-x'])).toBeCloseTo(registration.x, 3);
     expect(Number(code['data-registration-width'])).toBeCloseTo(registration.size, 3);
-    expect(Number(code.x)).toBeCloseTo(registration.x + registration.size / 2, 3);
-    expect(code['text-anchor']).toBe('middle');
-    expect(Number(code.textLength)).toBeCloseTo(registration.size, 3);
-    expect(code.lengthAdjust).toBe('spacing');
-    expect(code['font-family']).toBe('Arial, Helvetica, sans-serif');
-    expect(code['font-weight']).toBe('normal');
-    expect(findElements(svg, 'tspan')).toHaveLength(0);
-    expect(svg).toContain('>2590-602-0391</text>');
+    expect(codeCharacters).toHaveLength(13);
+    expect(codeCharacters.every((character) => character['text-anchor'] === 'middle')).toBe(true);
+    expect(codeCharacters.every((character) => character['font-weight'] === 'normal')).toBe(true);
+    expect(codeCharacters.every((character) => character.textLength === undefined)).toBe(true);
+
+    const characterCellWidth = registration.size / codeCharacters.length;
+
+    expect(Number(codeCharacters[0].x)).toBeCloseTo(registration.x + characterCellWidth / 2, 3);
+    expect(Number(codeCharacters.at(-1).x)).toBeCloseTo(
+      registration.x + registration.size - characterCellWidth / 2,
+      3,
+    );
+    expect(svg).not.toContain('textLength=');
+    expect(
+      Array.from(svg.matchAll(/<text\b[^>]*>([^<]*)<\/text>/g), (match) => match[1]).join(''),
+    ).toBe('2590-602-0391');
     await expect(decodeSvg(svg)).resolves.toBe(payload);
   });
 

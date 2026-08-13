@@ -3,6 +3,12 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-08-13: Corrected renderer-dependent Matter manual-code alignment in PDF and DOCX exports,
+  centred single artwork on A4 pages, and tightened batch PDF card bounds and DOCX page geometry.
+  Fresh SVG, PNG, PDF, and DOCX exports passed structural checks and visual inspection; the Matter
+  payload decoded exactly from all four single formats, and all seven payloads decoded exactly from
+  both rendered two-page batch documents. Mobile dark and desktop light browser layouts also
+  remained aligned and free of horizontal overflow.
 - 2026-08-12: Released v2.1.0 with the optical recasting interface, contact-sheet Batch Recast
   layout and per-item output styles, exact visible-module branding registration, fragment-based
   private sharing, batch v2 migration, and renderer-independent filled module geometry. Added 47

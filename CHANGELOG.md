@@ -6,6 +6,15 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ## [Unreleased]
 
+### Fixed
+
+- Render Matter manual codes as independently centred characters so SVG, PDF, and DOCX renderers
+  keep the code aligned with the logo and visible QR module field.
+- Centre single QR artwork vertically and horizontally on A4 PDF and DOCX pages while retaining a
+  proper document footer.
+- Stabilise batch PDF card strokes and caption bounds, and give batch DOCX exports fixed A4 table
+  geometry, light borders, and page-aware footers.
+
 ## [2.1.0] - 2026-08-12
 
 ### Added

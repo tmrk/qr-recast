@@ -340,14 +340,16 @@ async function expectMatterRowsToAlign(page) {
       (element) => element.tagName.toLowerCase() === 'svg' && element.getAttribute('y') === '68',
     );
     const code = elements.find(
-      (element) => element.tagName.toLowerCase() === 'text' && element.getAttribute('y') === '378',
+      (element) =>
+        element.tagName.toLowerCase() === 'g' && element.hasAttribute('data-registration-x'),
     );
+    const codeCharacters = code ? [...code.querySelectorAll(':scope > text')] : [];
 
     return {
       code: {
         width: code?.getAttribute('data-registration-width'),
         x: code?.getAttribute('data-registration-x'),
-        y: code?.getAttribute('y'),
+        y: codeCharacters[0]?.getAttribute('y'),
       },
       logo: {
         height: logo?.getAttribute('height'),
@@ -497,9 +499,7 @@ function expectMatterSvgRowsToAlign(svg) {
   const qr = svg.match(
     /<svg x="([^"]+)" y="([^"]+)" width="([^"]+)" height="([^"]+)" viewBox="([^"]+)" shape-rendering="crispEdges"/,
   );
-  const code = svg.match(
-    /<text x="[^"]+" y="378"[^>]+data-registration-x="([^"]+)" data-registration-width="([^"]+)"/,
-  );
+  const code = svg.match(/<g data-registration-x="([^"]+)" data-registration-width="([^"]+)"/);
 
   expect(logo).not.toBeNull();
   expect(qr).not.toBeNull();

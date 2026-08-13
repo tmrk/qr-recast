@@ -58,14 +58,20 @@ The three Playwright journeys cover:
 
 ### Recorded evidence
 
-| Date       | Revision state       | Evidence                                                                  |
-| ---------- | -------------------- | ------------------------------------------------------------------------- |
-| 2026-08-12 | Local 2.1.0 worktree | `npm ci` and `npm run check`: clean install and complete gate passed      |
-| 2026-08-12 | Local 2.1.0 worktree | `npm run test:unit`: 5 files passed, 47 tests passed                      |
-| 2026-08-12 | Local 2.1.0 worktree | `npm run test:e2e`: 3 Playwright journeys passed                          |
-| 2026-08-12 | Local 2.1.0 worktree | Rendered Matter PDF and DOCX each decoded to `MT:OA3126F-034OCH6VQ00`     |
-| 2026-08-12 | Local 2.1.0 worktree | Rendered two-page batch PDF: all seven QRs decoded to their exact values  |
-| 2026-08-12 | Local 2.1.0 worktree | Rendered two-page batch DOCX: all seven QRs decoded to their exact values |
+| Date       | Revision state        | Evidence                                                                  |
+| ---------- | --------------------- | ------------------------------------------------------------------------- |
+| 2026-08-13 | Local export worktree | `npm run check`: 5 files and 47 tests passed; production build passed     |
+| 2026-08-13 | Local export worktree | `npm run test:e2e`: all 3 Playwright journeys passed                      |
+| 2026-08-13 | Local export worktree | SVG XML, PDF streams, and DOCX ZIP relationships passed structural checks |
+| 2026-08-13 | Local export worktree | Rendered single SVG, PNG, PDF, and DOCX decoded to the exact Matter value |
+| 2026-08-13 | Local export worktree | All 7 QRs decoded exactly from rendered two-page batch PDF and DOCX       |
+| 2026-08-13 | Local export worktree | 360 px dark and 1,280 px light result layouts passed visual inspection    |
+| 2026-08-12 | Local 2.1.0 worktree  | `npm ci` and `npm run check`: clean install and complete gate passed      |
+| 2026-08-12 | Local 2.1.0 worktree  | `npm run test:unit`: 5 files passed, 47 tests passed                      |
+| 2026-08-12 | Local 2.1.0 worktree  | `npm run test:e2e`: 3 Playwright journeys passed                          |
+| 2026-08-12 | Local 2.1.0 worktree  | Rendered Matter PDF and DOCX each decoded to `MT:OA3126F-034OCH6VQ00`     |
+| 2026-08-12 | Local 2.1.0 worktree  | Rendered two-page batch PDF: all seven QRs decoded to their exact values  |
+| 2026-08-12 | Local 2.1.0 worktree  | Rendered two-page batch DOCX: all seven QRs decoded to their exact values |
 
 This table records checks that actually ran. These results do not imply that camera, native sharing,
 PWA installation, or the wider real-device browser matrix passed.

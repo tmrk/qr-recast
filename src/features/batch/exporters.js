@@ -19,6 +19,14 @@ const pdfPage = Object.freeze({
   cellHeight: 78,
   footerY: 286,
 });
+const docxPage = Object.freeze({
+  cellWidth: 4_513,
+  contentWidth: 9_026,
+  footer: 708,
+  height: 16_838,
+  margin: 1_440,
+  width: 11_906,
+});
 const columns = 2;
 const rowsPerPage = 3;
 const itemsPerPage = columns * rowsPerPage;
@@ -115,39 +123,93 @@ async function createBatchPdf(items) {
 
 async function createBatchDocx(items) {
   const [
-    { AlignmentType, Document, ImageRun, Packer, Paragraph, Table, TableCell, TableRow, WidthType },
+    {
+      AlignmentType,
+      BorderStyle,
+      Document,
+      Footer,
+      ImageRun,
+      Packer,
+      Paragraph,
+      Table,
+      TableCell,
+      TableLayoutType,
+      TableRow,
+      TextRun,
+      VerticalAlign,
+      WidthType,
+    },
     qrItems,
   ] = await Promise.all([import('docx'), createRenderableItems(items)]);
   const pages = chunkItems(qrItems, itemsPerPage);
   const sections = await Promise.all(
     pages.map(async (pageItems, pageIndex) => ({
+      footers: {
+        default: createDocxFooter(`QR Recast · ${pageIndex + 1} / ${pages.length}`, {
+          AlignmentType,
+          Footer,
+          Paragraph,
+          TextRun,
+        }),
+      },
       children: [
         new Paragraph({
-          alignment: AlignmentType.CENTER,
+          alignment: AlignmentType.LEFT,
+          children: [
+            new TextRun({
+              bold: true,
+              color: '1F2933',
+              font: 'Arial',
+              size: 32,
+              text: 'QR Recast',
+            }),
+          ],
           spacing: { after: 180 },
-          text: 'QR Recast',
         }),
         new Table({
+          alignment: AlignmentType.CENTER,
+          borders: createDocxTableBorders(BorderStyle),
+          columnWidths: [docxPage.cellWidth, docxPage.cellWidth],
+          layout: TableLayoutType.FIXED,
           rows: await createDocxRows(pageItems, {
             AlignmentType,
             ImageRun,
             Paragraph,
             TableCell,
             TableRow,
+            TextRun,
+            VerticalAlign,
             WidthType,
           }),
-          width: { size: 100, type: WidthType.PERCENTAGE },
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 180 },
-          text: `QR Recast · ${pageIndex + 1} / ${pages.length}`,
+          width: { size: docxPage.contentWidth, type: WidthType.DXA },
         }),
       ],
-      properties: {},
+      properties: {
+        page: {
+          margin: {
+            bottom: docxPage.margin,
+            footer: docxPage.footer,
+            gutter: 0,
+            header: docxPage.footer,
+            left: docxPage.margin,
+            right: docxPage.margin,
+            top: docxPage.margin,
+          },
+          size: { height: docxPage.height, width: docxPage.width },
+        },
+      },
     })),
   );
-  const document = new Document({ sections });
+  const document = new Document({
+    sections,
+    styles: {
+      default: {
+        document: {
+          run: { color: '1F2933', font: 'Arial', size: 20 },
+        },
+      },
+    },
+  });
 
   return Packer.toBlob(document);
 }
@@ -225,7 +287,8 @@ async function renderPdfPage(pdf, { cellWidth, items, pageCount, pageIndex, svg2
 
     pdf.setDrawColor(216, 228, 222);
     pdf.setFillColor(255, 255, 255);
-    pdf.roundedRect(x, y - 4, cellWidth, pdfPage.cellHeight - 8, 4, 4, 'FD');
+    pdf.setLineWidth(0.25);
+    pdf.roundedRect(x, y - 4, cellWidth, pdfPage.cellHeight - 4, 4, 4, 'FD');
     pdf.saveGraphicsState();
     try {
       await svg2pdf(svgElement, pdf, {
@@ -271,11 +334,15 @@ async function createDocxRows(pageItems, docx) {
   return rows;
 }
 
-async function createDocxCell(item, { AlignmentType, ImageRun, Paragraph, TableCell, WidthType }) {
+async function createDocxCell(
+  item,
+  { AlignmentType, ImageRun, Paragraph, TableCell, TextRun, VerticalAlign, WidthType },
+) {
   if (!item) {
     return new TableCell({
       children: [new Paragraph('')],
-      width: { size: 50, type: WidthType.PERCENTAGE },
+      verticalAlign: VerticalAlign.CENTER,
+      width: { size: docxPage.cellWidth, type: WidthType.DXA },
     });
   }
 
@@ -288,8 +355,8 @@ async function createDocxCell(item, { AlignmentType, ImageRun, Paragraph, TableC
   const svgBytes = new TextEncoder().encode(item.svg);
   const pngBuffer = await pngBlob.arrayBuffer();
   const artworkSize = fitDimensions(sourceSize, {
-    maxHeight: 210,
-    maxWidth: 170,
+    maxHeight: 190,
+    maxWidth: 155,
   });
 
   return new TableCell({
@@ -318,17 +385,57 @@ async function createDocxCell(item, { AlignmentType, ImageRun, Paragraph, TableC
       }),
       new Paragraph({
         alignment: AlignmentType.CENTER,
-        text: item.caption,
+        children: [
+          new TextRun({
+            bold: true,
+            color: '1F2933',
+            font: 'Arial',
+            size: 20,
+            text: item.caption,
+          }),
+        ],
       }),
     ],
     margins: {
-      bottom: 180,
-      left: 180,
-      right: 180,
-      top: 180,
+      bottom: 120,
+      left: 120,
+      right: 120,
+      top: 120,
     },
-    width: { size: 50, type: WidthType.PERCENTAGE },
+    verticalAlign: VerticalAlign.CENTER,
+    width: { size: docxPage.cellWidth, type: WidthType.DXA },
   });
+}
+
+function createDocxFooter(text, { AlignmentType, Footer, Paragraph, TextRun }) {
+  return new Footer({
+    children: [
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({
+            color: '5F6F69',
+            font: 'Arial',
+            size: 18,
+            text,
+          }),
+        ],
+      }),
+    ],
+  });
+}
+
+function createDocxTableBorders(BorderStyle) {
+  const border = { color: 'D8E4DE', size: 4, style: BorderStyle.SINGLE };
+
+  return {
+    bottom: border,
+    insideHorizontal: border,
+    insideVertical: border,
+    left: border,
+    right: border,
+    top: border,
+  };
 }
 
 function renderNestedSvg(svgString, x, y, size) {

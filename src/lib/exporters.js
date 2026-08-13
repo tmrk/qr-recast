@@ -1,5 +1,13 @@
 import { getSvgDimensions, svgToBlob, svgToPngBlob } from './qr.js';
 
+const pdfPage = Object.freeze({ footerY: 284, height: 297, width: 210 });
+const docxPage = Object.freeze({
+  footer: 708,
+  height: 16_838,
+  margin: 1_440,
+  width: 11_906,
+});
+
 export async function createSvgExport(svgString) {
   return svgToBlob(svgString);
 }
@@ -16,16 +24,20 @@ export async function createPdfExport(svgString) {
     maxHeight: 176,
     maxWidth: 128,
   });
+  const artworkPosition = {
+    x: (pdfPage.width - artworkSize.width) / 2,
+    y: (pdfPage.height - artworkSize.height) / 2,
+  };
 
   pdf.setFillColor(255, 255, 255);
-  pdf.rect(0, 0, 210, 297, 'F');
+  pdf.rect(0, 0, pdfPage.width, pdfPage.height, 'F');
   pdf.saveGraphicsState();
   try {
     await svg2pdf(svgElement, pdf, {
       height: artworkSize.height,
       width: artworkSize.width,
-      x: (210 - artworkSize.width) / 2,
-      y: 48,
+      x: artworkPosition.x,
+      y: artworkPosition.y,
     });
   } finally {
     pdf.restoreGraphicsState();
@@ -33,16 +45,14 @@ export async function createPdfExport(svgString) {
 
   pdf.setFontSize(10);
   pdf.setTextColor(89, 99, 95);
-  pdf.text('QR Recast', 105, 284, { align: 'center' });
+  pdf.text('QR Recast', pdfPage.width / 2, pdfPage.footerY, { align: 'center' });
 
   return pdf.output('blob');
 }
 
 export async function createDocxExport(svgString) {
-  const [{ AlignmentType, Document, ImageRun, Packer, Paragraph }, pngBlob] = await Promise.all([
-    import('docx'),
-    svgToPngBlob(svgString, 1024),
-  ]);
+  const [{ AlignmentType, Document, Footer, ImageRun, Packer, Paragraph, TextRun }, pngBlob] =
+    await Promise.all([import('docx'), svgToPngBlob(svgString, 1024)]);
   const svgBytes = new TextEncoder().encode(svgString);
   const pngBuffer = await pngBlob.arrayBuffer();
   const artworkSize = fitDimensions(getSvgDimensions(svgString), {
@@ -50,8 +60,32 @@ export async function createDocxExport(svgString) {
     maxWidth: 320,
   });
   const document = new Document({
+    styles: {
+      default: {
+        document: {
+          run: { color: '1F2933', font: 'Arial', size: 22 },
+        },
+      },
+    },
     sections: [
       {
+        footers: {
+          default: createDocxFooter({ AlignmentType, Footer, Paragraph, TextRun }),
+        },
+        properties: {
+          page: {
+            margin: {
+              bottom: docxPage.margin,
+              footer: docxPage.footer,
+              gutter: 0,
+              header: docxPage.footer,
+              left: docxPage.margin,
+              right: docxPage.margin,
+              top: Math.round((docxPage.height - Math.round(artworkSize.height) * 15) / 2),
+            },
+            size: { height: docxPage.height, width: docxPage.width },
+          },
+        },
         children: [
           new Paragraph({
             alignment: AlignmentType.CENTER,
@@ -75,16 +109,30 @@ export async function createDocxExport(svgString) {
               }),
             ],
           }),
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            text: 'QR Recast',
-          }),
         ],
       },
     ],
   });
 
   return Packer.toBlob(document);
+}
+
+function createDocxFooter({ AlignmentType, Footer, Paragraph, TextRun }) {
+  return new Footer({
+    children: [
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({
+            color: '5F6F69',
+            font: 'Arial',
+            size: 20,
+            text: 'QR Recast',
+          }),
+        ],
+      }),
+    ],
+  });
 }
 
 function fitDimensions({ height, width }, { maxHeight, maxWidth }) {

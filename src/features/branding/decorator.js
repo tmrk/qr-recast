@@ -131,7 +131,9 @@ function renderMatterSetupQrSvg(parsedSvg, badge, ariaLabel) {
   const registration = getQrRegistrationColumn(parsedSvg, layout.qr);
   const setupCode = badge.setupCode ? formatSetupCode(badge.type, badge.setupCode) : '';
   const codeFontSize = setupCode.length > 15 ? 17 : 26;
-  const codeText = setupCode ? renderCentredText(setupCode, registration, 378, codeFontSize) : '';
+  const codeText = setupCode
+    ? renderRegisteredCode(setupCode, registration, 378, codeFontSize)
+    : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${layout.width} ${layout.height}" role="img" aria-label="${ariaLabel}">
 <title>${ariaLabel}</title>
@@ -192,16 +194,23 @@ function renderMatterLogo(registration, qrTop) {
 </svg>`;
 }
 
-function renderCentredText(value, registration, baseline, fontSize) {
-  const text = String(value);
+function renderRegisteredCode(value, registration, baseline, fontSize) {
+  const characters = Array.from(String(value));
 
-  if (!text) {
+  if (!characters.length) {
     return '';
   }
 
-  const centre = registration.x + registration.size / 2;
+  const cellWidth = registration.size / characters.length;
+  const characterMarkup = characters
+    .map((character, index) => {
+      const x = registration.x + cellWidth * (index + 0.5);
 
-  return `<text x="${formatSvgNumber(centre)}" y="${baseline}" text-anchor="middle" textLength="${formatSvgNumber(registration.size)}" lengthAdjust="spacing" fill="${colours.setupInk}" font-family="Arial, Helvetica, sans-serif" font-size="${fontSize}" font-weight="normal" font-variant-numeric="tabular-nums" data-registration-x="${formatSvgNumber(registration.x)}" data-registration-width="${formatSvgNumber(registration.size)}">${escapeXml(text)}</text>`;
+      return `<text x="${formatSvgNumber(x)}" y="${baseline}" text-anchor="middle" fill="${colours.setupInk}" font-family="Arial, Helvetica, sans-serif" font-size="${fontSize}" font-weight="normal" font-variant-numeric="tabular-nums">${escapeXml(character)}</text>`;
+    })
+    .join('');
+
+  return `<g data-registration-x="${formatSvgNumber(registration.x)}" data-registration-width="${formatSvgNumber(registration.size)}">${characterMarkup}</g>`;
 }
 
 function renderRegisteredText(value, registration, baseline, fontSize) {
