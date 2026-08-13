@@ -41,7 +41,7 @@ test.describe('mobile recast journey', () => {
     const resultSvg = page.locator('.result-view__qr > svg');
 
     await expect(labelledButton).toHaveAttribute('aria-pressed', 'true');
-    await expect(resultSvg).toHaveAttribute('viewBox', '0 0 320 418');
+    await expect(resultSvg).toHaveAttribute('viewBox', '0 0 320 408');
 
     await cleanButton.click();
     await expect(cleanButton).toHaveAttribute('aria-pressed', 'true');
@@ -49,7 +49,7 @@ test.describe('mobile recast journey', () => {
 
     await labelledButton.click();
     await expect(labelledButton).toHaveAttribute('aria-pressed', 'true');
-    await expect(resultSvg).toHaveAttribute('viewBox', '0 0 320 418');
+    await expect(resultSvg).toHaveAttribute('viewBox', '0 0 320 408');
     await expectMatterRowsToAlign(page);
 
     await expect(page.getByRole('button', { name: 'Copy URL' })).toBeEnabled();
@@ -94,7 +94,7 @@ test.describe('mobile recast journey', () => {
 
     expect(svgDownload.fileName).toMatch(/^qr-recast-[a-f0-9]{8}\.svg$/);
     expect(svgText).toMatch(/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
-    expect(svgText).toContain('viewBox="0 0 320 418"');
+    expect(svgText).toContain('viewBox="0 0 320 408"');
     expect(svgText).toContain('x="16" y="68" width="288" height="288"');
     expectMatterSvgRowsToAlign(svgText);
     expect(svgText.trimEnd()).toMatch(/<\/svg>$/);
@@ -332,25 +332,35 @@ async function expectMatterRowsToAlign(page) {
   const rows = await artwork.evaluate((svg) => {
     const elements = [...svg.children];
     const logo = elements.find(
-      (element) => element.tagName.toLowerCase() === 'svg' && element.getAttribute('y') === '18',
+      (element) =>
+        element.tagName.toLowerCase() === 'svg' &&
+        element.getAttribute('viewBox') === '0 0 337.063 72.644',
     );
     const qr = elements.find(
       (element) => element.tagName.toLowerCase() === 'svg' && element.getAttribute('y') === '68',
     );
     const code = elements.find(
-      (element) => element.tagName.toLowerCase() === 'text' && element.getAttribute('y') === '386',
+      (element) => element.tagName.toLowerCase() === 'text' && element.getAttribute('y') === '378',
     );
 
     return {
       code: {
         width: code?.getAttribute('data-registration-width'),
         x: code?.getAttribute('data-registration-x'),
+        y: code?.getAttribute('y'),
       },
-      logo: { width: logo?.getAttribute('width'), x: logo?.getAttribute('x') },
+      logo: {
+        height: logo?.getAttribute('height'),
+        width: logo?.getAttribute('width'),
+        x: logo?.getAttribute('x'),
+        y: logo?.getAttribute('y'),
+      },
       qr: {
+        height: qr?.getAttribute('height'),
         viewBox: qr?.getAttribute('viewBox'),
         width: qr?.getAttribute('width'),
         x: qr?.getAttribute('x'),
+        y: qr?.getAttribute('y'),
       },
     };
   });
@@ -481,19 +491,23 @@ function readZipEntryNames(buffer) {
 }
 
 function expectMatterSvgRowsToAlign(svg) {
-  const logo = svg.match(/<svg x="([^"]+)" y="18" width="([^"]+)"/);
-  const qr = svg.match(/<svg x="([^"]+)" y="68" width="([^"]+)"[^>]+viewBox="([^"]+)"/);
+  const logo = svg.match(
+    /<svg x="([^"]+)" y="([^"]+)" width="([^"]+)" height="([^"]+)" viewBox="0 0 337\.063 72\.644"/,
+  );
+  const qr = svg.match(
+    /<svg x="([^"]+)" y="([^"]+)" width="([^"]+)" height="([^"]+)" viewBox="([^"]+)" shape-rendering="crispEdges"/,
+  );
   const code = svg.match(
-    /<text x="[^"]+" y="386"[^>]+data-registration-x="([^"]+)" data-registration-width="([^"]+)"/,
+    /<text x="[^"]+" y="378"[^>]+data-registration-x="([^"]+)" data-registration-width="([^"]+)"/,
   );
 
   expect(logo).not.toBeNull();
   expect(qr).not.toBeNull();
   expect(code).not.toBeNull();
   expectMatterRowMeasurements({
-    code: { width: code[2], x: code[1] },
-    logo: { width: logo[2], x: logo[1] },
-    qr: { viewBox: qr[3], width: qr[2], x: qr[1] },
+    code: { width: code[2], x: code[1], y: '378' },
+    logo: { height: logo[4], width: logo[3], x: logo[1], y: logo[2] },
+    qr: { height: qr[4], viewBox: qr[5], width: qr[3], x: qr[1], y: qr[2] },
   });
 }
 
@@ -507,4 +521,6 @@ function expectMatterRowMeasurements({ code, logo, qr }) {
   expect(logo.width).toBe(code.width);
   expect(Number(logo.x)).toBeCloseTo(symbolX, 3);
   expect(Number(logo.width)).toBeCloseTo(symbolWidth, 3);
+  expect(Number(logo.y) + Number(logo.height)).toBeCloseTo(Number(qr.y), 3);
+  expect(Number(code.y) - (Number(qr.y) + Number(qr.height))).toBe(22);
 }

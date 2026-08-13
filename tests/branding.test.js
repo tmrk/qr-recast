@@ -58,11 +58,13 @@ describe('QR branding registration columns', () => {
       'svg',
       (attributes) => attributes.viewBox === '0 0 337.063 72.644',
     );
-    const code = findElement(svg, 'text', (attributes) => attributes.y === '386');
+    const code = findElement(svg, 'text', (attributes) => attributes.y === '378');
     const registration = getVisibleQrRegistration(qr);
 
     expect(Number(logo.x)).toBeCloseTo(registration.x, 3);
     expect(Number(logo.width)).toBeCloseTo(registration.size, 3);
+    expect(Number(logo.y) + Number(logo.height)).toBeCloseTo(Number(qr.y), 3);
+    expect(Number(code.y) - (Number(qr.y) + Number(qr.height))).toBe(22);
     expect(Number(code['data-registration-x'])).toBeCloseTo(registration.x, 3);
     expect(Number(code['data-registration-width'])).toBeCloseTo(registration.size, 3);
     expect(Number(code.x)).toBeCloseTo(registration.x + registration.size / 2, 3);
