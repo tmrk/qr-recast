@@ -22,9 +22,9 @@ const setupLayouts = Object.freeze({
     width: 300,
   },
   matter: {
-    card: { height: 426, radius: 18, width: 306, x: 7, y: 7 },
-    height: 440,
-    qr: { size: 248, x: 36, y: 118 },
+    card: { height: 408, radius: 18, width: 310, x: 5, y: 5 },
+    height: 418,
+    qr: { size: 288, x: 16, y: 68 },
     width: 320,
   },
 });
@@ -130,15 +130,12 @@ function renderMatterSetupQrSvg(parsedSvg, badge, ariaLabel) {
   const layout = setupLayouts.matter;
   const registration = getQrRegistrationColumn(parsedSvg, layout.qr);
   const setupCode = badge.setupCode ? formatSetupCode(badge.type, badge.setupCode) : '';
-  const codeFontSize = setupCode.length > 15 ? 13 : 24;
-  const codeText = setupCode
-    ? renderRegisteredText(setupCode, registration, 403, codeFontSize)
-    : '';
+  const codeFontSize = setupCode.length > 15 ? 17 : 26;
+  const codeText = setupCode ? renderCentredText(setupCode, registration, 386, codeFontSize) : '';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${layout.width} ${layout.height}" role="img" aria-label="${ariaLabel}">
 <title>${ariaLabel}</title>
-<rect width="${layout.width}" height="${layout.height}" fill="${colours.background}"/>
-${renderSetupCard(layout)}
+${renderMatterCard(layout)}
 ${renderMatterLogo(registration)}
 ${renderNestedQr(parsedSvg, layout.qr.x, layout.qr.y, layout.qr.size)}
 ${codeText}
@@ -176,6 +173,10 @@ function renderSetupCard(layout) {
   return `<rect x="${layout.card.x}" y="${layout.card.y}" width="${layout.card.width}" height="${layout.card.height}" rx="${layout.card.radius}" fill="${colours.card}" stroke="${colours.setupBorder}" stroke-width="3"/>`;
 }
 
+function renderMatterCard(layout) {
+  return `<rect x="${layout.card.x}" y="${layout.card.y}" width="${layout.card.width}" height="${layout.card.height}" rx="${layout.card.radius}" fill="${colours.card}"/>`;
+}
+
 function renderHomeKitLogo(x, size) {
   return `<svg x="${formatSvgNumber(x)}" y="21" width="${size}" height="${size}" viewBox="71 58 371 359" aria-hidden="true" focusable="false">
 <path d="${homeKitLogoPath}" fill="none" stroke="${colours.setupBorder}" stroke-width="22" stroke-linejoin="round"/>
@@ -183,9 +184,23 @@ function renderHomeKitLogo(x, size) {
 }
 
 function renderMatterLogo(registration) {
-  return `<svg x="${formatSvgNumber(registration.x)}" y="45" width="${formatSvgNumber(registration.size)}" height="54" viewBox="0 0 337.063 72.644" aria-hidden="true" focusable="false">
+  const height = (registration.size * 72.644) / 337.063;
+
+  return `<svg x="${formatSvgNumber(registration.x)}" y="18" width="${formatSvgNumber(registration.size)}" height="${formatSvgNumber(height)}" viewBox="0 0 337.063 72.644" aria-hidden="true" focusable="false">
 <path d="${matterLogoPath}" fill="${colours.setupInk}"/>
 </svg>`;
+}
+
+function renderCentredText(value, registration, baseline, fontSize) {
+  const text = String(value);
+
+  if (!text) {
+    return '';
+  }
+
+  const centre = registration.x + registration.size / 2;
+
+  return `<text x="${formatSvgNumber(centre)}" y="${baseline}" text-anchor="middle" textLength="${formatSvgNumber(registration.size)}" lengthAdjust="spacing" fill="${colours.setupInk}" font-family="Arial, Helvetica, sans-serif" font-size="${fontSize}" font-weight="normal" font-variant-numeric="tabular-nums" data-registration-x="${formatSvgNumber(registration.x)}" data-registration-width="${formatSvgNumber(registration.size)}">${escapeXml(text)}</text>`;
 }
 
 function renderRegisteredText(value, registration, baseline, fontSize) {

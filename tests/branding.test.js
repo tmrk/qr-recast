@@ -58,14 +58,21 @@ describe('QR branding registration columns', () => {
       'svg',
       (attributes) => attributes.viewBox === '0 0 337.063 72.644',
     );
-    const code = findElement(svg, 'text', (attributes) => attributes.y === '403');
+    const code = findElement(svg, 'text', (attributes) => attributes.y === '386');
     const registration = getVisibleQrRegistration(qr);
 
     expect(Number(logo.x)).toBeCloseTo(registration.x, 3);
     expect(Number(logo.width)).toBeCloseTo(registration.size, 3);
     expect(Number(code['data-registration-x'])).toBeCloseTo(registration.x, 3);
     expect(Number(code['data-registration-width'])).toBeCloseTo(registration.size, 3);
-    expect(findElements(svg, 'tspan')).toHaveLength('2590-602-0391'.length);
+    expect(Number(code.x)).toBeCloseTo(registration.x + registration.size / 2, 3);
+    expect(code['text-anchor']).toBe('middle');
+    expect(Number(code.textLength)).toBeCloseTo(registration.size, 3);
+    expect(code.lengthAdjust).toBe('spacing');
+    expect(code['font-family']).toBe('Arial, Helvetica, sans-serif');
+    expect(code['font-weight']).toBe('normal');
+    expect(findElements(svg, 'tspan')).toHaveLength(0);
+    expect(svg).toContain('>2590-602-0391</text>');
     await expect(decodeSvg(svg)).resolves.toBe(payload);
   });
 

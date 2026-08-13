@@ -23,7 +23,7 @@ export function AppShell({ children, bottomSlot = null }) {
 
   return (
     <Box className="app-shell">
-      <AppBar className="app-shell__bar" color="transparent" elevation={0} position="sticky">
+      <AppBar className="app-shell__bar" color="inherit" elevation={0} position="sticky">
         <Toolbar className="app-shell__toolbar" disableGutters>
           <div className="app-shell__brand">
             <Box

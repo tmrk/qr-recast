@@ -41,7 +41,7 @@ test.describe('mobile recast journey', () => {
     const resultSvg = page.locator('.result-view__qr > svg');
 
     await expect(labelledButton).toHaveAttribute('aria-pressed', 'true');
-    await expect(resultSvg).toHaveAttribute('viewBox', '0 0 320 440');
+    await expect(resultSvg).toHaveAttribute('viewBox', '0 0 320 418');
 
     await cleanButton.click();
     await expect(cleanButton).toHaveAttribute('aria-pressed', 'true');
@@ -49,7 +49,7 @@ test.describe('mobile recast journey', () => {
 
     await labelledButton.click();
     await expect(labelledButton).toHaveAttribute('aria-pressed', 'true');
-    await expect(resultSvg).toHaveAttribute('viewBox', '0 0 320 440');
+    await expect(resultSvg).toHaveAttribute('viewBox', '0 0 320 418');
     await expectMatterRowsToAlign(page);
 
     await expect(page.getByRole('button', { name: 'Copy URL' })).toBeEnabled();
@@ -94,8 +94,8 @@ test.describe('mobile recast journey', () => {
 
     expect(svgDownload.fileName).toMatch(/^qr-recast-[a-f0-9]{8}\.svg$/);
     expect(svgText).toMatch(/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
-    expect(svgText).toContain('viewBox="0 0 320 440"');
-    expect(svgText).toContain('x="36" y="118" width="248" height="248"');
+    expect(svgText).toContain('viewBox="0 0 320 418"');
+    expect(svgText).toContain('x="16" y="68" width="288" height="288"');
     expectMatterSvgRowsToAlign(svgText);
     expect(svgText.trimEnd()).toMatch(/<\/svg>$/);
 
@@ -195,8 +195,8 @@ test.describe('batch proofing journey', () => {
       await moveDownButton.evaluate((element) => window.getComputedStyle(element).color),
     ).not.toBe(await deleteButton.evaluate((element) => window.getComputedStyle(element).color));
     expect((await moveDownButton.boundingBox())?.height).toBeGreaterThanOrEqual(40);
-    await firstItem.getByRole('button', { name: 'Output style: Labelled' }).click();
-    await expect(firstItem.getByRole('button', { name: 'Output style: Clean' })).toBeVisible();
+    await firstItem.getByRole('button', { name: 'Artwork: Labelled' }).click();
+    await expect(firstItem.getByRole('button', { name: 'Artwork: Clean' })).toBeVisible();
 
     const firstName = firstItem.getByRole('textbox', { name: 'Name' });
     await firstName.fill('Hall sensor proof');
@@ -332,13 +332,13 @@ async function expectMatterRowsToAlign(page) {
   const rows = await artwork.evaluate((svg) => {
     const elements = [...svg.children];
     const logo = elements.find(
-      (element) => element.tagName.toLowerCase() === 'svg' && element.getAttribute('y') === '45',
+      (element) => element.tagName.toLowerCase() === 'svg' && element.getAttribute('y') === '18',
     );
     const qr = elements.find(
-      (element) => element.tagName.toLowerCase() === 'svg' && element.getAttribute('y') === '118',
+      (element) => element.tagName.toLowerCase() === 'svg' && element.getAttribute('y') === '68',
     );
     const code = elements.find(
-      (element) => element.tagName.toLowerCase() === 'text' && element.getAttribute('y') === '403',
+      (element) => element.tagName.toLowerCase() === 'text' && element.getAttribute('y') === '386',
     );
 
     return {
@@ -481,10 +481,10 @@ function readZipEntryNames(buffer) {
 }
 
 function expectMatterSvgRowsToAlign(svg) {
-  const logo = svg.match(/<svg x="([^"]+)" y="45" width="([^"]+)"/);
-  const qr = svg.match(/<svg x="([^"]+)" y="118" width="([^"]+)"[^>]+viewBox="([^"]+)"/);
+  const logo = svg.match(/<svg x="([^"]+)" y="18" width="([^"]+)"/);
+  const qr = svg.match(/<svg x="([^"]+)" y="68" width="([^"]+)"[^>]+viewBox="([^"]+)"/);
   const code = svg.match(
-    /<text y="403"[^>]+data-registration-x="([^"]+)" data-registration-width="([^"]+)"/,
+    /<text x="[^"]+" y="386"[^>]+data-registration-x="([^"]+)" data-registration-width="([^"]+)"/,
   );
 
   expect(logo).not.toBeNull();

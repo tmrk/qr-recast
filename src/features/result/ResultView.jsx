@@ -590,26 +590,6 @@ export function ResultView({
       role="button"
       tabIndex={svgString ? 0 : -1}
     >
-      <div aria-hidden="true" className="result-view__proof-heading">
-        <span>{strings.result.proofLabel}</span>
-        <span>01 / SVG</span>
-      </div>
-      <span
-        aria-hidden="true"
-        className="result-view__registration result-view__registration--tl"
-      />
-      <span
-        aria-hidden="true"
-        className="result-view__registration result-view__registration--tr"
-      />
-      <span
-        aria-hidden="true"
-        className="result-view__registration result-view__registration--bl"
-      />
-      <span
-        aria-hidden="true"
-        className="result-view__registration result-view__registration--br"
-      />
       {svgString ? (
         <div
           aria-label={strings.result.qrAlt}
@@ -620,10 +600,6 @@ export function ResultView({
       ) : (
         <CircularProgress aria-label={strings.result.generating} />
       )}
-      <div aria-hidden="true" className="result-view__proof-footer">
-        <span>{payloadKindLabel}</span>
-        <span>{strings.result.proofStatus}</span>
-      </div>
     </Paper>
   );
   const typeDetails = (
@@ -701,24 +677,11 @@ export function ResultView({
       <div className="result-view__workbench">
         <header className="result-view__header">
           <div className="result-view__heading-copy">
-            <Chip
-              className="result-view__kind-chip"
-              icon={<TypeIcon />}
-              label={payloadKindLabel}
-              size="small"
-            />
             <Typography component="h1" id="result-title" variant="h1">
               {strings.result.title}
             </Typography>
             <Typography color="text.secondary">{strings.result.supporting}</Typography>
           </div>
-          <IconButton
-            className="result-view__new-scan"
-            aria-label={strings.result.scanAgain}
-            onClick={scanAgain}
-          >
-            <QrCodeScannerRounded />
-          </IconButton>
         </header>
 
         <div className="result-view__proof-column">
