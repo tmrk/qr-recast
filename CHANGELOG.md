@@ -6,6 +6,14 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-11-19
+
+### Fixed
+
+- Made the scanning line in the camera frame glide smoothly. It now moves with a GPU transform
+  instead of changing its position on every frame, so it no longer stutters while the scanner
+  is decoding.
+
 ## [2.2.0] - 2026-11-19
 
 ### Added

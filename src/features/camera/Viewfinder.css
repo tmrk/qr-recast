@@ -191,16 +191,31 @@
 .viewfinder__sweep {
   position: absolute;
   top: 8%;
+  bottom: 8%;
   left: 10%;
   width: 80%;
-  height: 2px;
+  overflow: hidden;
   opacity: 0;
-  border-radius: 999px;
-  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+  pointer-events: none;
+}
+
+/* The line sits at the bottom edge of a full-height layer that slides with
+   transform, so the browser can animate it off the main thread while the
+   scanner is busy decoding frames. */
+.viewfinder__sweep::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, #ffffff, transparent) bottom / 100% 2px no-repeat;
+  transform: translate3d(0, calc(-100% + 2px), 0);
+  will-change: transform;
 }
 
 .viewfinder__frame--active .viewfinder__sweep {
   opacity: 0.9;
+}
+
+.viewfinder__frame--active .viewfinder__sweep::after {
   animation: qr-sweep 1.6s ease-in-out infinite alternate;
 }
 
@@ -457,10 +472,10 @@
 
 @keyframes qr-sweep {
   from {
-    top: 8%;
+    transform: translate3d(0, calc(-100% + 2px), 0);
   }
   to {
-    top: 92%;
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -469,6 +484,7 @@
   .viewfinder__frame,
   .viewfinder__capture-flash,
   .viewfinder__sweep,
+  .viewfinder__sweep::after,
   .viewfinder__polygon {
     transition: none;
     animation: none;

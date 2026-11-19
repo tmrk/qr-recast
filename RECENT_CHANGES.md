@@ -3,6 +3,8 @@
 Newest entries stay at the top. Keep roughly the last 20 meaningful changes here; older entries
 move into `CHANGELOG.md`.
 
+- 2026-11-19: Released v2.2.1. The camera scanning line now animates with a transform rather than
+  its top position, so it stays smooth on phones while frames are being decoded.
 - 2026-08-13: Corrected renderer-dependent Matter manual-code alignment in PDF and DOCX exports,
   centred single artwork on A4 pages, and tightened batch PDF card bounds and DOCX page geometry.
   Fresh SVG, PNG, PDF, and DOCX exports passed structural checks and visual inspection; the Matter
