@@ -5,6 +5,7 @@ import { AppShell } from './components/AppShell.jsx';
 import { AdSlot, adsEnabled } from './features/ads/AdSlot.jsx';
 import { Analytics } from './features/analytics/Analytics.jsx';
 import { ThemeColourMeta } from './components/ThemeColourMeta.jsx';
+import { UpdatePrompt } from './components/UpdatePrompt.jsx';
 import { HomeView } from './features/home/HomeView.jsx';
 import { appTheme, colourSchemeStorageKey } from './theme/index.js';
 
@@ -38,11 +39,15 @@ function AppContent() {
               scrollBehavior: 'auto !important',
               transitionDuration: '0.01ms !important',
             },
+            '::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*)': {
+              animation: 'none !important',
+            },
           },
         })}
       />
       <ThemeColourMeta />
       <Analytics />
+      <UpdatePrompt />
       <AppShell bottomSlot={adsEnabled ? <AdSlot /> : null}>
         <Routes>
           <Route element={<HomeView />} path="/" />

@@ -2,6 +2,7 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 import jsQR from 'jsqr';
+import lzString from 'lz-string';
 import QRCode from 'qrcode';
 import sharp from 'sharp';
 
@@ -32,9 +33,9 @@ test.describe('mobile recast journey', () => {
     await openScanner(page);
     await uploadQr(page, matterPayload);
 
-    await expect(page.getByRole('heading', { name: 'Your recast QR' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Matter device' })).toBeVisible();
     await expect(page.getByRole('img', { name: 'Recast QR code' })).toBeVisible();
-    await expect(page.getByText('Matter device', { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Scan again' })).toBeVisible();
 
     const cleanButton = page.getByRole('button', { name: 'Clean', exact: true });
     const labelledButton = page.getByRole('button', { name: 'Labelled', exact: true });
@@ -52,8 +53,8 @@ test.describe('mobile recast journey', () => {
     await expect(resultSvg).toHaveAttribute('viewBox', '0 0 320 408');
     await expectMatterRowsToAlign(page);
 
-    await expect(page.getByRole('button', { name: 'Copy URL' })).toBeEnabled();
-    await page.getByRole('button', { name: 'Copy URL' }).click();
+    await expect(page.getByRole('button', { name: 'Copy link' })).toBeEnabled();
+    await page.getByRole('button', { name: 'Copy link' }).click();
     await expect(page.getByRole('alert').filter({ hasText: 'Copied' })).toBeVisible();
 
     const sharedUrl = await page.evaluate(() => window.__qrRecastCopiedText);
@@ -65,7 +66,9 @@ test.describe('mobile recast journey', () => {
 
     const sharedPage = await context.newPage();
     await sharedPage.goto(sharedUrl);
-    await expect(sharedPage.getByRole('heading', { name: 'Your recast QR' })).toBeVisible();
+    await expect(
+      sharedPage.getByRole('heading', { level: 1, name: 'Matter device' }),
+    ).toBeVisible();
     await expect.poll(() => sharedPage.url()).not.toContain('#q=');
     await expect
       .poll(() =>
@@ -126,6 +129,78 @@ test.describe('mobile recast journey', () => {
   });
 });
 
+test.describe('system back navigation', () => {
+  test.use({
+    colorScheme: 'light',
+    hasTouch: true,
+    isMobile: true,
+    viewport: { height: 800, width: 360 },
+  });
+
+  test('closes surfaces first, then returns from a result to the scanner', async ({
+    context,
+    page,
+  }) => {
+    const browserErrors = captureBrowserErrors(context);
+    const scannerHeading = page.getByRole('heading', { name: 'Scan a QR code' });
+    const resultHeading = page.getByRole('heading', { level: 1, name: 'Matter device' });
+    const settingsSheet = page.getByRole('dialog', { name: 'Settings' });
+    const payloadText = page.locator('.result-view__payload');
+
+    await openScanner(page);
+    await uploadQr(page, matterPayload);
+    await expect(resultHeading).toBeVisible();
+
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await expect(settingsSheet).toBeVisible();
+    await page.goBack();
+    await expect(settingsSheet).toBeHidden();
+    await expect(resultHeading).toBeVisible();
+
+    await page.getByRole('button', { name: 'Show text' }).click();
+    await expect(payloadText).toHaveText(matterPayload);
+    await page.goBack();
+    await expect(payloadText).toBeHidden();
+    await expect(resultHeading).toBeVisible();
+
+    await page.getByRole('button', { name: 'Download', exact: true }).click();
+    await expect(page.getByRole('menu')).toBeVisible();
+    await page.goBack();
+    await expect(page.getByRole('menu')).toBeHidden();
+    await expect(resultHeading).toBeVisible();
+
+    await page.goBack();
+    await expect(scannerHeading).toBeVisible();
+    await expect(resultHeading).toBeHidden();
+
+    await uploadQr(page, matterPayload);
+    await expect(resultHeading).toBeVisible();
+    await page.getByRole('button', { name: 'Scan again' }).click();
+    await expect(scannerHeading).toBeVisible();
+
+    await uploadQr(page, matterPayload);
+    await expect(resultHeading).toBeVisible();
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await expect(settingsSheet).toBeVisible();
+    await page.getByRole('button', { name: 'Close settings' }).click();
+    await expect(settingsSheet).toBeHidden();
+    await page.goBack();
+    await expect(scannerHeading).toBeVisible();
+    expect(browserErrors).toEqual([]);
+  });
+
+  test('lets a shared link go back to the scanner first', async ({ page }) => {
+    await page.goto(`./#q=${lzString.compressToEncodedURIComponent(matterPayload)}`);
+    await expect(page.getByRole('heading', { level: 1, name: 'Matter device' })).toBeVisible();
+    await expect.poll(() => page.url()).not.toContain('#q=');
+
+    await page.goBack();
+    await expect(page.getByRole('heading', { name: 'Scan a QR code' })).toBeVisible();
+    expect(page.url()).not.toContain('#q=');
+    expect(await page.evaluate(() => JSON.stringify(window.history.state))).not.toContain('MT:');
+  });
+});
+
 test.describe('desktop smoke check', () => {
   test.use({
     colorScheme: 'dark',
@@ -147,7 +222,7 @@ test.describe('desktop smoke check', () => {
     await expect(page.locator('.app-shell')).toHaveCSS('background-color', 'rgb(239, 238, 231)');
 
     await uploadQr(page, desktopUrlPayload);
-    await expect(page.getByRole('heading', { name: 'Your recast QR' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Web address' })).toBeVisible();
     await expect(page.getByRole('img', { name: 'Recast QR code' })).toBeVisible();
     await page.getByRole('button', { name: 'Show text' }).click();
 
@@ -309,7 +384,7 @@ async function captureAnalyticsCommands(context) {
 
 async function openScanner(page) {
   await page.goto('./');
-  await expect(page.getByRole('heading', { name: 'Point at a QR code' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Scan a QR code' })).toBeVisible();
 }
 
 async function uploadQr(page, payload) {
@@ -374,7 +449,7 @@ async function downloadExport(page, format, testInfo) {
   await page.getByRole('button', { name: 'Download', exact: true }).click();
 
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('menuitem', { name: format, exact: true }).click();
+  await page.getByRole('menuitem', { name: new RegExp(`^${format}`) }).click();
   const download = await downloadPromise;
   const fileName = download.suggestedFilename();
   const path = testInfo.outputPath(fileName);
@@ -391,7 +466,7 @@ async function downloadBatchExport(page, format, testInfo) {
   await page.getByRole('button', { name: 'Export batch', exact: true }).click();
 
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('menuitem', { name: format, exact: true }).click();
+  await page.getByRole('menuitem', { name: new RegExp(`^${format}`) }).click();
   const download = await downloadPromise;
   const fileName = download.suggestedFilename();
   const path = testInfo.outputPath(fileName);

@@ -6,6 +6,42 @@ The format is based on Keep a Changelog, and this project uses Semantic Versioni
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-19
+
+### Added
+
+- Added an unobtrusive "A new version is ready" prompt with Reload and Later actions. The service
+  worker now waits for the user instead of replacing the app mid-task, and the app checks for
+  updates when it returns to the foreground and once an hour.
+- Added a System, Light, and Dark colour scheme choice in Settings. First visits still follow the
+  device, and an explicit choice persists.
+- Added a Stop camera control, a "Reading image" state for uploads, and plain-language camera,
+  torch, and upload messages in place of raw browser error text.
+- Made the system back gesture close the open sheet, dialog, or menu first, then return from a
+  result to the scanner, instead of leaving the installed app. History entries hold no payload.
+- Added a short hint to every Download and batch export format, and a back action at the top of
+  every result.
+
+### Changed
+
+- Redesigned the scanner as a stage with a thumb-reach dock: Single and Batch sit above a clear
+  frame, with Start camera and Upload image underneath. Batch now keeps the camera stage and the
+  saved list in one flow, with a sticky Add code and Export batch bar.
+- Regrouped the result screen into what the code is (type title and Details), how it looks
+  (Artwork), and what to do with it (a sticky Download and Copy link bar on phones, a Share and
+  save card on desktop). Show text moved into Details.
+- Replaced the batch contact-sheet cards with compact rows that have 44 px controls, and rebuilt
+  Settings as grouped sections for appearance, exports, batch, analytics, and privacy.
+- Simplified copy throughout, including "Copy link" in place of "Copy URL", and removed the
+  remaining jargon and em dashes.
+- Made the standalone app behave natively: safe-area insets on the app bar, sheets, snackbars, and
+  bottom bars, no tap highlight or accidental text selection on controls, no pull-to-refresh
+  bounce, a visible focus ring, a dark-aware preboot shell, and the browser theme colour set before the first
+  paint from the stored or system scheme.
+- Switched the iOS status bar style to `default` so the clock stays readable on the light scheme,
+  and updated the manifest description.
+- Added a warning palette that meets AA contrast in both schemes.
+
 ### Fixed
 
 - Render Matter manual codes as independently centred characters so SVG, PDF, and DOCX renderers

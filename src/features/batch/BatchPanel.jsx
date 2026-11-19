@@ -1,18 +1,18 @@
 import ArrowDownwardRounded from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowUpwardRounded from '@mui/icons-material/ArrowUpwardRounded';
+import ArticleRounded from '@mui/icons-material/ArticleRounded';
 import DeleteRounded from '@mui/icons-material/DeleteRounded';
+import DescriptionRounded from '@mui/icons-material/DescriptionRounded';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import FileDownloadRounded from '@mui/icons-material/FileDownloadRounded';
-import QrCodeScannerRounded from '@mui/icons-material/QrCodeScannerRounded';
 import ImageRounded from '@mui/icons-material/ImageRounded';
-import ArticleRounded from '@mui/icons-material/ArticleRounded';
-import DescriptionRounded from '@mui/icons-material/DescriptionRounded';
+import PhotoLibraryRounded from '@mui/icons-material/PhotoLibraryRounded';
 import PictureAsPdfRounded from '@mui/icons-material/PictureAsPdfRounded';
+import QrCodeScannerRounded from '@mui/icons-material/QrCodeScannerRounded';
 import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded';
 import {
   Alert,
   Button,
-  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -32,14 +32,30 @@ import {
 import { useState } from 'react';
 import { batchNameMaxLength, normaliseBatchName } from './store.js';
 import { BatchThumbnail } from './BatchThumbnail.jsx';
+import { useHistoryLayer } from '../../lib/history-layers.js';
 import { strings } from '../../strings.js';
 import './BatchPanel.css';
 
 const batchExportActions = [
-  { format: 'svg', icon: DescriptionRounded, label: strings.result.svg },
-  { format: 'png', icon: ImageRounded, label: strings.result.png },
-  { format: 'pdf', icon: PictureAsPdfRounded, label: strings.result.pdf },
-  { format: 'docx', icon: ArticleRounded, label: strings.result.docx },
+  {
+    format: 'svg',
+    hint: strings.result.svgHint,
+    icon: DescriptionRounded,
+    label: strings.result.svg,
+  },
+  { format: 'png', hint: strings.result.pngHint, icon: ImageRounded, label: strings.result.png },
+  {
+    format: 'pdf',
+    hint: strings.result.pdfHint,
+    icon: PictureAsPdfRounded,
+    label: strings.result.pdf,
+  },
+  {
+    format: 'docx',
+    hint: strings.result.docxHint,
+    icon: ArticleRounded,
+    label: strings.result.docx,
+  },
 ];
 
 /**
@@ -77,6 +93,10 @@ export function BatchPanel({
   const [draggedItemId, setDraggedItemId] = useState('');
   const items = batch.items;
   const exportMenuOpen = Boolean(exportAnchorElement);
+
+  useHistoryLayer(exportMenuOpen, () => setExportAnchorElement(null));
+  useHistoryLayer(clearOpen, () => setClearOpen(false));
+
   const countLabel =
     items.length === 1
       ? strings.batch.oneCode.replace('{count}', String(items.length))
@@ -89,6 +109,11 @@ export function BatchPanel({
     : cameraStarting
       ? strings.camera.pendingTitle
       : strings.batch.startScanning;
+  const addCodeLabel = cameraReady
+    ? strings.batch.scanning
+    : cameraStarting
+      ? strings.camera.pendingTitle
+      : strings.batch.addCode;
   const panelClassName = [
     'batch-panel',
     items.length ? 'batch-panel--populated' : 'batch-panel--empty',
@@ -103,10 +128,6 @@ export function BatchPanel({
   return (
     <Paper className={panelClassName} elevation={0}>
       <div className="batch-panel__header">
-        <div aria-hidden="true" className="batch-panel__folio">
-          <span>{String(items.length).padStart(2, '0')}</span>
-          <i />
-        </div>
         <div className="batch-panel__heading">
           <Typography component="h2" variant="h2">
             {strings.batch.title}
@@ -116,6 +137,13 @@ export function BatchPanel({
           </Typography>
         </div>
         <div className="batch-panel__header-actions">
+          {items.length ? (
+            <Tooltip title={strings.camera.upload}>
+              <IconButton aria-label={strings.camera.upload} onClick={onUploadImage}>
+                <PhotoLibraryRounded />
+              </IconButton>
+            </Tooltip>
+          ) : null}
           <Button
             disabled={!items.length}
             onClick={() => setClearOpen(true)}
@@ -171,46 +199,56 @@ export function BatchPanel({
             <Button
               disabled={startScanDisabled}
               onClick={onStartScan}
+              size="large"
               startIcon={cameraStarting ? <CircularProgress size={18} /> : <QrCodeScannerRounded />}
               variant="contained"
             >
               {startScanLabel}
             </Button>
-            <Button onClick={onUploadImage} startIcon={<ImageRounded />} variant="outlined">
+            <Button
+              onClick={onUploadImage}
+              size="large"
+              startIcon={<ImageRounded />}
+              variant="outlined"
+            >
               {strings.camera.upload}
             </Button>
           </div>
         </div>
       )}
 
-      <div className={`batch-panel__footer${items.length ? ' batch-panel__footer--split' : ''}`}>
-        {items.length ? (
+      {items.length ? (
+        <div className="batch-panel__footer">
           <Button
             disabled={startScanDisabled}
             onClick={onStartScan}
+            size="large"
             startIcon={cameraStarting ? <CircularProgress size={18} /> : <QrCodeScannerRounded />}
             variant="outlined"
           >
-            {strings.batch.addCode}
+            {addCodeLabel}
           </Button>
-        ) : null}
-        <Button
-          aria-controls={exportMenuOpen ? 'batch-export-menu' : undefined}
-          aria-expanded={exportMenuOpen ? 'true' : undefined}
-          aria-haspopup="menu"
-          disabled={!items.length || Boolean(busyFormat)}
-          onClick={(event) => setExportAnchorElement(event.currentTarget)}
-          startIcon={busyFormat ? <CircularProgress size={18} /> : <FileDownloadRounded />}
-          variant="contained"
-        >
-          {strings.batch.export}
-        </Button>
-      </div>
+          <Button
+            aria-controls={exportMenuOpen ? 'batch-export-menu' : undefined}
+            aria-expanded={exportMenuOpen ? 'true' : undefined}
+            aria-haspopup="menu"
+            disabled={Boolean(busyFormat)}
+            onClick={(event) => setExportAnchorElement(event.currentTarget)}
+            size="large"
+            startIcon={busyFormat ? <CircularProgress size={18} /> : <FileDownloadRounded />}
+            variant="contained"
+          >
+            {strings.batch.export}
+          </Button>
+        </div>
+      ) : null}
       <Menu
         anchorEl={exportAnchorElement}
+        anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
         id="batch-export-menu"
         onClose={() => setExportAnchorElement(null)}
         open={exportMenuOpen}
+        transformOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         {batchExportActions.map((action) => {
           const Icon = action.icon;
@@ -228,7 +266,7 @@ export function BatchPanel({
               <ListItemIcon>
                 {loading ? <CircularProgress size={18} /> : <Icon fontSize="small" />}
               </ListItemIcon>
-              <ListItemText>{action.label}</ListItemText>
+              <ListItemText primary={action.label} secondary={action.hint} />
             </MenuItem>
           );
         })}
@@ -240,9 +278,9 @@ export function BatchPanel({
           <DialogContentText>{strings.batch.clearBody}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setClearOpen(false)}>{strings.common.no}</Button>
+          <Button onClick={() => setClearOpen(false)}>{strings.batch.clearCancel}</Button>
           <Button color="error" onClick={confirmClear} variant="contained">
-            {strings.common.yes}
+            {strings.batch.clearConfirm}
           </Button>
         </DialogActions>
       </Dialog>
@@ -265,6 +303,7 @@ function BatchItem({
   const [draftState, setDraftState] = useState({ itemId: '', name: '' });
   const name = draftState.itemId === item.id ? draftState.name : item.name;
   const itemClassName = `batch-panel__item${dragging ? ' batch-panel__item--dragging' : ''}`;
+  const labelled = item.branding?.enabled !== false;
 
   function commitName() {
     const nextName = normaliseBatchName(name, item.name);
@@ -286,19 +325,19 @@ function BatchItem({
       }}
       role="listitem"
     >
-      <div className="batch-panel__proof-rail">
-        <span aria-hidden="true" className="batch-panel__proof-number">
-          {String(index + 1).padStart(2, '0')}
-        </span>
+      <div className="batch-panel__proof-visual">
+        <BatchThumbnail item={item} />
         <span className="batch-panel__drag" aria-label={strings.batch.drag} role="img">
           <DragIndicatorRounded />
         </span>
       </div>
-      <div className="batch-panel__proof-visual">
-        <BatchThumbnail item={item} />
-        <Chip className="batch-panel__type-chip" label={item.type.label} size="small" />
-      </div>
       <div className="batch-panel__item-main">
+        <div className="batch-panel__item-head">
+          <span aria-hidden="true" className="batch-panel__proof-number">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <span className="batch-panel__type">{item.type.label}</span>
+        </div>
         <TextField
           fullWidth
           label={strings.batch.nameLabel}
@@ -315,16 +354,14 @@ function BatchItem({
         />
         <div className="batch-panel__item-meta">
           <Button
-            aria-label={`${strings.result.outputStyle}: ${item.branding?.enabled === false ? strings.result.cleanStyle : strings.result.labelledStyle}`}
-            aria-pressed={item.branding?.enabled !== false}
+            aria-label={`${strings.result.outputStyle}: ${labelled ? strings.result.labelledStyle : strings.result.cleanStyle}`}
+            aria-pressed={labelled}
             className="batch-panel__style-toggle"
-            onClick={() => onBrandingChange(item.id, item.branding?.enabled === false)}
+            onClick={() => onBrandingChange(item.id, !labelled)}
             size="small"
-            variant="text"
+            variant="outlined"
           >
-            {item.branding?.enabled === false
-              ? strings.result.cleanStyle
-              : strings.result.labelledStyle}
+            {labelled ? strings.result.labelledStyle : strings.result.cleanStyle}
           </Button>
           <div className="batch-panel__item-actions">
             <Tooltip title={strings.batch.moveUp}>
@@ -333,7 +370,6 @@ function BatchItem({
                   aria-label={strings.batch.moveUp}
                   disabled={index === 0}
                   onClick={() => onMove(item.id, index - 1)}
-                  size="small"
                 >
                   <ArrowUpwardRounded fontSize="small" />
                 </IconButton>
@@ -345,7 +381,6 @@ function BatchItem({
                   aria-label={strings.batch.moveDown}
                   disabled={index === itemCount - 1}
                   onClick={() => onMove(item.id, index + 1)}
-                  size="small"
                 >
                   <ArrowDownwardRounded fontSize="small" />
                 </IconButton>
@@ -356,7 +391,6 @@ function BatchItem({
                 aria-label={strings.batch.delete}
                 className="batch-panel__delete-action"
                 onClick={() => onDelete(item.id)}
-                size="small"
               >
                 <DeleteRounded fontSize="small" />
               </IconButton>

@@ -12,11 +12,12 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'script-defer',
+      registerType: 'prompt',
+      injectRegister: false,
       includeManifestIcons: false,
       manifest,
       workbox: {
+        cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{css,html,js,png,svg,woff2}'],
       },
     }),

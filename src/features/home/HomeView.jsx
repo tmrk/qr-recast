@@ -1,12 +1,13 @@
 import PlaylistAddCheckRounded from '@mui/icons-material/PlaylistAddCheckRounded';
 import QrCodeScannerRounded from '@mui/icons-material/QrCodeScannerRounded';
-import { Button, Paper } from '@mui/material';
+import { Button } from '@mui/material';
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { trackAnalyticsEvent } from '../analytics/events.js';
 import { useBrandingPreference } from '../branding/preferences.js';
 import { batchResumeEvent, useBatchStore } from '../batch/store.js';
+import { useHistoryLayer } from '../../lib/history-layers.js';
 import { SHARE_FRAGMENT_KEY, decodePayloadFromShareUrl } from '../../lib/qr.js';
 import { strings } from '../../strings.js';
 import { Viewfinder } from '../camera/Viewfinder.jsx';
@@ -49,6 +50,15 @@ export function HomeView() {
     new URLSearchParams(location.search).get(SHARE_FRAGMENT_KEY);
   const namingItem = batchStore.batch.items.find((item) => item.id === namingItemId) ?? null;
   const batchCount = batchStore.batch.items.length;
+
+  const showingResult = decoded != null;
+
+  useHistoryLayer(showingResult, () => setDecoded(null));
+  useHistoryLayer(Boolean(namingItem), () => setNamingItemId(''));
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [showingResult]);
 
   function showDecoded(value) {
     if (!document.startViewTransition) {
@@ -285,7 +295,7 @@ export function HomeView() {
   if (encodedSharedPayload) {
     return (
       <div key="loading" className="home-view home-view--loading">
-        <div aria-live="polite" className="result-view__loading" role="status">
+        <div aria-live="polite" className="home-view__loading" role="status">
           {strings.result.loading}
         </div>
       </div>
@@ -305,7 +315,7 @@ export function HomeView() {
       <div key="result" className="home-view home-view--result">
         <Suspense
           fallback={
-            <div aria-live="polite" className="result-view__loading" role="status">
+            <div aria-live="polite" className="home-view__loading" role="status">
               {strings.result.loading}
             </div>
           }
@@ -326,6 +336,9 @@ export function HomeView() {
 
   return (
     <div key="scanner" className="home-view home-view--scanner">
+      <h1 className="visually-hidden">
+        {batchMode ? strings.batch.pageTitle : strings.camera.pageTitle}
+      </h1>
       <Viewfinder
         bottomSlot={
           batchMode ? (
@@ -352,35 +365,31 @@ export function HomeView() {
         onControlsChange={setViewfinderControls}
         showStatusCard={!batchMode}
         topSlot={
-          <Paper className="batch-mode-control" elevation={0}>
-            <div
-              aria-label={strings.batch.modeLabel}
-              className="batch-mode-control__buttons"
-              role="group"
-            >
+          <div className="scan-mode">
+            <div aria-label={strings.batch.modeLabel} className="qr-segmented" role="group">
               <Button
                 aria-pressed={!batchMode}
                 onClick={() => updateCaptureMode('single')}
-                variant={batchMode ? 'text' : 'contained'}
+                startIcon={<QrCodeScannerRounded />}
+                variant="text"
               >
-                <QrCodeScannerRounded />
                 {strings.batch.single}
               </Button>
               <Button
                 aria-pressed={batchMode}
                 onClick={() => updateCaptureMode('batch')}
-                variant={batchMode ? 'contained' : 'text'}
+                startIcon={<PlaylistAddCheckRounded />}
+                variant="text"
               >
-                <PlaylistAddCheckRounded />
                 {strings.batch.batch}
               </Button>
             </div>
             {batchCount ? (
-              <span className="batch-mode-control__count">
+              <span className="scan-mode__count">
                 {strings.batch.countShort.replace('{count}', String(batchCount))}
               </span>
             ) : null}
-          </Paper>
+          </div>
         }
       />
       <Suspense fallback={null}>

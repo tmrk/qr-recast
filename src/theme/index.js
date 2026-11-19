@@ -58,10 +58,30 @@ const sharedComponents = {
   MuiButton: {
     styleOverrides: {
       root: {
-        borderRadius: 12,
+        borderRadius: 999,
         minHeight: 44,
-        paddingInline: 18,
+        paddingInline: 20,
       },
+      sizeLarge: {
+        minHeight: 52,
+        paddingInline: 26,
+        fontSize: '1rem',
+      },
+    },
+  },
+  MuiOutlinedInput: {
+    styleOverrides: {
+      root: {
+        borderRadius: 12,
+      },
+      input: {
+        fontSize: '1rem',
+      },
+    },
+  },
+  MuiSnackbar: {
+    defaultProps: {
+      anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
     },
   },
   MuiIconButton: {
@@ -99,7 +119,7 @@ const sharedComponents = {
   MuiDialog: {
     styleOverrides: {
       paper: {
-        borderRadius: 20,
+        borderRadius: 28,
       },
     },
   },

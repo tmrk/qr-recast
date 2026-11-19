@@ -1,0 +1,480 @@
+.viewfinder {
+  width: min(100%, calc(var(--qr-workbench) + 2 * var(--qr-gutter)));
+  min-height: calc(100dvh - var(--qr-bar-height) - env(safe-area-inset-top));
+  margin: 0 auto;
+  padding: 12px max(var(--qr-gutter), env(safe-area-inset-right))
+    max(20px, calc(env(safe-area-inset-bottom) + 8px))
+    max(var(--qr-gutter), env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.viewfinder__top-slot {
+  display: flex;
+  justify-content: center;
+}
+
+.viewfinder__layout {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.viewfinder__stage {
+  position: relative;
+  min-height: 280px;
+  max-height: 560px;
+  flex: 1 1 280px;
+  overflow: hidden;
+  border: 1px solid var(--qr-border-soft);
+  border-radius: var(--qr-radius-xl);
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      rgb(var(--qr-palette-primary-mainChannel) / 0.1),
+      transparent 62%
+    ),
+    radial-gradient(rgb(var(--qr-palette-outline-mainChannel) / 0.22) 1px, transparent 1.4px) 0 0 /
+      20px 20px,
+    var(--qr-palette-surface-containerLowest);
+  isolation: isolate;
+}
+
+.viewfinder--immersive .viewfinder__stage {
+  max-height: none;
+  flex: 1 1 auto;
+  border-color: transparent;
+  background: #020706;
+}
+
+.viewfinder--compact .viewfinder__stage {
+  min-height: 0;
+  height: 190px;
+  flex: 0 0 auto;
+}
+
+.viewfinder--compact.viewfinder--camera-active .viewfinder__stage {
+  height: min(44dvh, 360px);
+}
+
+.viewfinder__video {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  background: #020706;
+  transition: opacity 180ms ease;
+}
+
+.viewfinder--camera-active .viewfinder__video {
+  opacity: 1;
+}
+
+.viewfinder__canvas,
+.viewfinder__file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.viewfinder__frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(62%, 232px);
+  aspect-ratio: 1;
+  border-radius: var(--qr-radius-lg);
+  transform: translate(-50%, -50%);
+  transition: width 220ms cubic-bezier(0.2, 0, 0, 1);
+  pointer-events: none;
+}
+
+.viewfinder--compact .viewfinder__frame {
+  width: 128px;
+}
+
+.viewfinder__frame--active,
+.viewfinder__frame--detected {
+  width: min(72%, 340px);
+  border-radius: 22px;
+  box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.42);
+}
+
+.viewfinder--compact .viewfinder__frame--active,
+.viewfinder--compact .viewfinder__frame--detected {
+  width: min(60%, 200px);
+}
+
+.viewfinder__corner {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border: 0 solid var(--qr-palette-primary-main);
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.viewfinder--compact .viewfinder__corner {
+  width: 24px;
+  height: 24px;
+}
+
+.viewfinder__frame--active .viewfinder__corner,
+.viewfinder__frame--detected .viewfinder__corner {
+  border-color: #ffffff;
+}
+
+.viewfinder__frame--detected .viewfinder__corner {
+  border-color: var(--qr-palette-primary-light);
+  transform: scale(1.04);
+}
+
+.viewfinder__corner--top-left {
+  top: 0;
+  left: 0;
+  border-top-width: 3px;
+  border-left-width: 3px;
+  border-top-left-radius: 16px;
+}
+
+.viewfinder__corner--top-right {
+  top: 0;
+  right: 0;
+  border-top-width: 3px;
+  border-right-width: 3px;
+  border-top-right-radius: 16px;
+}
+
+.viewfinder__corner--bottom-left {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 3px;
+  border-left-width: 3px;
+  border-bottom-left-radius: 16px;
+}
+
+.viewfinder__corner--bottom-right {
+  right: 0;
+  bottom: 0;
+  border-right-width: 3px;
+  border-bottom-width: 3px;
+  border-bottom-right-radius: 16px;
+}
+
+.viewfinder__idle-icon.MuiSvgIcon-root {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 38%;
+  height: 38%;
+  color: var(--qr-palette-primary-main);
+  opacity: 0.5;
+  transform: translate(-50%, -50%);
+}
+
+.viewfinder__frame--active .viewfinder__idle-icon,
+.viewfinder__frame--detected .viewfinder__idle-icon {
+  display: none;
+}
+
+.viewfinder__sweep {
+  position: absolute;
+  top: 8%;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  opacity: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+}
+
+.viewfinder__frame--active .viewfinder__sweep {
+  opacity: 0.9;
+  animation: qr-sweep 1.6s ease-in-out infinite alternate;
+}
+
+.viewfinder__detected-icon.MuiSvgIcon-root {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22%;
+  height: 22%;
+  opacity: 0;
+  color: var(--qr-palette-primary-light);
+  transform: translate(-50%, -50%) scale(0.72);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.viewfinder__frame--detected .viewfinder__detected-icon {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.viewfinder__polygon {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: polygon-confirm 240ms ease-out both;
+}
+
+.viewfinder__polygon polygon {
+  fill: rgb(var(--qr-palette-primary-mainChannel) / 0.2);
+  stroke: var(--qr-palette-primary-light);
+  stroke-linejoin: round;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 12px rgb(var(--qr-palette-primary-mainChannel) / 0.5));
+}
+
+.viewfinder__capture-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(var(--qr-palette-primary-mainChannel) / 0.3),
+    transparent 56%
+  );
+  animation: capture-flash 350ms ease-out both;
+}
+
+.viewfinder__hint,
+.viewfinder__notice {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  max-width: calc(100% - 28px);
+  transform: translateX(-50%);
+}
+
+.viewfinder__hint {
+  min-height: 36px;
+  padding: 6px 16px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border-radius: 999px;
+  background: rgb(12 20 18 / 0.72);
+  color: #f3faf7;
+  font-weight: 560;
+  backdrop-filter: blur(10px);
+}
+
+.viewfinder__notice.MuiAlert-root {
+  width: max-content;
+  border-radius: var(--qr-radius-md);
+}
+
+.viewfinder__controls {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 999px;
+  background: rgb(12 20 18 / 0.72);
+  color: #f3faf7;
+  backdrop-filter: blur(10px);
+  transform: translateX(-50%);
+}
+
+.viewfinder__controls .MuiIconButton-root {
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 50%;
+  color: inherit;
+}
+
+.viewfinder__cta {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 4px;
+}
+
+.viewfinder--compact:not(.viewfinder--camera-active) .viewfinder__frame {
+  display: none;
+}
+
+.viewfinder__bottom-slot {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.viewfinder__status.MuiPaper-root {
+  min-width: 0;
+  padding: 4px 2px 0;
+  display: grid;
+  gap: 18px;
+  border: 0;
+  background: transparent;
+}
+
+.viewfinder__status-copy {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.viewfinder__status-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.viewfinder__status .MuiTypography-root {
+  overflow-wrap: anywhere;
+}
+
+.viewfinder__status-actions {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.viewfinder__status-actions .MuiButton-root {
+  min-width: 0;
+  padding-inline: 14px;
+}
+
+.viewfinder__status-actions .MuiButton-root:only-child {
+  grid-column: 1 / -1;
+}
+
+.viewfinder__privacy {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--qr-palette-text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.viewfinder__privacy .MuiSvgIcon-root {
+  flex: 0 0 auto;
+  color: var(--qr-palette-primary-main);
+}
+
+[data-light] .viewfinder__privacy .MuiSvgIcon-root {
+  color: var(--qr-palette-primary-dark);
+}
+
+@media (min-width: 560px) {
+  .viewfinder__status-actions {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .viewfinder {
+    padding-top: 28px;
+    gap: 22px;
+  }
+
+  .viewfinder__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(340px, 1fr);
+    align-items: start;
+    gap: 32px;
+  }
+
+  .viewfinder__stage,
+  .viewfinder--compact .viewfinder__stage,
+  .viewfinder--compact.viewfinder--camera-active .viewfinder__stage {
+    height: auto;
+    min-height: 0;
+    max-height: calc(100dvh - var(--qr-bar-height) - 150px);
+    aspect-ratio: 4 / 3;
+    flex: none;
+  }
+
+  .viewfinder--immersive .viewfinder__layout {
+    grid-template-columns: minmax(0, 880px);
+    justify-content: center;
+  }
+
+  .viewfinder--immersive .viewfinder__stage {
+    aspect-ratio: 16 / 10;
+  }
+
+  .viewfinder--compact .viewfinder__frame {
+    width: min(40%, 200px);
+  }
+
+  .viewfinder--compact .viewfinder__frame--active,
+  .viewfinder--compact .viewfinder__frame--detected {
+    width: min(62%, 320px);
+  }
+
+  .viewfinder--compact .viewfinder__corner {
+    width: 34px;
+    height: 34px;
+  }
+
+  .viewfinder__status.MuiPaper-root {
+    padding: 36px 32px 28px;
+    align-self: center;
+    gap: 22px;
+    border: 1px solid var(--qr-border-soft);
+    border-radius: var(--qr-radius-xl);
+    background: var(--qr-palette-surface-containerLow);
+    box-shadow: var(--qr-elev-1);
+  }
+
+  .viewfinder__status-title {
+    font-size: 1.6rem;
+  }
+
+  .viewfinder__privacy {
+    justify-content: flex-start;
+  }
+
+  .viewfinder__bottom-slot {
+    align-self: start;
+  }
+}
+
+@keyframes qr-sweep {
+  from {
+    top: 8%;
+  }
+  to {
+    top: 92%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewfinder__video,
+  .viewfinder__frame,
+  .viewfinder__capture-flash,
+  .viewfinder__sweep,
+  .viewfinder__polygon {
+    transition: none;
+    animation: none;
+  }
+
+  .viewfinder__capture-flash {
+    opacity: 0;
+  }
+}

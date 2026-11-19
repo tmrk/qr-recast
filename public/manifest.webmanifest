@@ -1,8 +1,11 @@
 {
   "name": "QR Recast",
   "short_name": "QR Recast",
-  "description": "Photograph a QR code and re-emit it as crisp files.",
+  "description": "Rebuild photographed QR codes as clean files, privately on your device.",
   "lang": "en-GB",
+  "dir": "ltr",
+  "categories": ["utilities", "productivity"],
+  "prefer_related_applications": false,
   "id": "/qr-recast/",
   "scope": "/qr-recast/",
   "start_url": "/qr-recast/",

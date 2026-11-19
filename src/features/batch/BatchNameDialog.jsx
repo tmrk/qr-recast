@@ -8,7 +8,7 @@ import {
   IconButton,
   TextField,
 } from '@mui/material';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { batchNameMaxLength, normaliseBatchName } from './store.js';
 import { strings } from '../../strings.js';
 
@@ -20,6 +20,7 @@ import { strings } from '../../strings.js';
  * }} props
  */
 export function BatchNameDialog({ item, onClose, onSave }) {
+  const inputRef = useRef(null);
   const [draftState, setDraftState] = useState({ itemId: '', name: '' });
   const name = draftState.itemId === item?.id ? draftState.name : (item?.name ?? '');
 
@@ -33,7 +34,20 @@ export function BatchNameDialog({ item, onClose, onSave }) {
   }
 
   return (
-    <Dialog fullWidth maxWidth="xs" onClose={onClose} open={Boolean(item)}>
+    <Dialog
+      fullWidth
+      maxWidth="xs"
+      onClose={onClose}
+      open={Boolean(item)}
+      slotProps={{
+        transition: {
+          onEntered: () => {
+            inputRef.current?.focus();
+            inputRef.current?.select();
+          },
+        },
+      }}
+    >
       <DialogTitle>{strings.batch.nameTitle}</DialogTitle>
       <IconButton
         aria-label={strings.batch.closeName}
@@ -45,6 +59,7 @@ export function BatchNameDialog({ item, onClose, onSave }) {
       <DialogContent>
         <TextField
           fullWidth
+          inputRef={inputRef}
           label={strings.batch.nameLabel}
           onChange={(event) => setDraftState({ itemId: item?.id ?? '', name: event.target.value })}
           onKeyDown={(event) => {

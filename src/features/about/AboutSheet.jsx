@@ -1,7 +1,7 @@
 import CloseRounded from '@mui/icons-material/CloseRounded';
 import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import PlaylistAddCheckRounded from '@mui/icons-material/PlaylistAddCheckRounded';
-import PrivacyTipRounded from '@mui/icons-material/PrivacyTipRounded';
+import ShieldRounded from '@mui/icons-material/ShieldRounded';
 import {
   Alert,
   Button,
@@ -12,16 +12,16 @@ import {
   DialogTitle,
   Drawer,
   IconButton,
-  Stack,
   Switch,
   Typography,
   useMediaQuery,
 } from '@mui/material';
 import { useState } from 'react';
 import packageJson from '../../../package.json';
+import { useHistoryLayer } from '../../lib/history-layers.js';
 import { strings } from '../../strings.js';
 import { useAppTheme } from '../../theme/index.js';
-import { themeOptions } from '../../theme/options.js';
+import { themeChoices } from '../../theme/options.js';
 import { requestBatchResume, useBatchStore } from '../batch/store.js';
 import { useBrandingPreference } from '../branding/preferences.js';
 import {
@@ -32,6 +32,7 @@ import {
   setAnalyticsOptOut,
   trackAnalyticsEvent,
 } from '../analytics/events.js';
+import './AboutSheet.css';
 
 const buildHash = import.meta.env.VITE_BUILD_SHA?.slice(0, 7) || 'local';
 
@@ -42,10 +43,12 @@ export function AboutSheet({ open, onClose }) {
   const [analyticsOptedOut, setAnalyticsOptedOutState] = useState(() => hasAnalyticsOptedOut());
   const [clearBatchOpen, setClearBatchOpen] = useState(false);
   const [brandingEnabled, setBrandingEnabled] = useBrandingPreference();
-  const [themeRollKey, setThemeRollKey] = useState(0);
   const useSideSheet = useMediaQuery('(min-width:900px)');
-  const { resolvedMode, toggleMode } = useAppTheme();
+  const { mode, setMode } = useAppTheme();
   const batchStore = useBatchStore();
+
+  useHistoryLayer(clearBatchOpen, () => setClearBatchOpen(false));
+
   const doNotTrackEnabled = isDoNotTrackEnabled();
   const analyticsPreferenceEnabled = !analyticsOptedOut && !doNotTrackEnabled;
   const analyticsStatus = getAnalyticsStatus({
@@ -55,11 +58,6 @@ export function AboutSheet({ open, onClose }) {
   });
   const batchCount = batchStore.batch.items.length;
   const batchCountLabel = getBatchCountLabel(batchCount);
-
-  const currentOption =
-    themeOptions.find((option) => option.mode === resolvedMode) ?? themeOptions[0];
-  const CurrentIcon = currentOption.icon;
-  const currentLabel = currentOption.label;
 
   function updateAnalyticsPreference(event) {
     const optedOut = !event.target.checked;
@@ -80,11 +78,6 @@ export function AboutSheet({ open, onClose }) {
       state: enabled ? 'enabled' : 'disabled',
       surface: 'settings',
     });
-  }
-
-  function handleThemeToggle() {
-    setThemeRollKey((k) => k + 1);
-    toggleMode();
   }
 
   function resumeBatch() {
@@ -121,18 +114,41 @@ export function AboutSheet({ open, onClose }) {
           </IconButton>
         </div>
 
-        <Stack aria-labelledby="about-title" className="about-sheet__content" spacing={2.5}>
-          <section className="about-sheet__settings-section" aria-labelledby="about-branding-title">
-            <Stack spacing={1.5}>
-              <Typography
-                className="about-sheet__section-title"
-                component="h3"
-                id="about-branding-title"
-              >
-                {strings.about.brandingTitle}
-              </Typography>
-              <div className="about-sheet__preference-row">
-                <label className="about-sheet__preference-label" htmlFor="branding-default-toggle">
+        <div className="about-sheet__content">
+          <section aria-labelledby="about-theme-title" className="about-sheet__section">
+            <h3 className="about-sheet__section-title" id="about-theme-title">
+              {strings.theme.title}
+            </h3>
+            <div
+              aria-labelledby="about-theme-title"
+              className="qr-segmented about-sheet__theme-options"
+              role="group"
+            >
+              {themeChoices.map((option) => {
+                const Icon = option.icon;
+
+                return (
+                  <Button
+                    aria-pressed={mode === option.mode}
+                    key={option.mode}
+                    onClick={() => setMode(option.mode)}
+                    startIcon={<Icon fontSize="small" />}
+                    variant="text"
+                  >
+                    {option.label}
+                  </Button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section aria-labelledby="about-branding-title" className="about-sheet__section">
+            <h3 className="about-sheet__section-title" id="about-branding-title">
+              {strings.about.brandingTitle}
+            </h3>
+            <div className="about-sheet__group">
+              <div className="about-sheet__row">
+                <label className="about-sheet__row-label" htmlFor="branding-default-toggle">
                   {strings.about.brandingToggle}
                 </label>
                 <span className="about-sheet__switch-slot">
@@ -148,58 +164,24 @@ export function AboutSheet({ open, onClose }) {
                   />
                 </span>
               </div>
-              <Typography color="text.secondary" id="about-branding-status" variant="body2">
+              <Typography
+                className="about-sheet__help"
+                color="text.secondary"
+                id="about-branding-status"
+                variant="body2"
+              >
                 {strings.about.brandingStatus}
               </Typography>
-            </Stack>
+            </div>
           </section>
 
-          <section className="about-sheet__settings-section" aria-labelledby="about-theme-title">
-            <Stack spacing={1.5}>
-              <Typography
-                className="about-sheet__section-title"
-                component="h3"
-                id="about-theme-title"
-              >
-                {strings.theme.title}
-              </Typography>
-              <div className="about-sheet__preference-row">
-                <label className="about-sheet__preference-label" htmlFor="theme-toggle-button">
-                  {strings.theme.toggleLabel}
-                </label>
-                <span className="about-sheet__switch-slot">
-                  <IconButton
-                    aria-label={strings.theme.toggleLabel}
-                    id="theme-toggle-button"
-                    onClick={handleThemeToggle}
-                    size="small"
-                    sx={{ borderRadius: 2 }}
-                  >
-                    <span key={themeRollKey} className="about-sheet__theme-icon">
-                      <CurrentIcon fontSize="small" />
-                    </span>
-                  </IconButton>
-                </span>
-              </div>
-              <Typography color="text.secondary" variant="body2">
-                {currentLabel}
-              </Typography>
-            </Stack>
-          </section>
-
-          <section className="about-sheet__settings-section" aria-labelledby="about-batch-title">
-            <Stack spacing={1.5}>
-              <Typography
-                className="about-sheet__section-title"
-                component="h3"
-                id="about-batch-title"
-              >
-                {strings.about.batchTitle}
-              </Typography>
-              <Typography color="text.secondary" variant="body2">
-                {batchCountLabel}
-              </Typography>
-              <Typography color="text.secondary" variant="body2">
+          <section aria-labelledby="about-batch-title" className="about-sheet__section">
+            <h3 className="about-sheet__section-title" id="about-batch-title">
+              {strings.about.batchTitle}
+            </h3>
+            <div className="about-sheet__group">
+              <Typography className="about-sheet__strong">{batchCountLabel}</Typography>
+              <Typography className="about-sheet__help" color="text.secondary" variant="body2">
                 {strings.about.batchStorage}
               </Typography>
               {batchStore.persistenceError ? (
@@ -216,6 +198,7 @@ export function AboutSheet({ open, onClose }) {
                   {batchCount ? strings.about.resumeBatch : strings.about.startBatch}
                 </Button>
                 <Button
+                  color="error"
                   disabled={!batchCount}
                   onClick={() => setClearBatchOpen(true)}
                   startIcon={<DeleteRounded />}
@@ -224,26 +207,16 @@ export function AboutSheet({ open, onClose }) {
                   {strings.about.clearBatch}
                 </Button>
               </div>
-            </Stack>
+            </div>
           </section>
 
-          <section
-            className="about-sheet__settings-section"
-            aria-labelledby="about-analytics-title"
-          >
-            <Stack spacing={1.5}>
-              <Typography
-                className="about-sheet__section-title"
-                component="h3"
-                id="about-analytics-title"
-              >
-                {strings.about.analyticsTitle}
-              </Typography>
-              <div className="about-sheet__preference-row">
-                <label
-                  className="about-sheet__preference-label"
-                  htmlFor="analytics-preference-toggle"
-                >
+          <section aria-labelledby="about-analytics-title" className="about-sheet__section">
+            <h3 className="about-sheet__section-title" id="about-analytics-title">
+              {strings.about.analyticsTitle}
+            </h3>
+            <div className="about-sheet__group">
+              <div className="about-sheet__row">
+                <label className="about-sheet__row-label" htmlFor="analytics-preference-toggle">
                   {strings.about.analyticsToggle}
                 </label>
                 <span className="about-sheet__switch-slot">
@@ -260,43 +233,45 @@ export function AboutSheet({ open, onClose }) {
                   />
                 </span>
               </div>
-              <Typography color="text.secondary" id="about-analytics-status" variant="body2">
+              <Typography
+                className="about-sheet__help"
+                color="text.secondary"
+                id="about-analytics-status"
+                variant="body2"
+              >
                 {analyticsStatus}
               </Typography>
-            </Stack>
+            </div>
           </section>
 
-          <div className="about-sheet__privacy">
-            <PrivacyTipRounded color="primary" fontSize="small" />
-            <Typography color="text.secondary">{strings.about.privacyBody}</Typography>
-          </div>
-
-          <div className="about-sheet__metadata">
-            <div className="about-sheet__metadata-item">
-              <Typography color="text.secondary" variant="overline">
-                {strings.about.versionLabel}
-              </Typography>
-              <Typography>{packageJson.version}</Typography>
+          <section aria-labelledby="about-privacy-title" className="about-sheet__section">
+            <h3 className="about-sheet__section-title" id="about-privacy-title">
+              {strings.about.privacyTitle}
+            </h3>
+            <div className="about-sheet__privacy">
+              <ShieldRounded fontSize="small" />
+              <Typography variant="body2">{strings.about.privacyBody}</Typography>
             </div>
-            <div className="about-sheet__metadata-item">
-              <Typography color="text.secondary" variant="overline">
-                {strings.about.buildLabel}
-              </Typography>
-              <Typography>{buildHash}</Typography>
-            </div>
-          </div>
+          </section>
 
-          <Button
-            className="about-sheet__licence"
-            component="a"
-            href="https://github.com/tmrk/qr-recast/blob/main/LICENCE"
-            rel="noopener noreferrer"
-            target="_blank"
-            variant="outlined"
-          >
-            {strings.about.licence}
-          </Button>
-        </Stack>
+          <footer className="about-sheet__footer">
+            <Typography color="text.secondary" variant="body2">
+              {strings.appName} {strings.about.versionLabel.toLowerCase()} {packageJson.version}
+              {' · '}
+              {strings.about.buildLabel.toLowerCase()} {buildHash}
+            </Typography>
+            <Button
+              className="about-sheet__licence"
+              component="a"
+              href="https://github.com/tmrk/qr-recast/blob/main/LICENCE"
+              rel="noopener noreferrer"
+              target="_blank"
+              variant="text"
+            >
+              {strings.about.licence}
+            </Button>
+          </footer>
+        </div>
       </Drawer>
 
       <Dialog onClose={() => setClearBatchOpen(false)} open={clearBatchOpen}>
@@ -305,9 +280,9 @@ export function AboutSheet({ open, onClose }) {
           <DialogContentText>{strings.batch.clearBody}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setClearBatchOpen(false)}>{strings.common.no}</Button>
+          <Button onClick={() => setClearBatchOpen(false)}>{strings.batch.clearCancel}</Button>
           <Button color="error" onClick={clearBatch} variant="contained">
-            {strings.common.yes}
+            {strings.batch.clearConfirm}
           </Button>
         </DialogActions>
       </Dialog>

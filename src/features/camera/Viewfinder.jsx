@@ -1,15 +1,26 @@
 import CameraswitchRounded from '@mui/icons-material/CameraswitchRounded';
+import CloseRounded from '@mui/icons-material/CloseRounded';
 import FlashlightOffRounded from '@mui/icons-material/FlashlightOffRounded';
 import FlashlightOnRounded from '@mui/icons-material/FlashlightOnRounded';
 import PhotoLibraryRounded from '@mui/icons-material/PhotoLibraryRounded';
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded';
 import QrCodeScannerRounded from '@mui/icons-material/QrCodeScannerRounded';
 import ShieldRounded from '@mui/icons-material/ShieldRounded';
-import { Box, Button, IconButton, Paper, Stack, Tooltip, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  Paper,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { trackAnalyticsEvent } from '../analytics/events.js';
 import { decodeImageFile, decodeVideoFrame } from '../../lib/decode.js';
 import { strings } from '../../strings.js';
+import './Viewfinder.css';
 
 const CAMERA_CONSTRAINTS = {
   width: { ideal: 1920 },
@@ -24,6 +35,10 @@ const statusCopy = {
   pending: {
     title: strings.camera.pendingTitle,
     body: strings.camera.pendingBody,
+  },
+  reading: {
+    title: strings.camera.readingTitle,
+    body: strings.camera.readingBody,
   },
   denied: {
     title: strings.camera.deniedTitle,
@@ -59,7 +74,7 @@ export function Viewfinder({
   showStatusCard = true,
   topSlot = null,
 }) {
-  const sectionRef = useRef(null);
+  const stageRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -170,7 +185,6 @@ export function Viewfinder({
         await refreshDevices();
       } catch (error) {
         stopStream();
-        setErrorMessage(error instanceof Error ? error.message : '');
         setStatus(isPermissionError(error) ? 'denied' : 'error');
       }
     },
@@ -195,11 +209,20 @@ export function Viewfinder({
     try {
       await track.applyConstraints({ advanced: [{ torch: nextTorchState }] });
       setTorchOn(nextTorchState);
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : strings.camera.torchError);
+    } catch {
+      setErrorMessage(strings.camera.torchError);
       setTorchAvailable(false);
     }
   }, [torchOn]);
+
+  const handleStop = useCallback(() => {
+    stopStream();
+    detectedRef.current = false;
+    setDetected(false);
+    setDetectedPolygon(null);
+    setErrorMessage('');
+    setStatus('idle');
+  }, [stopStream]);
 
   const handleUpload = useCallback(
     async (event) => {
@@ -210,7 +233,7 @@ export function Viewfinder({
         return;
       }
 
-      setStatus('pending');
+      setStatus('reading');
       setErrorMessage('');
       setDetected(false);
       setDetectedPolygon(null);
@@ -225,11 +248,11 @@ export function Viewfinder({
         }
 
         setErrorMessage(strings.camera.noCode);
-        setStatus(streamRef.current ? 'ready' : 'idle');
-      } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : strings.camera.uploadError);
-        setStatus('error');
+      } catch {
+        setErrorMessage(strings.camera.uploadError);
       }
+
+      setStatus(streamRef.current ? 'ready' : 'idle');
     },
     [handleDetected],
   );
@@ -263,12 +286,11 @@ export function Viewfinder({
 
         if (result?.data) {
           setDetectedPolygon(
-            mapQrLocation(result.location, videoRef.current, canvasRef.current, sectionRef.current),
+            mapQrLocation(result.location, videoRef.current, canvasRef.current, stageRef.current),
           );
           handleDetected(result, 'camera');
         }
-      } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : strings.camera.errorBody);
+      } catch {
         setStatus('error');
       } finally {
         decodingRef.current = false;
@@ -292,137 +314,192 @@ export function Viewfinder({
 
   useEffect(() => () => stopStream(), [stopStream]);
 
+  useEffect(() => {
+    if (!errorMessage) {
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => setErrorMessage(''), 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [errorMessage]);
+
   const showStatusPanel = showStatusCard && status !== 'ready' && !detected;
-  const hasStatusLayout = status !== 'ready' && !detected;
   const hasActiveCameraLayer = status === 'ready' || detected;
+  const busyStatus = status === 'pending' || status === 'reading';
   const copy = statusCopy[status] ?? statusCopy.error;
   const hasBottomSlot = Boolean(bottomSlot);
   const viewfinderClassName = [
     'viewfinder',
     hasActiveCameraLayer ? 'viewfinder--camera-active' : '',
-    hasStatusLayout ? 'viewfinder--status' : '',
+    hasActiveCameraLayer && !continueAfterDetected ? 'viewfinder--immersive' : '',
+    continueAfterDetected ? 'viewfinder--compact' : '',
     hasBottomSlot ? 'viewfinder--with-bottom-slot' : '',
   ]
     .filter(Boolean)
     .join(' ');
+  const batchProblem =
+    !showStatusCard && ['denied', 'unsupported', 'error'].includes(status) ? copy.body : '';
 
   return (
-    <section
-      ref={sectionRef}
-      className={viewfinderClassName}
-      aria-label={strings.camera.viewfinderLabel}
-    >
+    <section className={viewfinderClassName} aria-label={strings.camera.viewfinderLabel}>
       {topSlot ? <div className="viewfinder__top-slot">{topSlot}</div> : null}
-      <video ref={videoRef} autoPlay className="viewfinder__video" muted playsInline />
-      <canvas ref={canvasRef} aria-hidden="true" className="viewfinder__canvas" />
+      <div className="viewfinder__layout">
+        <div ref={stageRef} className="viewfinder__stage">
+          <video ref={videoRef} autoPlay className="viewfinder__video" muted playsInline />
+          <canvas ref={canvasRef} aria-hidden="true" className="viewfinder__canvas" />
 
-      <Box
-        aria-hidden="true"
-        className={[
-          'viewfinder__frame',
-          detected ? 'viewfinder__frame--detected' : '',
-          status === 'ready' ? 'viewfinder__frame--active' : '',
-          status !== 'ready' && !detected ? 'viewfinder__frame--idle' : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      >
-        <span className="viewfinder__corner viewfinder__corner--top-left" />
-        <span className="viewfinder__corner viewfinder__corner--top-right" />
-        <span className="viewfinder__corner viewfinder__corner--bottom-left" />
-        <span className="viewfinder__corner viewfinder__corner--bottom-right" />
-        <span className="viewfinder__reticle" />
-        <span className="viewfinder__sweep" />
-        <QrCodeScannerRounded className="viewfinder__detected-icon" />
-      </Box>
+          <Box
+            aria-hidden="true"
+            className={[
+              'viewfinder__frame',
+              detected ? 'viewfinder__frame--detected' : '',
+              status === 'ready' ? 'viewfinder__frame--active' : '',
+              status !== 'ready' && !detected ? 'viewfinder__frame--idle' : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            <span className="viewfinder__corner viewfinder__corner--top-left" />
+            <span className="viewfinder__corner viewfinder__corner--top-right" />
+            <span className="viewfinder__corner viewfinder__corner--bottom-left" />
+            <span className="viewfinder__corner viewfinder__corner--bottom-right" />
+            <QrCodeScannerRounded className="viewfinder__idle-icon" />
+            <span className="viewfinder__sweep" />
+            <QrCodeScannerRounded className="viewfinder__detected-icon" />
+          </Box>
 
-      {detected && detectedPolygon ? (
-        <svg
-          aria-hidden="true"
-          className="viewfinder__polygon"
-          viewBox={`0 0 ${detectedPolygon.width} ${detectedPolygon.height}`}
-        >
-          <polygon points={detectedPolygon.points} />
-        </svg>
-      ) : null}
+          {detected && detectedPolygon ? (
+            <svg
+              aria-hidden="true"
+              className="viewfinder__polygon"
+              viewBox={`0 0 ${detectedPolygon.width} ${detectedPolygon.height}`}
+            >
+              <polygon points={detectedPolygon.points} />
+            </svg>
+          ) : null}
 
-      {detected ? <div aria-hidden="true" className="viewfinder__capture-flash" /> : null}
+          {detected ? <div aria-hidden="true" className="viewfinder__capture-flash" /> : null}
 
-      {status === 'ready' ? (
-        <Typography className="viewfinder__hint" variant="body1">
-          {strings.camera.hint}
-        </Typography>
-      ) : null}
-
-      {showStatusPanel ? (
-        <Paper
-          aria-live="polite"
-          className={`viewfinder__status viewfinder__status--${status}`}
-          elevation={0}
-        >
-          {status === 'idle' ? (
-            <Typography color="primary" variant="overline">
-              {strings.camera.idleEyebrow}
+          {status === 'ready' && !errorMessage ? (
+            <Typography className="viewfinder__hint" variant="body2">
+              {strings.camera.hint}
             </Typography>
           ) : null}
-          <QrCodeScannerRounded color="primary" fontSize="large" />
-          <Stack spacing={1}>
-            <Typography component="h1" variant="h2">
-              {copy.title}
-            </Typography>
-            <Typography color="text.secondary">{errorMessage || copy.body}</Typography>
-          </Stack>
-          <div className="viewfinder__status-actions">
-            {status !== 'pending' && status !== 'unsupported' ? (
-              <Button
-                onClick={() => startCamera()}
-                startIcon={<PlayArrowRounded />}
-                variant="contained"
-              >
-                {strings.camera.start}
+
+          {errorMessage ? (
+            <Alert className="viewfinder__notice" severity="warning" variant="filled">
+              {errorMessage}
+            </Alert>
+          ) : null}
+
+          {continueAfterDetected && !hasActiveCameraLayer ? (
+            <div className="viewfinder__cta">
+              {status !== 'unsupported' ? (
+                <Button
+                  disabled={busyStatus}
+                  onClick={() => startCamera()}
+                  size="large"
+                  startIcon={busyStatus ? <CircularProgress size={18} /> : <PlayArrowRounded />}
+                  variant="contained"
+                >
+                  {status === 'pending'
+                    ? strings.camera.pendingTitle
+                    : status === 'reading'
+                      ? strings.camera.readingTitle
+                      : strings.camera.start}
+                </Button>
+              ) : null}
+              <Button onClick={openUpload} startIcon={<PhotoLibraryRounded />} variant="text">
+                {strings.camera.upload}
               </Button>
-            ) : null}
-            <Button onClick={openUpload} startIcon={<PhotoLibraryRounded />} variant="outlined">
-              {strings.camera.upload}
-            </Button>
-          </div>
-          <div className="viewfinder__privacy">
-            <ShieldRounded color="primary" fontSize="small" />
-            <Typography color="text.secondary" variant="body2">
-              {strings.privacyNote}
-            </Typography>
-          </div>
-        </Paper>
-      ) : null}
-
-      {hasBottomSlot ? <div className="viewfinder__bottom-slot">{bottomSlot}</div> : null}
-
-      {status === 'ready' ? (
-        <div className="viewfinder__controls">
-          {torchAvailable ? (
-            <Tooltip title={torchOn ? strings.camera.torchOff : strings.camera.torchOn}>
-              <IconButton
-                aria-label={torchOn ? strings.camera.torchOff : strings.camera.torchOn}
-                onClick={handleTorch}
-              >
-                {torchOn ? <FlashlightOffRounded /> : <FlashlightOnRounded />}
-              </IconButton>
-            </Tooltip>
+            </div>
           ) : null}
-          {canFlip ? (
-            <Tooltip title={strings.camera.flip}>
-              <IconButton aria-label={strings.camera.flip} onClick={handleFlip}>
-                <CameraswitchRounded />
-              </IconButton>
-            </Tooltip>
+
+          {status === 'ready' ? (
+            <div className="viewfinder__controls">
+              {torchAvailable ? (
+                <Tooltip title={torchOn ? strings.camera.torchOff : strings.camera.torchOn}>
+                  <IconButton
+                    aria-label={torchOn ? strings.camera.torchOff : strings.camera.torchOn}
+                    onClick={handleTorch}
+                  >
+                    {torchOn ? <FlashlightOffRounded /> : <FlashlightOnRounded />}
+                  </IconButton>
+                </Tooltip>
+              ) : null}
+              {canFlip ? (
+                <Tooltip title={strings.camera.flip}>
+                  <IconButton aria-label={strings.camera.flip} onClick={handleFlip}>
+                    <CameraswitchRounded />
+                  </IconButton>
+                </Tooltip>
+              ) : null}
+              <Tooltip title={strings.camera.upload}>
+                <IconButton aria-label={strings.camera.upload} onClick={openUpload}>
+                  <PhotoLibraryRounded />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={strings.camera.stop}>
+                <IconButton aria-label={strings.camera.stop} onClick={handleStop}>
+                  <CloseRounded />
+                </IconButton>
+              </Tooltip>
+            </div>
           ) : null}
-          <Tooltip title={strings.camera.upload}>
-            <IconButton aria-label={strings.camera.upload} onClick={openUpload}>
-              <PhotoLibraryRounded />
-            </IconButton>
-          </Tooltip>
         </div>
-      ) : null}
+
+        {showStatusPanel ? (
+          <Paper
+            aria-live="polite"
+            className={`viewfinder__status viewfinder__status--${status}`}
+            elevation={0}
+          >
+            <div className="viewfinder__status-copy">
+              <Typography className="viewfinder__status-title" component="h2" variant="h2">
+                {copy.title}
+                {busyStatus ? <CircularProgress aria-hidden="true" size={20} /> : null}
+              </Typography>
+              <Typography color="text.secondary">{copy.body}</Typography>
+            </div>
+            <div className="viewfinder__status-actions">
+              {!busyStatus && status !== 'unsupported' ? (
+                <Button
+                  onClick={() => startCamera()}
+                  size="large"
+                  startIcon={<PlayArrowRounded />}
+                  variant="contained"
+                >
+                  {strings.camera.start}
+                </Button>
+              ) : null}
+              <Button
+                onClick={openUpload}
+                size="large"
+                startIcon={<PhotoLibraryRounded />}
+                variant={status === 'unsupported' ? 'contained' : 'outlined'}
+              >
+                {strings.camera.upload}
+              </Button>
+            </div>
+            <p className="viewfinder__privacy">
+              <ShieldRounded fontSize="small" />
+              <span>{strings.privacyNote}</span>
+            </p>
+          </Paper>
+        ) : null}
+
+        {hasBottomSlot ? (
+          <div className="viewfinder__bottom-slot">
+            {batchProblem ? (
+              <Alert className="viewfinder__problem" severity="warning" variant="outlined">
+                {batchProblem}
+              </Alert>
+            ) : null}
+            {bottomSlot}
+          </div>
+        ) : null}
+      </div>
 
       <input
         ref={fileInputRef}

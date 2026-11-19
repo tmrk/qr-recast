@@ -1,6 +1,7 @@
 import SettingsRounded from '@mui/icons-material/SettingsRounded';
 import { AppBar, Box, Container, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { lazy, Suspense, useState } from 'react';
+import { useHistoryLayer } from '../lib/history-layers.js';
 import { strings } from '../strings.js';
 import { useAppTheme } from '../theme/index.js';
 import { themeOptions } from '../theme/options.js';
@@ -16,6 +17,8 @@ export function AppShell({ children, bottomSlot = null }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [themeRollKey, setThemeRollKey] = useState(0);
   const { resolvedMode, toggleMode } = useAppTheme();
+
+  useHistoryLayer(settingsOpen, () => setSettingsOpen(false));
 
   const currentOption =
     themeOptions.find((option) => option.mode === resolvedMode) ?? themeOptions[0];

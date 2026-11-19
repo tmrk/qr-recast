@@ -25,6 +25,12 @@ export const lightTheme = Object.freeze({
       dark: '#410002',
       contrastText: '#FFFFFF',
     },
+    warning: {
+      main: '#8A5100',
+      light: '#FFDDB5',
+      dark: '#5C3500',
+      contrastText: '#FFFFFF',
+    },
     success: {
       main: '#2E7D32',
       light: '#CDE8CE',

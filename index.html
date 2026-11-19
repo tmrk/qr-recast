@@ -2,21 +2,52 @@
 <html lang="en-GB">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
     <meta name="theme-color" content="#EFEEE7" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="QR Recast" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="format-detection" content="telephone=no" />
     <meta name="color-scheme" content="light dark" />
     <meta
       name="description"
-      content="Restore photographed QR codes as crisp, private, scan-ready files on your device."
+      content="Rebuild a photographed QR code as a clean, scannable file. Private and processed on your device."
     />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <link rel="apple-touch-icon" href="%BASE_URL%icons/apple-touch-icon.png" />
     <title>QR Recast</title>
+    <script>
+      (function () {
+        var scheme = '';
+        try {
+          scheme = window.localStorage.getItem('qr-recast-colour-scheme') || '';
+        } catch {
+          scheme = '';
+        }
+        if (scheme !== 'light' && scheme !== 'dark') {
+          scheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-boot-scheme', scheme);
+        document
+          .querySelector('meta[name="theme-color"]')
+          .setAttribute('content', scheme === 'dark' ? '#0D1210' : '#EFEEE7');
+      })();
+    </script>
     <style id="fallback-shell">
+      html {
+        background: #efeee7;
+      }
+      html[data-boot-scheme='dark'] {
+        background: #0d1210;
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+      }
       .preboot-shell {
         background: #efeee7;
         color: #18201e;
@@ -24,14 +55,12 @@
       .preboot-shell p {
         color: #52605c;
       }
-      @media (prefers-color-scheme: dark) {
-        .preboot-shell {
-          background: #0d1210;
-          color: #edf2ef;
-        }
-        .preboot-shell p {
-          color: #aab6b1;
-        }
+      [data-boot-scheme='dark'] .preboot-shell {
+        background: #0d1210;
+        color: #e9ece8;
+      }
+      [data-boot-scheme='dark'] .preboot-shell p {
+        color: #aab4b0;
       }
     </style>
   </head>
@@ -55,9 +84,9 @@
             style="width: 56px; height: 56px; margin: 0 auto; border-radius: 14px"
           />
           <section style="display: grid; gap: 8px">
-            <h1 style="margin: 0; font-size: 2rem; line-height: 1.1">Point at a QR code</h1>
+            <h1 style="margin: 0; font-size: 2rem; line-height: 1.1">Scan a QR code</h1>
             <p style="margin: 0">
-              Restore it as crisp SVG, PNG, PDF, or Word artwork — entirely on this device.
+              Rebuild it as a clean SVG, PNG, PDF, or Word file, entirely on this device.
             </p>
           </section>
         </main>

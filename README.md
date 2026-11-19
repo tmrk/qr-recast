@@ -56,8 +56,9 @@ This checks formatting, ESLint, British English spelling, QR type fixtures, 47 u
 production build. Individual commands and manual browser/export protocols are documented in
 [TESTING.md](TESTING.md).
 
-Three committed Playwright journeys exercise the mobile single-result/share/export flow, desktop
-overflow, and a persisted seven-item batch with per-item output styles and every export format:
+Five committed Playwright journeys exercise the mobile single-result/share/export flow, system back
+navigation, desktop overflow, and a persisted seven-item batch with per-item output styles and
+every export format:
 
 ```sh
 npm run test:e2e

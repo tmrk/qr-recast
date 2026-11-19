@@ -1,5 +1,6 @@
-import ArticleRounded from '@mui/icons-material/ArticleRounded';
 import AppsRounded from '@mui/icons-material/AppsRounded';
+import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded';
+import ArticleRounded from '@mui/icons-material/ArticleRounded';
 import CalendarMonthRounded from '@mui/icons-material/CalendarMonthRounded';
 import CheckRounded from '@mui/icons-material/CheckRounded';
 import CloseRounded from '@mui/icons-material/CloseRounded';
@@ -18,7 +19,6 @@ import LocationOnRounded from '@mui/icons-material/LocationOnRounded';
 import OpenInNewRounded from '@mui/icons-material/OpenInNewRounded';
 import PhoneRounded from '@mui/icons-material/PhoneRounded';
 import PictureAsPdfRounded from '@mui/icons-material/PictureAsPdfRounded';
-import QrCodeScannerRounded from '@mui/icons-material/QrCodeScannerRounded';
 import ShareRounded from '@mui/icons-material/ShareRounded';
 import SmsRounded from '@mui/icons-material/SmsRounded';
 import TextFieldsRounded from '@mui/icons-material/TextFieldsRounded';
@@ -61,12 +61,15 @@ import { shareOrCopyUrl, shareOrSaveBlob, statusToMessage } from '../../lib/file
 import { extractPayloadUrl } from '../../lib/payload.js';
 import { detectQrType, payloadKindFromQrType } from '../../lib/qr-types/index.js';
 import { SHARE_URL_MAX_LENGTH, buildShareUrl, createQrSvg, hashTextPrefix } from '../../lib/qr.js';
+import { useHistoryLayer } from '../../lib/history-layers.js';
 import { strings } from '../../strings.js';
+import './ResultView.css';
 
 const exportActions = [
   {
     format: 'svg',
     label: strings.result.svg,
+    hint: strings.result.svgHint,
     icon: DescriptionRounded,
     createBlob: createSvgExport,
     mime: 'image/svg+xml',
@@ -74,6 +77,7 @@ const exportActions = [
   {
     format: 'png',
     label: strings.result.png,
+    hint: strings.result.pngHint,
     icon: ImageRounded,
     createBlob: createPngExport,
     mime: 'image/png',
@@ -81,6 +85,7 @@ const exportActions = [
   {
     format: 'pdf',
     label: strings.result.pdf,
+    hint: strings.result.pdfHint,
     icon: PictureAsPdfRounded,
     createBlob: createPdfExport,
     mime: 'application/pdf',
@@ -88,6 +93,7 @@ const exportActions = [
   {
     format: 'docx',
     label: strings.result.docx,
+    hint: strings.result.docxHint,
     icon: ArticleRounded,
     createBlob: createDocxExport,
     mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -139,6 +145,7 @@ export function ResultView({
   const [globalBrandingEnabled] = useBrandingPreference();
   const qrCopyTimerRef = useRef(0);
   const hasCoarsePointer = useMediaQuery('(pointer: coarse)');
+  const bottomActionBar = useMediaQuery('(max-width: 899px)');
 
   useEffect(() => {
     let active = true;
@@ -221,6 +228,10 @@ export function ResultView({
   );
   const useTextBottomSheet = hasCoarsePointer;
   const downloadMenuOpen = Boolean(downloadAnchorElement);
+
+  useHistoryLayer(downloadMenuOpen, () => setDownloadAnchorElement(null));
+  useHistoryLayer(textOpen, () => setTextOpen(false));
+
   const exportInProgress = exportActions.some((action) => busyAction === action.format);
   const decodedPayloadBlock = (
     <pre className="result-view__payload">
@@ -604,24 +615,19 @@ export function ResultView({
   );
   const typeDetails = (
     <Paper className="result-view__type-card" elevation={0}>
-      <Stack
-        className="result-view__type-card-heading"
-        direction="row"
-        spacing={1.25}
-        sx={{ alignItems: 'center' }}
-      >
-        <span className="result-view__type-icon" aria-hidden="true">
-          <TypeIcon />
-        </span>
-        <Stack spacing={0.25} sx={{ minWidth: 0 }}>
-          <Typography color="text.secondary" variant="overline">
-            {strings.result.detailsTitle}
-          </Typography>
-          <Typography component="h2" variant="h2">
-            {payloadKindLabel}
-          </Typography>
-        </Stack>
-      </Stack>
+      <div className="result-view__card-head">
+        <Typography component="h2" variant="h2">
+          {strings.result.detailsTitle}
+        </Typography>
+        <Button
+          disabled={Boolean(busyAction)}
+          onClick={openDecodedText}
+          startIcon={<TextSnippetRounded />}
+          variant="text"
+        >
+          {strings.result.showText}
+        </Button>
+      </div>
       {qrType.fields.length ? (
         <div className="result-view__fields">
           {qrType.fields.map((field) => {
@@ -668,7 +674,11 @@ export function ResultView({
             );
           })}
         </div>
-      ) : null}
+      ) : (
+        <Typography className="result-view__preview" color="text.secondary">
+          {payloadPreview}
+        </Typography>
+      )}
     </Paper>
   );
 
@@ -676,11 +686,26 @@ export function ResultView({
     <section className="result-view" aria-labelledby="result-title">
       <div className="result-view__workbench">
         <header className="result-view__header">
-          <div className="result-view__heading-copy">
-            <Typography component="h1" id="result-title" variant="h1">
-              {strings.result.title}
-            </Typography>
-            <Typography color="text.secondary">{strings.result.supporting}</Typography>
+          <Button
+            className="result-view__back"
+            onClick={scanAgain}
+            startIcon={<ArrowBackRounded />}
+            variant="text"
+          >
+            {strings.result.scanAgain}
+          </Button>
+          <div className="result-view__title">
+            <span className="result-view__type-icon" aria-hidden="true">
+              <TypeIcon />
+            </span>
+            <div className="result-view__title-copy">
+              <Typography component="h1" id="result-title" variant="h1">
+                {payloadKindLabel}
+              </Typography>
+              <Typography color="text.secondary" variant="body2">
+                {strings.result.restored}
+              </Typography>
+            </div>
           </div>
         </header>
 
@@ -693,6 +718,7 @@ export function ResultView({
           >
             {qrCard}
           </Tooltip>
+          <p className="result-view__qr-hint">{strings.result.copyQrHint}</p>
 
           <Paper className="result-view__branding-control" elevation={0}>
             <div>
@@ -705,20 +731,20 @@ export function ResultView({
             </div>
             <div
               aria-label={strings.result.outputStyle}
-              className="result-view__style-options"
+              className="qr-segmented result-view__style-options"
               role="group"
             >
               <Button
                 aria-pressed={!brandingEnabled}
                 onClick={() => updateResultBranding(false)}
-                variant={brandingEnabled ? 'text' : 'contained'}
+                variant="text"
               >
                 {strings.result.cleanStyle}
               </Button>
               <Button
                 aria-pressed={brandingEnabled}
                 onClick={() => updateResultBranding(true)}
-                variant={brandingEnabled ? 'contained' : 'text'}
+                variant="text"
               >
                 {strings.result.labelledStyle}
               </Button>
@@ -726,68 +752,7 @@ export function ResultView({
           </Paper>
         </div>
 
-        <div className="result-view__control-column">
-          {typeDetails}
-
-          <Paper className="result-view__action-deck" elevation={0}>
-            <Typography component="h2" variant="overline">
-              {strings.result.actionsTitle}
-            </Typography>
-            <div className="result-view__primary-actions">
-              <Button
-                aria-describedby={shareUrlTooLarge ? 'share-url-guidance' : undefined}
-                className={urlActionClassName}
-                color={urlActionCopied ? 'success' : 'primary'}
-                disabled={shareUrlDisabled}
-                onClick={runShareUrl}
-                startIcon={
-                  busyAction === 'url' ? (
-                    <CircularProgress size={18} />
-                  ) : (
-                    <span
-                      key={urlActionCopied ? 'copied' : 'ready'}
-                      className="result-view__url-action-icon"
-                    >
-                      <UrlActionIcon />
-                    </span>
-                  )
-                }
-                style={urlActionStyle}
-                variant="contained"
-              >
-                {canShareUrlNatively ? strings.result.shareUrl : strings.result.copyUrl}
-              </Button>
-              <Button
-                aria-controls={downloadMenuOpen ? 'result-download-menu' : undefined}
-                aria-expanded={downloadMenuOpen ? 'true' : undefined}
-                aria-haspopup="menu"
-                disabled={!svgString || Boolean(busyAction)}
-                endIcon={<KeyboardArrowDownRounded />}
-                onClick={(event) => setDownloadAnchorElement(event.currentTarget)}
-                startIcon={
-                  exportInProgress ? <CircularProgress size={18} /> : <FileDownloadRounded />
-                }
-                variant="contained"
-              >
-                {strings.result.download}
-              </Button>
-            </div>
-
-            <div className="result-view__secondary-actions">
-              <Button
-                disabled={Boolean(busyAction)}
-                onClick={openDecodedText}
-                startIcon={<TextSnippetRounded />}
-                variant="text"
-              >
-                {strings.result.showText}
-              </Button>
-              <Button onClick={scanAgain} startIcon={<QrCodeScannerRounded />} variant="text">
-                {strings.result.scanAgain}
-              </Button>
-            </div>
-          </Paper>
-
+        <div className="result-view__notices">
           {shareUrlTooLarge ? (
             <Alert id="share-url-guidance" severity="warning" variant="outlined">
               {strings.result.urlTooLargeGuidance}
@@ -828,11 +793,62 @@ export function ResultView({
           ) : null}
         </div>
 
+        {typeDetails}
+
+        <div className="result-view__actions">
+          <Typography className="result-view__actions-title" component="h2" variant="overline">
+            {strings.result.actionsTitle}
+          </Typography>
+          <div className="result-view__primary-actions">
+            <Button
+              aria-controls={downloadMenuOpen ? 'result-download-menu' : undefined}
+              aria-expanded={downloadMenuOpen ? 'true' : undefined}
+              aria-haspopup="menu"
+              disabled={!svgString || Boolean(busyAction)}
+              endIcon={<KeyboardArrowDownRounded />}
+              onClick={(event) => setDownloadAnchorElement(event.currentTarget)}
+              size="large"
+              startIcon={
+                exportInProgress ? <CircularProgress size={18} /> : <FileDownloadRounded />
+              }
+              variant="contained"
+            >
+              {strings.result.download}
+            </Button>
+            <Button
+              aria-describedby={shareUrlTooLarge ? 'share-url-guidance' : undefined}
+              className={`${urlActionClassName}${urlActionCopied ? '' : ' qr-tonal'}`}
+              color={urlActionCopied ? 'success' : 'primary'}
+              disabled={shareUrlDisabled}
+              onClick={runShareUrl}
+              size="large"
+              startIcon={
+                busyAction === 'url' ? (
+                  <CircularProgress size={18} />
+                ) : (
+                  <span
+                    key={urlActionCopied ? 'copied' : 'ready'}
+                    className="result-view__url-action-icon"
+                  >
+                    <UrlActionIcon />
+                  </span>
+                )
+              }
+              style={urlActionStyle}
+              variant="contained"
+            >
+              {canShareUrlNatively ? strings.result.shareUrl : strings.result.copyUrl}
+            </Button>
+          </div>
+        </div>
+
         <Menu
           anchorEl={downloadAnchorElement}
+          anchorOrigin={{ horizontal: 'left', vertical: bottomActionBar ? 'top' : 'bottom' }}
           id="result-download-menu"
           onClose={() => setDownloadAnchorElement(null)}
           open={downloadMenuOpen}
+          transformOrigin={{ horizontal: 'left', vertical: bottomActionBar ? 'bottom' : 'top' }}
         >
           {exportActions.map((action) => {
             const Icon = action.icon;
@@ -847,7 +863,7 @@ export function ResultView({
                 <ListItemIcon>
                   {loading ? <CircularProgress size={18} /> : <Icon fontSize="small" />}
                 </ListItemIcon>
-                <ListItemText>{action.label}</ListItemText>
+                <ListItemText primary={action.label} secondary={action.hint} />
               </MenuItem>
             );
           })}
